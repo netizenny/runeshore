@@ -1,8 +1,9 @@
+/// <reference types="vite/client" />
 import type { ClientMsg, ServerMsg } from '@runeshore/shared';
 
 export type Status = 'connecting' | 'open' | 'closed';
 
-const wsUrl = () => `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`;
+const wsUrl = () => import.meta.env.VITE_WS_URL || `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`;
 
 // Reconnecting socket: backoff 0.5 s -> 5 s. `onOpen` runs on every (re)connect so callers can re-join.
 export function connect(h: {
