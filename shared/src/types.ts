@@ -57,7 +57,7 @@ export type Phase =
   | { k: 'moveShade'; then: 'roll' | 'main' }
   | { k: 'steal'; hex: HexId; victims: PlayerId[]; then: 'roll' | 'main' }
   | { k: 'main' }
-  | { k: 'waymaking'; left: 1 | 2 }
+  | { k: 'waymaking'; left: 1 | 2; then: 'roll' | 'main' }
   | { k: 'ended'; winner: PlayerId };
 
 export interface TradeOffer {

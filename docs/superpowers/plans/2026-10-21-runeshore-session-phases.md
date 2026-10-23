@@ -46,7 +46,7 @@ this with friends before any expansion work starts.
 - Start prompt: "Execute Tasks 4–5 of the base-game plan."
 - Done when: generate, setup and production tests pass.
 
-### [ ] Session 3: Core rules (Tasks 6–8)
+### [x] Session 3: Core rules (Tasks 6–8)
 
 - Sevens, discards, the Shade, stealing, end turn.
 - Building paths, outposts, citadels. Bank, port and player trades.
