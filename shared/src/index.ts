@@ -10,3 +10,4 @@ export * from './engine/awards';
 export * from './engine/legal';
 export * from './view';
 export * from './protocol';
+export { tradeRatio } from './engine/trade';

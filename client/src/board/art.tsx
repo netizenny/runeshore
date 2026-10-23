@@ -147,3 +147,7 @@ export const Shade = () => (
     <circle cx={2.5} cy={-2} r={1.4} fill="var(--blood)" />
   </g>
 );
+
+export const ResIcon = ({ r, size = 18 }: { r: Resource; size?: number }) => (
+  <svg viewBox="-7 -7 14 14" width={size} height={size} fill={TERRAIN_FILL[r]} stroke={GOLD} strokeWidth={1} strokeLinejoin="round" strokeLinecap="round" aria-label={r}>{RESOURCE_GLYPH[r]}</svg>
+);

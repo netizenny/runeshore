@@ -78,7 +78,7 @@ this with friends before any expansion work starts.
 - Done when: 3 browser tabs can create, join, start, and click through setup on the
   same board. A reload keeps the seat.
 
-### [ ] Session 7: Game panels (Task 14, steps 1–4)
+### [x] Session 7: Game panels (Task 14, steps 1–4)
 
 - Players, Log, Hand, Build, Omens, Trade panels.
 - Discard, Shade-steal, Bounty, Hoard and Waymaking prompts.

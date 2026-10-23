@@ -1,32 +1,62 @@
 import { useState } from 'react';
 import type { Action, ClientMsg, ServerMsg } from '@runeshore/shared';
 import { Board, type Mode } from '../board/Board';
+import { ComicPanel } from '../fx/ComicPanel';
+import { Build } from '../panels/Build';
+import { Discard } from '../panels/Discard';
+import { Hand } from '../panels/Hand';
+import { Log } from '../panels/Log';
+import { Omens } from '../panels/Omens';
+import { Players } from '../panels/Players';
+import { ShadeSteal } from '../panels/ShadeSteal';
+import { Trade } from '../panels/Trade';
 
 type GameMsg = Extract<ServerMsg, { t: 'game' }>;
 
 const has = (legal: Action[], ...types: Action['type'][]) => legal.some((a) => types.includes(a.type));
 
-// Task 14 replaces this bar with real panels; for now just enough to drive setup and the first turns.
 export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }) {
   const { view, legal } = game;
+  const me = view.players.find((p) => p.id === view.you)!;
   const [picked, setPicked] = useState<Mode>(null);
-  const forced: Mode = has(legal, 'placeOutpost') ? 'outpost' : has(legal, 'placePath') || view.phase.k === 'waymaking' ? 'path' : has(legal, 'moveShade') ? 'shade' : null;
+  const [trading, setTrading] = useState(false);
+  const ph = view.phase;
+  const forced: Mode = has(legal, 'placeOutpost') ? 'outpost' : has(legal, 'placePath') || ph.k === 'waymaking' ? 'path' : has(legal, 'moveShade') ? 'shade' : null;
   const mode = forced ?? picked;
   const act = (action: Action) => {
     setPicked(null);
     send({ t: 'action', action });
   };
-  const toggles: [Mode, boolean][] = [['path', has(legal, 'buildPath')], ['outpost', has(legal, 'buildOutpost')], ['citadel', has(legal, 'buildCitadel')]];
-  const name = (id: string) => view.players.find((p) => p.id === id)?.name;
+  const name = view.players.find((p) => p.id === view.order[view.current])?.name;
+  const prompt = ph.k === 'waymaking' ? `Waymaking: lay ${ph.left} more path${ph.left > 1 ? 's' : ''}`
+    : ph.k === 'setup' ? `Setup: place your ${ph.step}`
+    : has(legal, 'moveShade') ? 'Move the Shade to a hex'
+    : ph.k === 'discard' ? 'Waiting for discards'
+    : `${name}: ${ph.k}`;
+  const roll = legal.find((a) => a.type === 'roll');
+  const end = legal.find((a) => a.type === 'endTurn');
+  const owed = ph.k === 'discard' ? ph.pending[view.you] : 0;
+
   return (
     <div className="game">
-      <div className="bar">
-        <span>{name(view.order[view.current])} · {view.phase.k}</span>
-        {!forced && toggles.filter(([, ok]) => ok).map(([m]) => <button key={m} onClick={() => setPicked(picked === m ? null : m)}>{m}</button>)}
-        {legal.filter((a) => a.type === 'roll' || a.type === 'endTurn').map((a) => <button key={a.type} onClick={() => act(a)}>{a.type === 'roll' ? 'Roll' : 'End turn'}</button>)}
-        {legal.filter((a): a is Extract<Action, { type: 'steal' }> => a.type === 'steal').map((a) => <button key={a.victim} onClick={() => act(a)}>Steal from {name(a.victim)}</button>)}
-      </div>
+      <div className="bar"><b>{prompt}</b>{view.dice && <span>🎲 {view.dice[0]} + {view.dice[1]}</span>}</div>
       <div className="board"><Board view={view} legal={legal} mode={mode} onAction={act} /></div>
+      <aside className="side">
+        <Players view={view} waiting={game.waitingOn.map((w) => w.player)} deadline={game.deadline} />
+        <Log view={view} />
+      </aside>
+      <div className="dock">
+        <Hand hand={me.hand!} />
+        <Build legal={legal} picked={forced ? null : picked} setPicked={setPicked} act={act} />
+        <Omens me={me} turn={view.turn} legal={legal} act={act} />
+        <button data-on={trading} onClick={() => setTrading(!trading)}>Trade</button>
+        {roll && <button className="go" onClick={() => act(roll)}>Roll</button>}
+        {end && <button className="go" onClick={() => act(end)}>End turn</button>}
+      </div>
+      {trading && <div className="drawer"><Trade view={view} legal={legal} act={act} /></div>}
+      {owed > 0 && has(legal, 'discard') && <Discard hand={me.hand!} need={owed} act={act} />}
+      {ph.k === 'steal' && has(legal, 'steal') && <ShadeSteal view={view} legal={legal} act={act} />}
+      <ComicPanel events={game.events} view={view} />
     </div>
   );
 }
