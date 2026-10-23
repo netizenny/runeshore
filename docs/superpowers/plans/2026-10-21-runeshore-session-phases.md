@@ -121,13 +121,14 @@ Detailed plan: `docs/superpowers/plans/2026-10-23-runeshore-hollow-fleet.md` (Ta
 - Done when: plan committed and split into sessions 11–16 below (adjust if needed).
 - Done 2026-10-23: plan written; sessions 11–16 keep their shape, task map at the end of the plan.
 
-### [ ] Session 10b: In-game Rulebook (base game)
+### [x] Session 10b: In-game Rulebook (base game)
 
 - Magic-book button top-left of the board opens a Rulebook overlay: Terms (every renamed word), Pieces, Turn, Omens (each card), Ports and trading, Winning.
 - Content is data in `client/src/rules/content.ts` (one entry per topic: title, text, optional icon), shown by `client/src/panels/Rulebook.tsx` with a search box and topic list. Card text comes from `constants.ts` where it already exists, so it cannot drift.
 - Rule for every later expansion: its UI task is not done until its Rulebook entries (terms, pieces, every card) are added. A new expansion adds a new tab.
 - Start prompt: "Build the in-game Rulebook with the base-game content."
 - Done when: book opens and closes in a game, every Omen and renamed term has an entry, tests pass, committed.
+- Done 2026-10-23: Rulebook overlay + base-game content; omen text moved to `OMEN_TEXT` in shared constants. Not checked in a live browser.
 
 ### [ ] Session 11: Engine hooks, event die, commodities (Tasks H1–H3)
 

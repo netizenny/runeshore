@@ -8,6 +8,7 @@ import { Hand } from '../panels/Hand';
 import { Log } from '../panels/Log';
 import { Offers } from '../panels/Offers';
 import { Omens } from '../panels/Omens';
+import { Rulebook } from '../panels/Rulebook';
 import { Players } from '../panels/Players';
 import { ShadeSteal } from '../panels/ShadeSteal';
 import { Trade } from '../panels/Trade';
@@ -21,6 +22,7 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
   const me = view.players.find((p) => p.id === view.you)!;
   const [picked, setPicked] = useState<Mode>(null);
   const [trading, setTrading] = useState(false);
+  const [book, setBook] = useState(false);
   const ph = view.phase;
   const forced: Mode = has(legal, 'placeOutpost') ? 'outpost' : has(legal, 'placePath') || ph.k === 'waymaking' ? 'path' : has(legal, 'moveShade') ? 'shade' : null;
   const mode = forced ?? picked;
@@ -41,7 +43,7 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
   return (
     <div className="game">
       <div className="bar"><b>{prompt}</b>{view.dice && ph.k !== 'roll' && <span>🎲 {view.dice[0]} + {view.dice[1]}</span>}</div>
-      <div className="board"><Board view={view} legal={legal} mode={mode} onAction={act} /></div>
+      <div className="board"><button className="book" title="Rulebook" onClick={() => setBook(true)}>📖</button><Board view={view} legal={legal} mode={mode} onAction={act} /></div>
       <aside className="side">
         <Players view={view} waiting={game.waitingOn.map((w) => w.player)} deadline={game.deadline} />
         <Log view={view} />
@@ -58,6 +60,7 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
       {trading &&<div className="drawer"><Trade view={view} legal={legal} act={act} /></div>}
       {owed > 0 && has(legal, 'discard') && <Discard hand={me.hand!} need={owed} act={act} />}
       {ph.k === 'steal' && has(legal, 'steal') && <ShadeSteal view={view} legal={legal} act={act} />}
+      {book && <Rulebook close={() => setBook(false)} />}
       <ComicPanel events={game.events} view={view} />
     </div>
   );

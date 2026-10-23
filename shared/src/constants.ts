@@ -26,6 +26,14 @@ export const OMEN_DECK: OmenKind[] = [
   ...rep<OmenKind>('hoard', 2),
 ];
 
+export const OMEN_TEXT: Record<OmenKind, string> = {
+  warden: 'Warden: move the Shade and steal',
+  relic: 'Relic: 1 hidden Renown',
+  waymaking: 'Waymaking: lay 2 paths free',
+  bounty: 'Bounty: take any 2 from the bank',
+  hoard: 'Hoard: take every card of one kind from the others',
+};
+
 export const TILES: Terrain[] = [
   ...rep<Terrain>('timber', 4),
   ...rep<Terrain>('fleece', 4),

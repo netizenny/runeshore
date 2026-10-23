@@ -71,3 +71,9 @@ button[data-on='true'] { background: var(--ink-gold-dim); color: var(--night); }
 .tray { display: flex; flex-wrap: wrap; gap: .2rem; min-height: 28px; padding: .2rem; border: 1px dashed var(--ink-gold-dim); border-radius: 4px; }
 .offers { position: absolute; z-index: 6; top: 3rem; right: 270px; display: flex; flex-direction: column; gap: .5rem; max-width: 260px; }
 .offers .offer { flex-direction: column; align-items: stretch; margin: 0; padding: .5rem; background: var(--night-2); border: 2px solid var(--ink-gold); border-radius: 6px; }
+.game .board { position: relative; }
+.book { position: absolute; top: .5rem; left: .5rem; z-index: 3; font-size: 1.3rem; }
+.rulebook { inset: 2rem; right: 280px; display: flex; flex-direction: column; z-index: 6; }
+.rb-head { display: flex; gap: .6rem; align-items: center; }
+.rb-head h2 { margin: 0 auto 0 0; }
+.rb-body { overflow-y: auto; margin-top: .8rem; }

@@ -1,14 +1,6 @@
 import { useState } from 'react';
-import { RESOURCES, type Action, type OmenKind, type PlayerViewPlayer, type Resource } from '@runeshore/shared';
+import { OMEN_TEXT, RESOURCES, type Action, type OmenKind, type PlayerViewPlayer, type Resource } from '@runeshore/shared';
 import { ResIcon } from '../board/art';
-
-const TEXT: Record<OmenKind, string> = {
-  warden: 'Warden: move the Shade and steal',
-  relic: 'Relic: 1 hidden Renown',
-  waymaking: 'Waymaking: lay 2 paths free',
-  bounty: 'Bounty: take any 2 from the bank',
-  hoard: 'Hoard: take every card of one kind from the others',
-};
 
 export function Omens({ me, turn, legal, act }: { me: PlayerViewPlayer; turn: number; legal: Action[]; act(a: Action): void }) {
   const [pick, setPick] = useState<Resource[]>([]);
@@ -31,7 +23,7 @@ export function Omens({ me, turn, legal, act }: { me: PlayerViewPlayer; turn: nu
   return (
     <div className="omens">
       {(me.omens ?? []).map((o, i) => (
-        <button key={i} className="omen" title={TEXT[o.kind]} disabled={!can(o.kind)} onClick={() => run(o.kind)}>
+        <button key={i} className="omen" title={OMEN_TEXT[o.kind]} disabled={!can(o.kind)} onClick={() => run(o.kind)}>
           {o.kind}{o.boughtTurn === turn && o.kind !== 'relic' ? ' (new)' : ''}
         </button>
       ))}
