@@ -10,7 +10,7 @@ export function Discard({ hand, need, act }: { hand: ResourceCounts; need: numbe
     <div className="modal">
       <h3>The Shade stirs: cast off {need}</h3>
       {RESOURCES.map((r) => (
-        <div key={r} className="row"><ResIcon r={r} /> {r} ({hand[r]}) <Stepper value={c[r]} max={Math.min(hand[r], need - sum + c[r])} onChange={(v) => setC({ ...c, [r]: v })} /></div>
+        <div key={r} className="row"><ResIcon r={r} /> {r} ({hand[r]}) <Stepper value={c[r]} max={Math.min(hand[r], need - sum + c[r])} onChange={(v) => setC((p) => ({ ...p, [r]: v }))} /></div>
       ))}
       <button disabled={sum !== need} onClick={() => act({ type: 'discard', cards: c })}>Cast off ({sum}/{need})</button>
     </div>

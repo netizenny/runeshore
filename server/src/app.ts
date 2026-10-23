@@ -11,7 +11,7 @@ const MIME: Record<string, string> = { '.html': 'text/html', '.js': 'text/javasc
 const DIST = fileURLToPath(new URL('../../client/dist', import.meta.url));
 
 export function startServer(port: number, rooms = new Rooms()): Server {
-  const serveStatic = process.env.NODE_ENV === 'production';
+  const serveStatic = existsSync(join(DIST, 'index.html')); // built client present: serve it
   const http = createServer((req, res) => {
     const url = (req.url ?? '/').split('?')[0];
     if (url === '/health') return void res.end('ok');

@@ -48,7 +48,7 @@ export function Trade({ view, legal, act }: { view: PlayerView; legal: Action[];
         <>
           <h4>Offer to players</h4>
           {RESOURCES.map((r) => (
-            <div key={r} className="row"><ResIcon r={r} /> give <Stepper value={give[r]} max={hand[r]} onChange={(v) => setGive({ ...give, [r]: v })} /> get <Stepper value={get[r]} max={9} onChange={(v) => setGet({ ...get, [r]: v })} /></div>
+            <div key={r} className="row"><ResIcon r={r} /> give <Stepper value={give[r]} max={hand[r]} onChange={(v) => setGive((p) => ({ ...p, [r]: v }))} /> get <Stepper value={get[r]} max={9} onChange={(v) => setGet((p) => ({ ...p, [r]: v }))} /></div>
           ))}
           <div className="row">To: {others.map((p) => <label key={p.id}><input type="checkbox" checked={to.includes(p.id)} onChange={() => toggle(p.id)} />{p.name}</label>)} {!to.length && <small>(everyone)</small>}</div>
           <button disabled={!ok} onClick={send}>Send offer</button>

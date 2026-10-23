@@ -86,7 +86,7 @@ this with friends before any expansion work starts.
 - Start prompt: "Execute Task 14 steps 1–4 of the base-game plan."
 - Done when: every action in `legal` can be done from the UI.
 
-### [ ] Session 8: Full playtest and ship locally (Task 14 step 5, Task 15)
+### [x] Session 8: Full playtest and ship locally (Task 14 step 5, Task 15)
 
 - Play a full 3-player game across 3 tabs. Fix bugs found, with tests for engine bugs.
 - Production build, restart-mid-game check, README for running and playing.
