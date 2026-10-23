@@ -10,7 +10,7 @@ function caption(e: GameEvent, v: PlayerView): Cap | null {
     case 'rolled': return { big: `${e.dice[0] + e.dice[1]}`, small: `${n(v, e.player)} rolls ${e.dice[0]} and ${e.dice[1]}` };
     case 'shadeMoved': return { big: 'THE SHADE', small: `${n(v, e.player)} calls it to a new hex` };
     case 'stole': return { big: 'STOLEN!', small: `${n(v, e.thief)} takes ${e.resource ?? 'a card'} from ${n(v, e.victim)}` };
-    case 'awardChanged': return e.player ? { big: e.award === 'longestPath' ? 'LONGEST PATH' : 'GRAND HOST', small: `${n(v, e.player)} claims it` } : null;
+    case 'awardChanged': return e.player ? { big: e.award === 'longestPath' ? 'LONGEST TRAIL' : 'WARLORD', small: `${n(v, e.player)} claims it` } : null;
     default: return null;
   }
 }

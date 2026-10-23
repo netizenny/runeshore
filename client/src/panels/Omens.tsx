@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { OMEN_TEXT, RESOURCES, type Action, type OmenKind, type PlayerViewPlayer, type Resource } from '@runeshore/shared';
+import { OMEN_NAME, OMEN_TEXT, RESOURCES, type Action, type OmenKind, type PlayerViewPlayer, type Resource } from '@runeshore/shared';
 import { ResIcon } from '../board/art';
 
 export function Omens({ me, turn, legal, act }: { me: PlayerViewPlayer; turn: number; legal: Action[]; act(a: Action): void }) {
@@ -24,7 +24,7 @@ export function Omens({ me, turn, legal, act }: { me: PlayerViewPlayer; turn: nu
     <div className="omens">
       {(me.omens ?? []).map((o, i) => (
         <button key={i} className="omen" title={OMEN_TEXT[o.kind]} disabled={!can(o.kind)} onClick={() => run(o.kind)}>
-          {o.kind}{o.boughtTurn === turn && o.kind !== 'relic' ? ' (new)' : ''}
+          {OMEN_NAME[o.kind]}{o.boughtTurn === turn && o.kind !== 'relic' ? ' (new)' : ''}
         </button>
       ))}
       {open && (

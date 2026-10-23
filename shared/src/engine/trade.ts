@@ -25,7 +25,7 @@ export function bankTrade(s: GameState, id: PlayerId, a: Extract<Action, { type:
   const n = tradeRatio(s, id, a.give);
   const p = player(s, id);
   if (p.hand[a.give] < n) return 'cannot afford';
-  if (s.bank[a.get] < 1) return 'bank is out of that resource';
+  if (s.bank[a.get] < 1) return 'vault is out of that resource';
   p.hand[a.give] -= n;
   s.bank[a.give] += n;
   s.bank[a.get]--;

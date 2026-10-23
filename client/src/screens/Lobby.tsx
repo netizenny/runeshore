@@ -50,7 +50,7 @@ export function Lobby(p: {
               <option value="random">Random</option>
               <option value="starter">Starter</option>
             </select>
-            <label>Renown target</label>
+            <label>Glory target</label>
             <select value={lobby.settings.renownTarget} onChange={(e) => set({ renownTarget: +e.target.value })}>
               {range(7, 15).map((n) => <option key={n}>{n}</option>)}
             </select>

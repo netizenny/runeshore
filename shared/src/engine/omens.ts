@@ -5,7 +5,7 @@ import { player, type Result } from './setup';
 
 export function buyOmen(s: GameState, id: PlayerId): Result {
   if (s.phase.k !== 'main') return 'cannot buy now';
-  if (!s.omenDeck.length) return 'no Omens left';
+  if (!s.omenDeck.length) return 'no Runes left';
   if (!canPay(s, id, COSTS.omen)) return 'cannot afford';
   pay(s, id, COSTS.omen);
   player(s, id).omens.push({ kind: s.omenDeck.pop()!, boughtTurn: s.turn });
@@ -14,18 +14,18 @@ export function buyOmen(s: GameState, id: PlayerId): Result {
 
 export function playOmen(s: GameState, id: PlayerId, a: Extract<Action, { type: 'playOmen' }>): Result {
   const ph = s.phase;
-  if (ph.k !== 'roll' && ph.k !== 'main') return 'cannot play an Omen now';
-  if (s.omenPlayedThisTurn) return 'one Omen per turn';
+  if (ph.k !== 'roll' && ph.k !== 'main') return 'cannot play a Rune now';
+  if (s.omenPlayedThisTurn) return 'one Rune per turn';
   if (a.kind === ('relic' as string)) return 'Relics count automatically';
   const p = player(s, id);
   const i = p.omens.findIndex((o) => o.kind === a.kind && o.boughtTurn < s.turn);
-  if (i < 0) return 'you have no such Omen to play';
+  if (i < 0) return 'you have no such Rune to play';
   // Validate before spending the card.
   if (a.kind === 'waymaking' && (p.piecesLeft.path < 1 || !hasLegalPath(s, id))) return 'no path can be placed';
   if (a.kind === 'bounty') {
     const [x, y] = a.pick;
     if (!RESOURCES.includes(x) || !RESOURCES.includes(y)) return 'bad pick';
-    if (s.bank[x] < (x === y ? 2 : 1) || s.bank[y] < 1) return 'bank lacks those resources';
+    if (s.bank[x] < (x === y ? 2 : 1) || s.bank[y] < 1) return 'vault lacks those resources';
   }
   if (a.kind === 'hoard' && !RESOURCES.includes(a.resource)) return 'bad pick';
 

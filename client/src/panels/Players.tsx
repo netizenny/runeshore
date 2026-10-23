@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { PlayerView } from '@runeshore/shared';
 
-// Renown the table can see: pieces and awards. Relics stay hidden until the win.
+// Glory the table can see: pieces and awards. Relics stay hidden until the win.
 export function renown(v: PlayerView, id: string) {
   const b = Object.values(v.buildings).filter((x) => x.owner === id);
   return b.filter((x) => x.kind === 'outpost').length + 2 * b.filter((x) => x.kind === 'citadel').length
@@ -28,12 +28,12 @@ export function Players({ view, waiting, deadline }: { view: PlayerView; waiting
         return (
           <div key={id} className="pl" data-turn={turn} style={{ borderLeftColor: `var(--${p.color})` }}>
             <b>{p.name}{id === view.you ? ' (you)' : ''}</b>
-            <span title="Renown">★ {renown(view, id)}</span>
+            <span title="Glory">★ {renown(view, id)}</span>
             <span title="Cards">🂠 {p.handCount}</span>
-            <span title="Omens">✦ {p.omenCount}</span>
-            {view.longestPath === id && <em>Longest Path</em>}
-            {view.grandHost === id && <em>Grand Host</em>}
-            {p.wardensPlayed > 0 && <small>Wardens {p.wardensPlayed}</small>}
+            <span title="Runes">✦ {p.omenCount}</span>
+            {view.longestPath === id && <em>Longest Trail</em>}
+            {view.grandHost === id && <em>Warlord</em>}
+            {p.wardensPlayed > 0 && <small>Warriors {p.wardensPlayed}</small>}
             {waiting.includes(id) && <span className="ring">{left === null ? '…' : `${left}s`}</span>}
           </div>
         );

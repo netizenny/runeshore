@@ -31,7 +31,7 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
     send({ t: 'action', action });
   };
   const name = view.players.find((p) => p.id === view.order[view.current])?.name;
-  const prompt = ph.k === 'waymaking' ? `Waymaking: lay ${ph.left} more path${ph.left > 1 ? 's' : ''}`
+  const prompt = ph.k === 'waymaking' ? `Twin Paths: lay ${ph.left} more path${ph.left > 1 ? 's' : ''}`
     : ph.k === 'setup' ? `Setup: place your ${ph.step}`
     : has(legal, 'moveShade') ? 'Move the Shade to a hex'
     : ph.k === 'discard' ? 'Waiting for discards'

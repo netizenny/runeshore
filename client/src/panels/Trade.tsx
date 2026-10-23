@@ -37,7 +37,7 @@ export function Trade({ view, legal, act }: { view: PlayerView; legal: Action[];
       <Pick label="GIVE" hand value={give} max={(r) => hand[r]} onChange={setGive} />
       <Pick label="GET" hand={false} value={get} max={() => 9} onChange={setGet} />
       <button className="go" disabled={!ok} onClick={send}>Offer to everyone</button>
-      <h4>Bank and ports</h4>
+      <h4>Vault and ports</h4>
       {RESOURCES.map((g) => (
         <div key={g} className="row"><ResIcon r={g} /> {ratio(g)}:1 →
           {RESOURCES.filter((r) => r !== g).map((r) => (

@@ -27,10 +27,10 @@ export const OMEN_DECK: OmenKind[] = [
 ];
 
 export const OMEN_TEXT: Record<OmenKind, string> = {
-  warden: 'Warden: move the Shade and steal',
-  relic: 'Relic: 1 hidden Renown',
-  waymaking: 'Waymaking: lay 2 paths free',
-  bounty: 'Bounty: take any 2 from the bank',
+  warden: 'Warriors: move the Shade and steal',
+  relic: 'Relic: 1 hidden Glory',
+  waymaking: 'Twin Paths: lay 2 paths free',
+  bounty: 'Bounty: take any 2 from the vault',
   hoard: 'Hoard: take every card of one kind from the others',
 };
 
@@ -46,3 +46,5 @@ export const TILES: Terrain[] = [
 export const TOKENS = [2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12];
 
 export const PORTS: (Resource | 'any')[] = [...rep<Resource | 'any'>('any', 4), ...RESOURCES];
+
+export const OMEN_NAME: Record<OmenKind, string> = { warden: 'Warriors', relic: 'Relic', waymaking: 'Twin Paths', bounty: 'Bounty', hoard: 'Hoard' };

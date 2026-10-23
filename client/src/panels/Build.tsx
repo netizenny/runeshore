@@ -13,7 +13,7 @@ export function Build({ legal, picked, setPicked, act }: { legal: Action[]; pick
           {label} <Cards c={COSTS[m]} />
         </button>
       ))}
-      <button disabled={!has(legal, 'buyOmen')} onClick={() => act({ type: 'buyOmen' })}>Omen <Cards c={COSTS.omen} /></button>
+      <button disabled={!has(legal, 'buyOmen')} onClick={() => act({ type: 'buyOmen' })}>Rune <Cards c={COSTS.omen} /></button>
     </div>
   );
 }

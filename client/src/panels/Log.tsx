@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import type { GameEvent, PlayerView } from '@runeshore/shared';
+import { OMEN_NAME, type GameEvent, type PlayerView } from '@runeshore/shared';
 import { Cards } from './util';
 
 export function Log({ view }: { view: PlayerView }) {
@@ -19,10 +19,10 @@ export function Log({ view }: { view: PlayerView }) {
       case 'shadeMoved': return `${n(e.player)} moved the Shade`;
       case 'stole': return `${n(e.thief)} stole ${e.resource ?? 'a card'} from ${n(e.victim)}`;
       case 'built': return `${n(e.player)} raised ${e.piece === 'outpost' ? 'an' : 'a'} ${e.piece}`;
-      case 'omenBought': return `${n(e.player)} drew an Omen`;
-      case 'omenPlayed': return `${n(e.player)} played ${e.kind}`;
-      case 'traded': return <>{n(e.a)} traded <Cards c={e.aGave} /> with {e.b === 'bank' ? 'the bank' : n(e.b)} for <Cards c={e.bGave} /></>;
-      case 'awardChanged': return `${e.award === 'longestPath' ? 'Longest Path' : 'Grand Host'} ${e.player ? `goes to ${n(e.player)}` : 'is lost'}`;
+      case 'omenBought': return `${n(e.player)} drew a Rune`;
+      case 'omenPlayed': return `${n(e.player)} played ${OMEN_NAME[e.kind]}`;
+      case 'traded': return <>{n(e.a)} traded <Cards c={e.aGave} /> with {e.b === 'bank' ? 'the vault' : n(e.b)} for <Cards c={e.bGave} /></>;
+      case 'awardChanged': return `${e.award === 'longestPath' ? 'Longest Trail' : 'Warlord'} ${e.player ? `goes to ${n(e.player)}` : 'is lost'}`;
       case 'turnEnded': return `${n(e.player)} ended their turn`;
       case 'autoActed': return `${n(e.player)} ran out of time`;
       case 'won': return `${n(e.player)} wins!`;
