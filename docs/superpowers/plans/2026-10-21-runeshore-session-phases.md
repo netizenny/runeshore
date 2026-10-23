@@ -141,10 +141,11 @@ Detailed plan: `docs/superpowers/plans/2026-10-23-runeshore-hollow-fleet.md` (Ta
 - Build, activate, upgrade, move, displace, chase the Shade. Bulwarks raise discard limit.
 - Done 2026-10-23: `hf/sentinels.ts`, `hf/bulwarks.ts`, phase `displaced`, tests `hf-sentinels`/`hf-bulwarks`. Rules checked via web (activate-and-act same turn: no); promotion keeps active state and displaced Sentinel keeps its state [verify]; Bulwark is not removed with a lost Citadel yet (H6).
 
-### [ ] Session 13: Hollow Fleet attacks and improvements (Tasks H6–H8)
+### [x] Session 13: Hollow Fleet attacks and improvements (Tasks H6–H8)
 
 - Fleet track, attack resolution, citadel loss, Shield of the shore.
 - Lore / Guild / Crown improvement tracks, Spires.
+- Done 2026-10-23: H6 `fleet.ts`, H7 `improve.ts` (improve, Spires, gate draws, Lore L3 auto-picks least-held resource, Guild L3 2:1), H8 `peddler.ts` (`placePeddler` called by the Peddler card in Session 14). Gate draw needs level >= 1 and red <= level+1 [verified loosely via web].
 
 ### [ ] Session 14: Arcana deck (Tasks H9–H12)
 
