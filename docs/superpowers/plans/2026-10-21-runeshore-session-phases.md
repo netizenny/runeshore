@@ -54,7 +54,7 @@ this with friends before any expansion work starts.
 - Start prompt: "Execute Tasks 6–8 of the base-game plan."
 - Done when: shade, build, trade and omen tests pass.
 
-### [ ] Session 4: Awards, legal moves, fuzzing (Tasks 9–10)
+### [x] Session 4: Awards, legal moves, fuzzing (Tasks 9–10)
 
 - Longest path, Grand host, Renown, win check.
 - `legalActions`, `autoAct`, `viewFor`, fuzz test over 50 seeds.

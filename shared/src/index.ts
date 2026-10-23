@@ -6,3 +6,6 @@ export * from './board/geometry';
 export * from './board/generate';
 export * from './engine/create';
 export * from './engine/apply';
+export * from './engine/awards';
+export * from './engine/legal';
+export * from './view';

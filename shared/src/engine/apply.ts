@@ -22,10 +22,13 @@ export function applyAction(state: GameState, playerId: PlayerId, action: Action
   if (!handler) return { ok: false, error: 'unknown action' };
   if (!state.players.some((p) => p.id === playerId)) return { ok: false, error: 'not in this game' };
   if (!ANYONE.includes(action.type) && playerId !== currentPlayer(state)) return { ok: false, error: 'not your turn' };
-  const next = structuredClone(state);
+  // Log events are never mutated, so share them instead of deep-cloning a log that grows all game.
+  const next = structuredClone({ ...state, log: [] as GameState["log"] });
+  next.log = [...state.log];
   const res = handler(next, playerId, action);
   if (typeof res === 'string') return { ok: false, error: res };
-  const events = [...res, ...updateAwards(next)];
+  // Awards only move when a piece is built or an Omen is played.
+  const events = res.some((e) => e.type === 'built' || e.type === 'omenPlayed') ? [...res, ...updateAwards(next)] : [...res];
   events.push(...checkWin(next));
   next.log.push(...events);
   return { ok: true, state: next, events };
