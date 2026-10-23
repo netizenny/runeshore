@@ -168,6 +168,7 @@ export type GameEvent =
   | { type: 'shieldAwarded'; player: PlayerId }
   | { type: 'citadelLost'; player: PlayerId; vertex: VertexId }
   | { type: 'arcanaDrawn'; player: PlayerId; track: Track }
+  | { type: 'peddlerPlaced'; player: PlayerId; hex: HexId }
   | { type: 'improved'; player: PlayerId; track: Track; level: number }
   | { type: 'spire'; player: PlayerId; track: Track; vertex: VertexId }
   | { type: 'omenBought'; player: PlayerId }

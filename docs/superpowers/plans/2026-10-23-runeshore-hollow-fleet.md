@@ -208,9 +208,9 @@ Production dice keep using `GameState.dice`: `dice[0]` = yellow die, `dice[1]` =
 - Create: `shared/src/engine/hf/peddler.ts`
 - Test: `shared/test/hf-peddler.test.ts`
 
-- [ ] **Step 1:** Rules check **[verify]**: the Peddler is placed by a Peddler Arcana card, sits on a land hex next to the placer's building, gives 1 Renown and a 2:1 bank trade in that hex's resource, and passes to whoever places it next.
-- [ ] **Step 2:** Implement `placePeddler`, `tradeRatio` hook, score hook. Tests.
-- [ ] **Step 3:** `npm test` green, commit `feat(hf): peddler`.
+- [x] **Step 1:** Rules check **[verify]**: the Peddler is placed by a Peddler Arcana card, sits on a land hex next to the placer's building, gives 1 Renown and a 2:1 bank trade in that hex's resource, and passes to whoever places it next.
+- [x] **Step 2:** Implement `placePeddler`, `tradeRatio` hook, score hook. Tests.
+- [x] **Step 3:** `npm test` green, commit `feat(hf): peddler`.
 
 ---
 
