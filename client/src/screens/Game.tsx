@@ -6,6 +6,7 @@ import { Build } from '../panels/Build';
 import { Discard } from '../panels/Discard';
 import { Hand } from '../panels/Hand';
 import { Log } from '../panels/Log';
+import { Offers } from '../panels/Offers';
 import { Omens } from '../panels/Omens';
 import { Players } from '../panels/Players';
 import { ShadeSteal } from '../panels/ShadeSteal';
@@ -53,7 +54,8 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
         {roll && <button className="go" onClick={() => act(roll)}>Roll</button>}
         {end && <button className="go" onClick={() => act(end)}>End turn</button>}
       </div>
-      {trading && <div className="drawer"><Trade view={view} legal={legal} act={act} /></div>}
+      <Offers view={view} legal={legal} act={act} />
+      {trading &&<div className="drawer"><Trade view={view} legal={legal} act={act} /></div>}
       {owed > 0 && has(legal, 'discard') && <Discard hand={me.hand!} need={owed} act={act} />}
       {ph.k === 'steal' && has(legal, 'steal') && <ShadeSteal view={view} legal={legal} act={act} />}
       <ComicPanel events={game.events} view={view} />
