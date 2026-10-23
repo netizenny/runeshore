@@ -136,9 +136,10 @@ Detailed plan: `docs/superpowers/plans/2026-10-23-runeshore-hollow-fleet.md` (Ta
 - Event die and red/yellow dice production; Vellum, Silk, Sigil from citadels.
 - Done 2026-10-23: flag, `hf` state, 3-dice roll, commodities, Shade gate, Bulwark discard limit, Renown sources; tests in `shared/test/hf-*.test.ts`. Shortcuts: Shade steals base cards only; `viewFor` still leaks `hf` (fixed in H13); rule numbers [verify]-ed from memory, not the rulebook.
 
-### [ ] Session 12: Sentinels and Bulwarks (Tasks H4–H5)
+### [x] Session 12: Sentinels and Bulwarks (Tasks H4–H5)
 
 - Build, activate, upgrade, move, displace, chase the Shade. Bulwarks raise discard limit.
+- Done 2026-10-23: `hf/sentinels.ts`, `hf/bulwarks.ts`, phase `displaced`, tests `hf-sentinels`/`hf-bulwarks`. Rules checked via web (activate-and-act same turn: no); promotion keeps active state and displaced Sentinel keeps its state [verify]; Bulwark is not removed with a lost Citadel yet (H6).
 
 ### [ ] Session 13: Hollow Fleet attacks and improvements (Tasks H6–H8)
 

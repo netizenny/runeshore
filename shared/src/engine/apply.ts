@@ -4,6 +4,8 @@ import { discard, endTurn, moveShade, roll, steal } from './turn';
 import { buildCitadel, buildOutpost, buildPath } from './build';
 import { bankTrade, cancelTrade, confirmTrade, offerTrade, respondTrade } from './trade';
 import { buyOmen, playOmen } from './omens';
+import { activateSentinel, buildSentinel, chaseShade, moveDisplaced, moveSentinel, promoteSentinel } from './hf/sentinels';
+import { buildBulwark } from './hf/bulwarks';
 import { checkWin, updateAwards } from './awards';
 
 export const currentPlayer = (s: GameState): PlayerId => s.order[s.current];
@@ -11,10 +13,11 @@ export const currentPlayer = (s: GameState): PlayerId => s.order[s.current];
 type Handler = (s: GameState, id: PlayerId, a: any) => Result;
 const HANDLERS: Record<Action['type'], Handler> = {
   placeOutpost, placePath, roll, discard, moveShade, steal, buildPath, buildOutpost, buildCitadel,
+  buildSentinel, activateSentinel, promoteSentinel, moveSentinel, moveDisplaced, chaseShade, buildBulwark,
   buyOmen, playOmen, bankTrade, offerTrade, respondTrade, confirmTrade, cancelTrade, endTurn,
 };
 // Actions any seated player may take; the handler checks they are actually asked to.
-const ANYONE: Action['type'][] = ['discard', 'respondTrade'];
+const ANYONE: Action['type'][] = ['discard', 'respondTrade', 'moveDisplaced'];
 
 export function applyAction(state: GameState, playerId: PlayerId, action: Action): ApplyResult {
   if (state.phase.k === 'ended') return { ok: false, error: 'game over' };

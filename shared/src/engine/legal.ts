@@ -7,6 +7,7 @@ import { canPay, pathSpotOk } from './build';
 import { tradeRatio } from './trade';
 import { player } from './setup';
 import { hfPlayer, stocks } from './hf/state';
+import { reach } from './hf/sentinels';
 
 const accepts = (s: GameState, id: PlayerId, a: Action) => applyAction(s, id, a).ok;
 
@@ -57,6 +58,10 @@ export function legalActions(s: GameState, id: PlayerId): Action[] {
     }
     return out;
   }
+  if (ph.k === 'displaced') {
+    if (ph.owner === id) for (const to of reach(s, id, ph.vertex)) add({ type: 'moveDisplaced', to });
+    return out;
+  }
   if (id !== currentPlayer(s)) return out;
 
   switch (ph.k) {
@@ -96,6 +101,21 @@ export function legalActions(s: GameState, id: PlayerId): Action[] {
         if (stocks(s, id, give).hand[give] < tradeRatio(s, id, give)) continue;
         for (const get of kinds) if (get !== give) add({ type: 'bankTrade', give, get });
       }
+      if (s.hf) {
+        const mine = Object.entries(s.hf.sentinels).filter(([, k]) => k.owner === id);
+        if (canPay(s, id, COSTS.sentinel)) {
+          for (const v of ALL_VERTICES) if (vertexEdges(v).some((e) => s.paths[e] === id)) add({ type: 'buildSentinel', vertex: v });
+          for (const [v] of mine) add({ type: 'promoteSentinel', vertex: v });
+        }
+        if (canPay(s, id, COSTS.bulwark)) for (const [v, b] of Object.entries(s.buildings)) if (b.owner === id) add({ type: 'buildBulwark', vertex: v });
+        for (const [v, k] of mine) {
+          if (!k.active) add({ type: 'activateSentinel', vertex: v });
+          else {
+            add({ type: 'chaseShade', vertex: v });
+            for (const to of reach(s, id, v)) add({ type: 'moveSentinel', from: v, to });
+          }
+        }
+      }
       break;
   }
 
@@ -112,6 +132,7 @@ export function legalActions(s: GameState, id: PlayerId): Action[] {
 
 export function pendingPlayers(s: GameState): PlayerId[] {
   if (s.phase.k === 'ended') return [];
+  if (s.phase.k === 'displaced') return [s.phase.owner];
   return s.phase.k === 'discard' ? Object.keys(s.phase.pending) : [currentPlayer(s)];
 }
 

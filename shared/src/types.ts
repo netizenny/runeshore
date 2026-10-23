@@ -63,6 +63,7 @@ export type Phase =
   | { k: 'steal'; hex: HexId; victims: PlayerId[]; then: 'roll' | 'main' }
   | { k: 'main' }
   | { k: 'waymaking'; left: 1 | 2; then: 'roll' | 'main' }
+  | { k: 'displaced'; owner: PlayerId; vertex: VertexId; rank: 1 | 2 | 3; active: boolean }
   | { k: 'ended'; winner: PlayerId };
 
 export interface HFState {
@@ -139,6 +140,13 @@ export type Action =
   | { type: 'respondTrade'; offerId: string; accept: boolean }
   | { type: 'confirmTrade'; offerId: string; partner: PlayerId }
   | { type: 'cancelTrade'; offerId: string }
+  | { type: 'buildSentinel'; vertex: VertexId }
+  | { type: 'activateSentinel'; vertex: VertexId }
+  | { type: 'promoteSentinel'; vertex: VertexId }
+  | { type: 'moveSentinel'; from: VertexId; to: VertexId }
+  | { type: 'moveDisplaced'; to: VertexId }
+  | { type: 'chaseShade'; vertex: VertexId }
+  | { type: 'buildBulwark'; vertex: VertexId }
   | { type: 'endTurn' };
 
 export type GameEvent =
@@ -148,7 +156,8 @@ export type GameEvent =
   | { type: 'discarded'; player: PlayerId; count: number }
   | { type: 'shadeMoved'; player: PlayerId; hex: HexId }
   | { type: 'stole'; thief: PlayerId; victim: PlayerId; resource: Resource | null }
-  | { type: 'built'; player: PlayerId; piece: 'path' | 'outpost' | 'citadel'; at: string }
+  | { type: 'built'; player: PlayerId; piece: 'path' | 'outpost' | 'citadel' | 'bulwark'; at: string }
+  | { type: 'sentinel'; player: PlayerId; did: 'built' | 'activated' | 'promoted' | 'moved' | 'displaced' | 'lost' | 'chased'; at: VertexId }
   | { type: 'omenBought'; player: PlayerId }
   | { type: 'omenPlayed'; player: PlayerId; kind: OmenKind }
   | { type: 'traded'; a: PlayerId; b: PlayerId | 'bank'; aGave: Partial<ResourceCounts & Record<Commodity, number>>; bGave: Partial<ResourceCounts & Record<Commodity, number>> }
