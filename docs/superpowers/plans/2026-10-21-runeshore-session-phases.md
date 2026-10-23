@@ -70,7 +70,7 @@ this with friends before any expansion work starts.
 - Start prompt: "Execute Task 11 of the base-game plan."
 - Done when: room, persist and ws tests pass.
 
-### [ ] Session 6: Client lobby and board (Tasks 12–13)
+### [x] Session 6: Client lobby and board (Tasks 12–13)
 
 - Theme tokens and fonts, socket with auto-reconnect, Home and Lobby screens.
 - SVG board art: six terrains, tokens, ports, pieces, the Shade.
