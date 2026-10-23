@@ -38,10 +38,4 @@ If it fails with `EADDRINUSE`, another server is still using port 3001. Close it
 
 1. Push the repo to GitHub, then in Render choose New > Blueprint and select it (`render.yaml` does the rest).
 2. Open the `https://<name>.onrender.com` URL; share room links from there.
-3. Limits: the free disk is wiped on every redeploy or restart, so a running game is lost then. Do not deploy mid-game. The server pings itself every 10 min to avoid the 15 min sleep.
-
-## Hosting on Render (free)
-
-1. Push the repo to GitHub, then in Render choose New > Blueprint and select it (`render.yaml` does the rest).
-2. Open the `https://<name>.onrender.com` URL; share room links from there.
 3. Limits: the service sleeps after about 15 min without traffic, and the free disk is wiped on every redeploy or restart, so a running game is lost then. Keep playing, and do not deploy mid-game.
