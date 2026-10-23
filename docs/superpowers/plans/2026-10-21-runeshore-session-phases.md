@@ -147,10 +147,11 @@ Detailed plan: `docs/superpowers/plans/2026-10-23-runeshore-hollow-fleet.md` (Ta
 - Lore / Guild / Crown improvement tracks, Spires.
 - Done 2026-10-23: H6 `fleet.ts`, H7 `improve.ts` (improve, Spires, gate draws, Lore L3 auto-picks least-held resource, Guild L3 2:1), H8 `peddler.ts` (`placePeddler` called by the Peddler card in Session 14). Gate draw needs level >= 1 and red <= level+1 [verified loosely via web].
 
-### [ ] Session 14: Arcana deck (Tasks H9–H12)
+### [x] Session 14: Arcana deck (Tasks H9–H12)
 
 - All three suits and the full card list. This is the biggest rules chunk; it may run
   into a second session.
+- Done 2026-10-23: all 54 cards (`hf/arcana*.ts`, names in `ARCANA`), tests `hf-arcana-{core,lore,guild,crown}`. Rules from web card summaries, not the rulebook PDF [verify]: Cleric needs an awake Shade and steals base cards only; Diplomat "open" = one end touches none of the owner's pieces; Turncoat places its same-rank Sentinel at an argument vertex; Plot puts a Basic Sentinel on the vacated vertex. New phases `arcanaGive`, `deserter`; `legalActions`, `autoAct` and `viewFor` do not know them yet (H13), so autopilot never plays Arcana and hands still leak.
 
 ### [ ] Session 15: Expansion autopilot, views, fuzz (Tasks H13–H14)
 
