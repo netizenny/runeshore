@@ -195,10 +195,10 @@ Production dice keep using `GameState.dice`: `dice[0]` = yellow die, `dice[1]` =
 - Modify: `shared/src/engine/hf/dice.ts` (gate hook), `shared/src/engine/trade.ts`
 - Test: `shared/test/hf-improve.test.ts`
 
-- [ ] **Step 1:** Rules check **[verify]**: level n costs n of that track's commodity; max 5; needs at least one Citadel; reaching 4 first claims a Spire on one of your Citadels (not yet taken), reaching 5 first-past the current holder takes it; abilities at level 3 (Lore: when production gives you nothing, take 1 base resource of your choice; Guild: commodities trade 2:1; Crown: Mighty Sentinels). Gate draw: on a gate face, each player draws an Arcana card from that track's stack if the red die ≤ their level + 1.
-- [ ] **Step 2:** Tests for each cost, claim and steal of Spires, ability effects, gate draws including the hand limit (draw is skipped at 4 cards) and an empty stack.
-- [ ] **Step 3:** Action `improve {track}`. Spires use `hf.spires`; Renown comes from H3.
-- [ ] **Step 4:** `npm test` green, commit `feat(hf): improvements and Spires`.
+- [x] **Step 1:** Rules check **[verify]**: level n costs n of that track's commodity; max 5; needs at least one Citadel; reaching 4 first claims a Spire on one of your Citadels (not yet taken), reaching 5 first-past the current holder takes it; abilities at level 3 (Lore: when production gives you nothing, take 1 base resource of your choice; Guild: commodities trade 2:1; Crown: Mighty Sentinels). Gate draw: on a gate face, each player draws an Arcana card from that track's stack if the red die ≤ their level + 1.
+- [x] **Step 2:** Tests for each cost, claim and steal of Spires, ability effects, gate draws including the hand limit (draw is skipped at 4 cards) and an empty stack.
+- [x] **Step 3:** Action `improve {track}`. Spires use `hf.spires`; Renown comes from H3.
+- [x] **Step 4:** `npm test` green, commit `feat(hf): improvements and Spires`.
 
 ---
 

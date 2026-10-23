@@ -151,6 +151,7 @@ export type Action =
   | { type: 'buildBulwark'; vertex: VertexId }
   | { type: 'chooseLoss'; vertex: VertexId }
   | { type: 'chooseReward'; track: Track }
+  | { type: 'improve'; track: Track; vertex?: VertexId }
   | { type: 'endTurn' };
 
 export type GameEvent =
@@ -167,6 +168,8 @@ export type GameEvent =
   | { type: 'shieldAwarded'; player: PlayerId }
   | { type: 'citadelLost'; player: PlayerId; vertex: VertexId }
   | { type: 'arcanaDrawn'; player: PlayerId; track: Track }
+  | { type: 'improved'; player: PlayerId; track: Track; level: number }
+  | { type: 'spire'; player: PlayerId; track: Track; vertex: VertexId }
   | { type: 'omenBought'; player: PlayerId }
   | { type: 'omenPlayed'; player: PlayerId; kind: OmenKind }
   | { type: 'traded'; a: PlayerId; b: PlayerId | 'bank'; aGave: Partial<ResourceCounts & Record<Commodity, number>>; bGave: Partial<ResourceCounts & Record<Commodity, number>> }

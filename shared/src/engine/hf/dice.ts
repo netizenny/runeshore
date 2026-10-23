@@ -3,13 +3,18 @@ import { randInt } from '../../rng';
 import { produce, startSeven } from '../turn';
 import type { Result } from '../setup';
 import { advanceFleet } from './fleet';
+import { gateDraws, loreBonus } from './improve';
 
 const FACES: ('ship' | Track)[] = ['ship', 'ship', 'ship', 'lore', 'guild', 'crown'];
 
 // Production, then a 7 starts its procedure. Runs after the event die, or after a Fleet choice is settled.
 export function afterFleet(s: GameState, total: number): GameEvent[] {
   s.phase = { k: 'main' };
-  if (total !== 7) return [{ type: 'produced', gains: produce(s, total) }];
+  if (total !== 7) {
+    const gains = produce(s, total);
+    loreBonus(s, gains);
+    return [{ type: 'produced', gains }];
+  }
   startSeven(s);
   return [];
 }
@@ -30,7 +35,7 @@ export function rollHF(s: GameState, _id: PlayerId): Result {
     { type: 'eventDie', face: hf.eventDie },
   ];
   s.phase = { k: 'main' };
-  // H7 adds the gate draw here, before production.
+  if (hf.eventDie !== 'ship') events.push(...gateDraws(s, hf.eventDie, s.dice[1]));
   if (hf.eventDie === 'ship') events.push(...advanceFleet(s, total));
   if (s.phase.k === 'main') events.push(...afterFleet(s, total));
   return events;

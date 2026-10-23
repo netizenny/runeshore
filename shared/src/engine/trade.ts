@@ -11,7 +11,8 @@ const nonzero = (c: ResourceCounts): Partial<ResourceCounts> =>
   Object.fromEntries(RESOURCES.filter((r) => c[r]).map((r) => [r, c[r]]));
 
 export function tradeRatio(s: GameState, id: PlayerId, resource: Resource | Commodity): 2 | 3 | 4 {
-  if (isCommodity(resource)) return 4; // ports do not apply to commodities
+  // ports do not apply to commodities; Guild level 3 makes them 2:1
+  if (isCommodity(resource)) return s.hf!.players[id].level.guild >= 3 ? 2 : 4;
   let best: 2 | 3 | 4 = 4;
   for (const port of s.board.ports) {
     if (port.kind !== 'any' && port.kind !== resource) continue;

@@ -1,5 +1,5 @@
 import type { Action, ApplyResult, Commodity, GameEvent, GameState, PlayerId, Resource, ResourceCounts } from '../types';
-import { COMMODITIES, COSTS, RESOURCES, emptyCounts, isCommodity } from '../constants';
+import { COMMODITIES, COSTS, IMPROVE_MAX, TRACK_COMMODITY, RESOURCES, emptyCounts, isCommodity } from '../constants';
 import { ALL_EDGES, ALL_VERTICES, vertexEdges, vertexNeighbors } from '../board/geometry';
 import { randInt, shuffle } from '../rng';
 import { applyAction, currentPlayer } from './apply';
@@ -113,6 +113,9 @@ export function legalActions(s: GameState, id: PlayerId): Action[] {
           for (const v of ALL_VERTICES) if (vertexEdges(v).some((e) => s.paths[e] === id)) add({ type: 'buildSentinel', vertex: v });
           for (const [v] of mine) add({ type: 'promoteSentinel', vertex: v });
         }
+        const lv = hfPlayer(s, id);
+        if (Object.values(s.buildings).some((b) => b.owner === id && b.kind === 'citadel'))
+          for (const track of TRACKS) if (lv.level[track] < IMPROVE_MAX && lv.commodities[TRACK_COMMODITY[track]] > lv.level[track]) add({ type: 'improve', track });
         if (canPay(s, id, COSTS.bulwark)) for (const [v, b] of Object.entries(s.buildings)) if (b.owner === id) add({ type: 'buildBulwark', vertex: v });
         for (const [v, k] of mine) {
           if (!k.active) add({ type: 'activateSentinel', vertex: v });

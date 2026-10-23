@@ -1,4 +1,4 @@
-import type { Commodity, OmenKind, Resource, ResourceCounts, Terrain } from './types';
+import type { Commodity, Track, OmenKind, Resource, ResourceCounts, Terrain } from './types';
 
 export const RESOURCES: Resource[] = ['clay', 'timber', 'fleece', 'harvest', 'starmetal'];
 
@@ -10,6 +10,8 @@ export const HF_BANK_EACH = 12;
 export const FLEET_TRACK = 7;
 export const SENTINELS_PER_RANK = 2;
 export const BULWARKS_MAX = 3;
+export const IMPROVE_MAX = 5;
+export const TRACK_COMMODITY: Record<Track, Commodity> = { lore: 'vellum', guild: 'silk', crown: 'sigil' };
 export const ARCANA_PER_TRACK = 18;
 export const ARCANA_HAND_MAX = 4;
 
