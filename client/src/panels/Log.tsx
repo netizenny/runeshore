@@ -11,7 +11,10 @@ export function Log({ view }: { view: PlayerView }) {
   const line = (e: GameEvent) => {
     switch (e.type) {
       case 'rolled': return `${n(e.player)} rolled ${e.dice[0] + e.dice[1]}`;
-      case 'produced': return `The land yields to ${Object.keys(e.gains).map(n).join(', ') || 'no one'}`;
+      case 'produced': {
+        const who = Object.entries(e.gains);
+        return who.length ? <>{who.map(([id, c]) => <span key={id}>{n(id)} yielded <Cards c={c} /> </span>)}</> : 'The land yields to no one';
+      }
       case 'discarded': return `${n(e.player)} cast off ${e.count} cards`;
       case 'shadeMoved': return `${n(e.player)} moved the Shade`;
       case 'stole': return `${n(e.thief)} stole ${e.resource ?? 'a card'} from ${n(e.victim)}`;

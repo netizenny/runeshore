@@ -52,7 +52,7 @@ export function Lobby(p: {
             </select>
             <label>Renown target</label>
             <select value={lobby.settings.renownTarget} onChange={(e) => set({ renownTarget: +e.target.value })}>
-              {range(8, 15).map((n) => <option key={n}>{n}</option>)}
+              {range(7, 15).map((n) => <option key={n}>{n}</option>)}
             </select>
             <label>Discard limit</label>
             <select value={lobby.settings.discardLimit} onChange={(e) => set({ discardLimit: +e.target.value })}>
@@ -60,8 +60,7 @@ export function Lobby(p: {
             </select>
             <label>Turn timer</label>
             <select value={lobby.settings.turnTimerSec} onChange={(e) => set({ turnTimerSec: +e.target.value as Settings['turnTimerSec'] })}>
-              <option value={0}>Off</option>
-              {[60, 90, 120].map((n) => <option key={n} value={n}>{n} s</option>)}
+              {[15, 30, 45].map((n) => <option key={n} value={n}>{n} s</option>)}
             </select>
           </div>
           <button disabled={lobby.seats.length < 3 || lobby.seats.length > 4} onClick={() => send({ t: 'start' })}>Begin</button>

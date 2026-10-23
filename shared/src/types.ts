@@ -30,14 +30,14 @@ export interface Settings {
   boardMode: 'random' | 'starter';
   renownTarget: number;
   discardLimit: number;
-  turnTimerSec: 0 | 60 | 90 | 120;
+  turnTimerSec: 15 | 30 | 45;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
   boardMode: 'random',
   renownTarget: 10,
   discardLimit: 7,
-  turnTimerSec: 0,
+  turnTimerSec: 30,
 };
 
 export interface PlayerState {

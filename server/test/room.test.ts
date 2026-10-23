@@ -62,8 +62,8 @@ describe('join rules', () => {
     const { room, socks } = lobby(3);
     room.handle(socks[0], { t: 'settings', settings: { renownTarget: 99 } });
     expect(errCode(socks[0])).toBe('bad_settings');
-    room.handle(socks[0], { t: 'settings', settings: { renownTarget: 12, turnTimerSec: 60 } });
-    expect(room.settings).toMatchObject({ renownTarget: 12, turnTimerSec: 60 });
+    room.handle(socks[0], { t: 'settings', settings: { renownTarget: 12, turnTimerSec: 30 } });
+    expect(room.settings).toMatchObject({ renownTarget: 12, turnTimerSec: 30 });
   });
 
   it('after start: no new seats; token holders get in; the newest socket replaces the old', () => {
@@ -132,11 +132,11 @@ describe('game flow', () => {
 
   it('turn timer expiry plays the autopilot until that player is no longer pending', () => {
     const { room, socks } = lobby(3);
-    room.handle(socks[0], { t: 'settings', settings: { turnTimerSec: 60 } });
+    room.handle(socks[0], { t: 'settings', settings: { turnTimerSec: 30 } });
     room.handle(socks[0], { t: 'start' });
     const first = room.game!.order[0];
-    expect(socks[0].last('game')!.deadline).toBe(Date.now() + 60_000);
-    vi.advanceTimersByTime(60_000);
+    expect(socks[0].last('game')!.deadline).toBe(Date.now() + 30_000);
+    vi.advanceTimersByTime(30_000);
     expect(room.game!.log.some((e) => e.type === 'autoActed')).toBe(true);
     expect(pendingPlayers(room.game!)).not.toContain(first);
     expect(Object.keys(room.game!.buildings).length).toBeGreaterThan(0);
