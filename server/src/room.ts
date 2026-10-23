@@ -279,7 +279,12 @@ export class Room {
   }
 
   private save() {
-    this.opts.save?.(this.snapshot());
+    // A disk hiccup (e.g. a sync tool locking the file) must not fail the move; the next change saves again.
+    try {
+      this.opts.save?.(this.snapshot());
+    } catch (e) {
+      console.error('snapshot save failed', e);
+    }
   }
 
   private changed() {

@@ -39,7 +39,7 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
 
   return (
     <div className="game">
-      <div className="bar"><b>{prompt}</b>{view.dice && <span>🎲 {view.dice[0]} + {view.dice[1]}</span>}</div>
+      <div className="bar"><b>{prompt}</b>{view.dice && ph.k !== 'roll' && <span>🎲 {view.dice[0]} + {view.dice[1]}</span>}</div>
       <div className="board"><Board view={view} legal={legal} mode={mode} onAction={act} /></div>
       <aside className="side">
         <Players view={view} waiting={game.waitingOn.map((w) => w.player)} deadline={game.deadline} />

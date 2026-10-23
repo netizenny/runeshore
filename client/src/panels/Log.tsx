@@ -4,7 +4,9 @@ import { Cards } from './util';
 
 export function Log({ view }: { view: PlayerView }) {
   const end = useRef<HTMLDivElement>(null);
-  useEffect(() => end.current?.scrollIntoView({ block: 'nearest' }), [view.log.length]);
+  useEffect(() => {
+    end.current?.scrollIntoView({ block: 'nearest' });
+  }, [view.log.length]);
   const n = (id: string) => view.players.find((p) => p.id === id)?.name ?? '?';
   const line = (e: GameEvent) => {
     switch (e.type) {
@@ -13,7 +15,7 @@ export function Log({ view }: { view: PlayerView }) {
       case 'discarded': return `${n(e.player)} cast off ${e.count} cards`;
       case 'shadeMoved': return `${n(e.player)} moved the Shade`;
       case 'stole': return `${n(e.thief)} stole ${e.resource ?? 'a card'} from ${n(e.victim)}`;
-      case 'built': return `${n(e.player)} raised a ${e.piece}`;
+      case 'built': return `${n(e.player)} raised ${e.piece === 'outpost' ? 'an' : 'a'} ${e.piece}`;
       case 'omenBought': return `${n(e.player)} drew an Omen`;
       case 'omenPlayed': return `${n(e.player)} played ${e.kind}`;
       case 'traded': return <>{n(e.a)} traded <Cards c={e.aGave} /> with {e.b === 'bank' ? 'the bank' : n(e.b)} for <Cards c={e.bGave} /></>;
