@@ -181,10 +181,10 @@ Production dice keep using `GameState.dice`: `dice[0]` = yellow die, `dice[1]` =
 **Interfaces:**
 - Produces: `advanceFleet(s) → Result`; Actions `chooseLoss {vertex}`, `chooseReward {track}`.
 
-- [ ] **Step 1:** Rules check **[verify]**: track length, attack strength = number of Citadels on the board (Spires count), defence = sum of ranks of active Sentinels per player. Fleet loses when defence ≥ strength: top contributor (alone) gets Shield of the shore (1 Renown); tied top contributors each pick one Arcana card from a stack instead; nobody with 0 contribution counts. Fleet wins: the player(s) with the lowest contribution among those who own Citadels lose one Citadel (it becomes an Outpost; Spire Citadels are safe unless a player has only those, in which case none is lost **[verify]**). After any attack: all Sentinels become inactive, track resets to 0, `shadeActive = true`.
-- [ ] **Step 2:** Tests: win, lose, tie for best, tie for worst, player with no Citadels (Review Focus 3), only-Spire Citadels, no Sentinels anywhere.
-- [ ] **Step 3:** Implement. Citadel loss with a choice → phase `fleetLoss {pending: PlayerId[]}` (Review Focus 4). Tied reward → `fleetReward {pending}`. When all resolve, resume the roll flow (production, then the 7 procedure).
-- [ ] **Step 4:** `npm test` green, commit `feat(hf): fleet attack`.
+- [x] **Step 1:** Rules check **[verify]**: track length, attack strength = number of Citadels on the board (Spires count), defence = sum of ranks of active Sentinels per player. Fleet loses when defence ≥ strength: top contributor (alone) gets Shield of the shore (1 Renown); tied top contributors each pick one Arcana card from a stack instead; nobody with 0 contribution counts. Fleet wins: the player(s) with the lowest contribution among those who own Citadels lose one Citadel (it becomes an Outpost; Spire Citadels are safe unless a player has only those, in which case none is lost **[verify]**). After any attack: all Sentinels become inactive, track resets to 0, `shadeActive = true`.
+- [x] **Step 2:** Tests: win, lose, tie for best, tie for worst, player with no Citadels (Review Focus 3), only-Spire Citadels, no Sentinels anywhere.
+- [x] **Step 3:** Implement. Citadel loss with a choice → phase `fleetLoss {pending: PlayerId[]}` (Review Focus 4). Tied reward → `fleetReward {pending}`. When all resolve, resume the roll flow (production, then the 7 procedure).
+- [x] **Step 4:** `npm test` green, commit `feat(hf): fleet attack`.
 
 ---
 

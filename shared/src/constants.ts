@@ -11,6 +11,7 @@ export const FLEET_TRACK = 7;
 export const SENTINELS_PER_RANK = 2;
 export const BULWARKS_MAX = 3;
 export const ARCANA_PER_TRACK = 18;
+export const ARCANA_HAND_MAX = 4;
 
 export const emptyCounts = (): ResourceCounts => ({ clay: 0, timber: 0, fleece: 0, harvest: 0, starmetal: 0 });
 

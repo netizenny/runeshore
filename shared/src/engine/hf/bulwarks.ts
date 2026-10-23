@@ -3,7 +3,6 @@ import { BULWARKS_MAX, COSTS } from '../../constants';
 import { canPay, pay } from '../build';
 import type { Result } from '../setup';
 
-// shortcut: nothing removes a Bulwark yet; H6 must drop it with the Citadel it stands on.
 export function buildBulwark(s: GameState, id: PlayerId, a: Extract<Action, { type: 'buildBulwark' }>): Result {
   if (!s.hf || s.phase.k !== 'main') return 'cannot build now';
   const b = s.buildings[a.vertex];

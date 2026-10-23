@@ -64,6 +64,8 @@ export type Phase =
   | { k: 'main' }
   | { k: 'waymaking'; left: 1 | 2; then: 'roll' | 'main' }
   | { k: 'displaced'; owner: PlayerId; vertex: VertexId; rank: 1 | 2 | 3; active: boolean }
+  | { k: 'fleetLoss'; pending: PlayerId[]; total: number }
+  | { k: 'fleetReward'; pending: PlayerId[]; total: number }
   | { k: 'ended'; winner: PlayerId };
 
 export interface HFState {
@@ -147,6 +149,8 @@ export type Action =
   | { type: 'moveDisplaced'; to: VertexId }
   | { type: 'chaseShade'; vertex: VertexId }
   | { type: 'buildBulwark'; vertex: VertexId }
+  | { type: 'chooseLoss'; vertex: VertexId }
+  | { type: 'chooseReward'; track: Track }
   | { type: 'endTurn' };
 
 export type GameEvent =
@@ -158,6 +162,11 @@ export type GameEvent =
   | { type: 'stole'; thief: PlayerId; victim: PlayerId; resource: Resource | null }
   | { type: 'built'; player: PlayerId; piece: 'path' | 'outpost' | 'citadel' | 'bulwark'; at: string }
   | { type: 'sentinel'; player: PlayerId; did: 'built' | 'activated' | 'promoted' | 'moved' | 'displaced' | 'lost' | 'chased'; at: VertexId }
+  | { type: 'fleetAdvanced'; pos: number }
+  | { type: 'fleetAttack'; strength: number; defence: number; held: boolean }
+  | { type: 'shieldAwarded'; player: PlayerId }
+  | { type: 'citadelLost'; player: PlayerId; vertex: VertexId }
+  | { type: 'arcanaDrawn'; player: PlayerId; track: Track }
   | { type: 'omenBought'; player: PlayerId }
   | { type: 'omenPlayed'; player: PlayerId; kind: OmenKind }
   | { type: 'traded'; a: PlayerId; b: PlayerId | 'bank'; aGave: Partial<ResourceCounts & Record<Commodity, number>>; bGave: Partial<ResourceCounts & Record<Commodity, number>> }

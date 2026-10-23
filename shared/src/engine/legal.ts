@@ -6,7 +6,7 @@ import { applyAction, currentPlayer } from './apply';
 import { canPay, pathSpotOk } from './build';
 import { tradeRatio } from './trade';
 import { player } from './setup';
-import { hfPlayer, stocks } from './hf/state';
+import { TRACKS, hfPlayer, stocks } from './hf/state';
 import { reach } from './hf/sentinels';
 
 const accepts = (s: GameState, id: PlayerId, a: Action) => applyAction(s, id, a).ok;
@@ -60,6 +60,12 @@ export function legalActions(s: GameState, id: PlayerId): Action[] {
   }
   if (ph.k === 'displaced') {
     if (ph.owner === id) for (const to of reach(s, id, ph.vertex)) add({ type: 'moveDisplaced', to });
+    return out;
+  }
+  if (ph.k === 'fleetLoss' || ph.k === 'fleetReward') {
+    if (!ph.pending.includes(id)) return out;
+    if (ph.k === 'fleetLoss') for (const vertex of Object.keys(s.buildings)) add({ type: 'chooseLoss', vertex });
+    else for (const track of TRACKS) add({ type: 'chooseReward', track });
     return out;
   }
   if (id !== currentPlayer(s)) return out;
@@ -133,6 +139,7 @@ export function legalActions(s: GameState, id: PlayerId): Action[] {
 export function pendingPlayers(s: GameState): PlayerId[] {
   if (s.phase.k === 'ended') return [];
   if (s.phase.k === 'displaced') return [s.phase.owner];
+  if (s.phase.k === 'fleetLoss' || s.phase.k === 'fleetReward') return s.phase.pending;
   return s.phase.k === 'discard' ? Object.keys(s.phase.pending) : [currentPlayer(s)];
 }
 
