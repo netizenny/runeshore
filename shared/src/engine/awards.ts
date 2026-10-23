@@ -1,6 +1,7 @@
 import type { EdgeId, GameEvent, GameState, PlayerId, VertexId } from '../types';
 import { edgeVertices, vertexEdges } from '../board/geometry';
 import { player } from './setup';
+import { hfScore } from './hf/score';
 
 // Longest simple trail of the player's paths; an opponent building ends the trail at that vertex.
 export function longestPathLength(s: GameState, id: PlayerId): number {
@@ -38,6 +39,8 @@ export function updateAwards(s: GameState): GameEvent[] {
     events.push({ type: 'awardChanged', award: 'longestPath', player: lp });
   }
 
+  if (s.hf) return events; // Sentinels replace Wardens, so no Grand host
+
   const held = s.grandHost ? player(s, s.grandHost).wardensPlayed : 2;
   const top = s.players.reduce((a, p) => (p.wardensPlayed > a.wardensPlayed ? p : a));
   if (top.wardensPlayed >= 3 && top.wardensPlayed > held && top.id !== s.grandHost) {
@@ -53,6 +56,7 @@ export function renown(s: GameState, id: PlayerId, includeHidden: boolean): numb
   for (const b of Object.values(s.buildings)) if (b.owner === id) n += b.kind === 'citadel' ? 2 : 1;
   if (s.longestPath === id) n += 2;
   if (s.grandHost === id) n += 2;
+  if (s.hf) n += hfScore(s, id);
   if (includeHidden) n += player(s, id).omens.filter((o) => o.kind === 'relic').length;
   return n;
 }

@@ -1,6 +1,14 @@
-import type { OmenKind, Resource, ResourceCounts, Terrain } from './types';
+import type { Commodity, OmenKind, Resource, ResourceCounts, Terrain } from './types';
 
 export const RESOURCES: Resource[] = ['clay', 'timber', 'fleece', 'harvest', 'starmetal'];
+
+export const COMMODITIES: Commodity[] = ['vellum', 'silk', 'sigil'];
+export const isCommodity = (k: string): k is Commodity => (COMMODITIES as string[]).includes(k);
+// A citadel on this terrain pays one base card plus one commodity (clay and harvest pay 2 base).
+export const COMMODITY_OF: Partial<Record<Resource, Commodity>> = { timber: 'vellum', fleece: 'silk', starmetal: 'sigil' };
+export const HF_BANK_EACH = 12;
+export const FLEET_TRACK = 7;
+export const ARCANA_PER_TRACK = 18;
 
 export const emptyCounts = (): ResourceCounts => ({ clay: 0, timber: 0, fleece: 0, harvest: 0, starmetal: 0 });
 

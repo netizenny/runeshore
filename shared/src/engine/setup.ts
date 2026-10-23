@@ -13,8 +13,10 @@ export function placeOutpost(s: GameState, id: PlayerId, a: Extract<Action, { ty
   if (!ALL_VERTICES.includes(v)) return 'no such vertex';
   if (s.buildings[v] || vertexNeighbors(v).some((n) => s.buildings[n])) return 'too close to another building';
   const p = player(s, id);
-  s.buildings[v] = { owner: id, kind: 'outpost' };
-  p.piecesLeft.outpost--;
+  // In the expansion the second outpost is a Citadel.
+  const kind = s.hf && ph.round === 2 ? 'citadel' : 'outpost';
+  s.buildings[v] = { owner: id, kind };
+  p.piecesLeft[kind]--;
   if (ph.round === 2) {
     for (const h of vertexHexes(v)) {
       const t = s.board.hexes[h].terrain;

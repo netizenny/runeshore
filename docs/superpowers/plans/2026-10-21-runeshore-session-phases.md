@@ -130,10 +130,11 @@ Detailed plan: `docs/superpowers/plans/2026-10-23-runeshore-hollow-fleet.md` (Ta
 - Done when: book opens and closes in a game, every Omen and renamed term has an entry, tests pass, committed.
 - Done 2026-10-23: Rulebook overlay + base-game content; omen text moved to `OMEN_TEXT` in shared constants. Not checked in a live browser.
 
-### [ ] Session 11: Engine hooks, event die, commodities (Tasks H1–H3)
+### [x] Session 11: Engine hooks, event die, commodities (Tasks H1–H3)
 
 - Expansion flag in settings; 13 Renown default; no Omen deck in this mode.
 - Event die and red/yellow dice production; Vellum, Silk, Sigil from citadels.
+- Done 2026-10-23: flag, `hf` state, 3-dice roll, commodities, Shade gate, Bulwark discard limit, Renown sources; tests in `shared/test/hf-*.test.ts`. Shortcuts: Shade steals base cards only; `viewFor` still leaks `hf` (fixed in H13); rule numbers [verify]-ed from memory, not the rulebook.
 
 ### [ ] Session 12: Sentinels and Bulwarks (Tasks H4–H5)
 

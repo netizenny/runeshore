@@ -1,10 +1,13 @@
-import type { Action, GameState, PlayerId, Resource, ResourceCounts } from '../types';
-import { RESOURCES } from '../constants';
+import type { Action, Commodity, GameState, PlayerId, Resource, ResourceCounts } from '../types';
+import { COMMODITIES, COMMODITY_OF, RESOURCES, isCommodity } from '../constants';
 import { hexVertices } from '../board/geometry';
 import { randInt } from '../rng';
 import { player, type Result } from './setup';
+import { discardLimitFor, hfPlayer, stocks } from './hf/state';
+import { rollHF } from './hf/dice';
 
 export function roll(s: GameState, _id: PlayerId): Result {
+  if (s.hf) return rollHF(s, _id);
   if (s.phase.k !== 'roll') return 'not time to roll';
   let d1: number, d2: number;
   [d1, s.rngState] = randInt(s.rngState, 6);
@@ -19,14 +22,23 @@ export function roll(s: GameState, _id: PlayerId): Result {
 }
 
 const handSize = (h: ResourceCounts) => RESOURCES.reduce((n, r) => n + h[r], 0);
+// Commodities count toward the 7-limit; Arcana do not.
+const cardCount = (s: GameState, id: PlayerId) =>
+  handSize(player(s, id).hand) + (s.hf ? COMMODITIES.reduce((n, c) => n + hfPlayer(s, id).commodities[c], 0) : 0);
 
-function startSeven(s: GameState) {
+// Until the first Fleet attack the Shade sleeps: players still discard, but nobody moves it or steals.
+const afterSeven = (s: GameState) => {
+  s.phase = s.hf && !s.hf.shadeActive ? { k: 'main' } : { k: 'moveShade', then: 'main' };
+};
+
+export function startSeven(s: GameState) {
   const pending: Record<PlayerId, number> = {};
   for (const p of s.players) {
-    const n = handSize(p.hand);
-    if (n > s.settings.discardLimit) pending[p.id] = Math.floor(n / 2);
+    const n = cardCount(s, p.id);
+    if (n > discardLimitFor(s, p.id)) pending[p.id] = Math.floor(n / 2);
   }
-  s.phase = Object.keys(pending).length ? { k: 'discard', pending } : { k: 'moveShade', then: 'main' };
+  if (Object.keys(pending).length) s.phase = { k: 'discard', pending };
+  else afterSeven(s);
 }
 
 export function discard(s: GameState, id: PlayerId, a: Extract<Action, { type: 'discard' }>): Result {
@@ -39,13 +51,21 @@ export function discard(s: GameState, id: PlayerId, a: Extract<Action, { type: '
     if (!Number.isInteger(n) || n < 0 || n > p.hand[r]) return 'bad discard';
     total += n;
   }
+  const com: Commodity[] = s.hf ? COMMODITIES : [];
+  for (const c of com) {
+    const n = a.commodities?.[c] ?? 0;
+    if (!Number.isInteger(n) || n < 0 || n > hfPlayer(s, id).commodities[c]) return 'bad discard';
+    total += n;
+  }
   if (total !== ph.pending[id]) return `discard exactly ${ph.pending[id]}`;
-  for (const r of RESOURCES) {
-    p.hand[r] -= a.cards[r];
-    s.bank[r] += a.cards[r];
+  for (const k of [...RESOURCES, ...com]) {
+    const n = (isCommodity(k) ? a.commodities?.[k] : a.cards[k]) ?? 0;
+    const { hand, bank } = stocks(s, id, k);
+    hand[k] -= n;
+    bank[k] += n;
   }
   delete ph.pending[id];
-  if (!Object.keys(ph.pending).length) s.phase = { k: 'moveShade', then: 'main' };
+  if (!Object.keys(ph.pending).length) afterSeven(s);
   return [{ type: 'discarded', player: id, count: total }];
 }
 
@@ -95,29 +115,33 @@ export function endTurn(s: GameState, id: PlayerId): Result {
   return [{ type: 'turnEnded', player: id }];
 }
 
-function produce(s: GameState, total: number): Record<PlayerId, Partial<ResourceCounts>> {
-  const owed: Record<PlayerId, Partial<ResourceCounts>> = {};
+export function produce(s: GameState, total: number) {
+  type Kind = Resource | Commodity;
+  const owed: Record<PlayerId, Partial<Record<Kind, number>>> = {};
   for (const hex of Object.values(s.board.hexes)) {
     if (hex.token !== total || hex.id === s.shadeHex || hex.terrain === 'ashen') continue;
     for (const v of hexVertices(hex.id)) {
       const b = s.buildings[v];
       if (!b) continue;
       const o = (owed[b.owner] ??= {});
-      o[hex.terrain] = (o[hex.terrain] ?? 0) + (b.kind === 'citadel' ? 2 : 1);
+      const com = s.hf && b.kind === 'citadel' ? COMMODITY_OF[hex.terrain] : undefined;
+      o[hex.terrain] = (o[hex.terrain] ?? 0) + (com ? 1 : b.kind === 'citadel' ? 2 : 1);
+      if (com) o[com] = (o[com] ?? 0) + 1;
     }
   }
-  const gains: Record<PlayerId, Partial<ResourceCounts>> = {};
-  for (const r of RESOURCES as Resource[]) {
+  const gains: Record<PlayerId, Partial<Record<Kind, number>>> = {};
+  for (const r of [...RESOURCES, ...(s.hf ? COMMODITIES : [])] as Kind[]) {
     const who = Object.keys(owed).filter((p) => owed[p][r]);
     const sum = who.reduce((n, p) => n + owed[p][r]!, 0);
     if (!sum) continue;
+    const bank = stocks(s, who[0], r).bank;
     // Short bank: nobody gets it, unless only one player is owed — then they take what's left.
-    if (sum > s.bank[r] && who.length > 1) continue;
+    if (sum > bank[r] && who.length > 1) continue;
     for (const p of who) {
-      const n = Math.min(owed[p][r]!, s.bank[r]);
+      const n = Math.min(owed[p][r]!, bank[r]);
       if (!n) continue;
-      s.bank[r] -= n;
-      s.players.find((x) => x.id === p)!.hand[r] += n;
+      bank[r] -= n;
+      stocks(s, p, r).hand[r] += n;
       (gains[p] ??= {})[r] = n;
     }
   }

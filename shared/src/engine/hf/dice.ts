@@ -1,0 +1,28 @@
+import type { GameState, PlayerId, Track } from '../../types';
+import { randInt } from '../../rng';
+import { produce, startSeven } from '../turn';
+import type { Result } from '../setup';
+
+const FACES: ('ship' | Track)[] = ['ship', 'ship', 'ship', 'lore', 'guild', 'crown'];
+
+// Yellow, red, then event die, all from rngState. Order: event die, production, then a 7.
+export function rollHF(s: GameState, _id: PlayerId): Result {
+  if (s.phase.k !== 'roll') return 'not time to roll';
+  const hf = s.hf!;
+  let y: number, r: number, e: number;
+  [y, s.rngState] = randInt(s.rngState, 6);
+  [r, s.rngState] = randInt(s.rngState, 6);
+  [e, s.rngState] = randInt(s.rngState, 6);
+  s.dice = [y + 1, r + 1];
+  hf.eventDie = FACES[e];
+  const total = s.dice[0] + s.dice[1];
+  const events: Result = [
+    { type: 'rolled', player: s.order[s.current], dice: s.dice },
+    { type: 'eventDie', face: hf.eventDie },
+  ];
+  s.phase = { k: 'main' };
+  // H6 fills the ship step here and H7 the gate draw, before production.
+  if (total !== 7) events.push({ type: 'produced', gains: produce(s, total) });
+  else startSeven(s);
+  return events;
+}

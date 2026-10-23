@@ -4,6 +4,7 @@ import { canPay, hasLegalPath, pay } from './build';
 import { player, type Result } from './setup';
 
 export function buyOmen(s: GameState, id: PlayerId): Result {
+  if (s.hf) return 'no Omens in this mode';
   if (s.phase.k !== 'main') return 'cannot buy now';
   if (!s.omenDeck.length) return 'no Runes left';
   if (!canPay(s, id, COSTS.omen)) return 'cannot afford';
@@ -14,6 +15,7 @@ export function buyOmen(s: GameState, id: PlayerId): Result {
 
 export function playOmen(s: GameState, id: PlayerId, a: Extract<Action, { type: 'playOmen' }>): Result {
   const ph = s.phase;
+  if (s.hf) return 'no Omens in this mode';
   if (ph.k !== 'roll' && ph.k !== 'main') return 'cannot play a Rune now';
   if (s.omenPlayedThisTurn) return 'one Rune per turn';
   if (a.kind === ('relic' as string)) return 'Relics count automatically';

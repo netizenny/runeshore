@@ -12,3 +12,9 @@ export function stateWith(partial: Partial<GameState> = {}): GameState {
   const s = createGame(PLAYERS, { ...DEFAULT_SETTINGS, boardMode: 'starter' }, 1);
   return { ...s, phase: { k: 'main' }, turn: 1, ...partial };
 }
+
+// Same as stateWith, but with Siege of the Hollow Fleet on.
+export function hfState(partial: Partial<GameState> = {}): GameState {
+  const s = createGame(PLAYERS, { ...DEFAULT_SETTINGS, boardMode: 'starter', hollowFleet: true }, 1);
+  return { ...s, phase: { k: 'main' }, turn: 1, ...partial };
+}

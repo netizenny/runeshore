@@ -1,25 +1,26 @@
-import type { Action, ApplyResult, GameEvent, GameState, PlayerId, Resource, ResourceCounts } from '../types';
-import { COSTS, RESOURCES, emptyCounts } from '../constants';
+import type { Action, ApplyResult, Commodity, GameEvent, GameState, PlayerId, Resource, ResourceCounts } from '../types';
+import { COMMODITIES, COSTS, RESOURCES, emptyCounts, isCommodity } from '../constants';
 import { ALL_EDGES, ALL_VERTICES, vertexEdges, vertexNeighbors } from '../board/geometry';
 import { randInt, shuffle } from '../rng';
 import { applyAction, currentPlayer } from './apply';
 import { canPay, pathSpotOk } from './build';
 import { tradeRatio } from './trade';
 import { player } from './setup';
+import { hfPlayer, stocks } from './hf/state';
 
 const accepts = (s: GameState, id: PlayerId, a: Action) => applyAction(s, id, a).ok;
 
-// All ways to discard exactly n cards from a hand.
-function discards(hand: ResourceCounts, n: number): ResourceCounts[] {
-  const out: ResourceCounts[] = [];
-  const go = (i: number, left: number, cur: ResourceCounts) => {
-    if (i === RESOURCES.length) {
+// All ways to discard exactly n cards from a hand (base resources, plus commodities in the expansion).
+function discards(hand: Record<string, number>, kinds: string[], n: number): Record<string, number>[] {
+  const out: Record<string, number>[] = [];
+  const go = (i: number, left: number, cur: Record<string, number>) => {
+    if (i === kinds.length) {
       if (!left) out.push({ ...cur });
       return;
     }
-    for (let k = 0; k <= Math.min(left, hand[RESOURCES[i]]); k++) go(i + 1, left - k, { ...cur, [RESOURCES[i]]: k });
+    for (let k = 0; k <= Math.min(left, hand[kinds[i]]); k++) go(i + 1, left - k, { ...cur, [kinds[i]]: k });
   };
-  go(0, n, emptyCounts());
+  go(0, n, {});
   return out;
 }
 
@@ -45,7 +46,15 @@ export function legalActions(s: GameState, id: PlayerId): Action[] {
   }
   if (ph.k === 'discard') {
     // Valid by construction, so no per-candidate state clone.
-    if (ph.pending[id]) for (const cards of discards(me.hand, ph.pending[id])) out.push({ type: 'discard', cards });
+    if (ph.pending[id]) {
+      const hf = !!s.hf;
+      const hand = { ...me.hand, ...(hf && hfPlayer(s, id).commodities) };
+      for (const d of discards(hand, hf ? [...RESOURCES, ...COMMODITIES] : RESOURCES, ph.pending[id])) {
+        const cards = Object.fromEntries(RESOURCES.map((r) => [r, d[r]])) as ResourceCounts;
+        if (!hf) out.push({ type: 'discard', cards });
+        else out.push({ type: 'discard', cards, commodities: { vellum: d.vellum, silk: d.silk, sigil: d.sigil } });
+      }
+    }
     return out;
   }
   if (id !== currentPlayer(s)) return out;
@@ -82,9 +91,10 @@ export function legalActions(s: GameState, id: PlayerId): Action[] {
         else if (outpost && !b && vertexEdges(v).some((e) => s.paths[e] === id)) add({ type: 'buildOutpost', vertex: v });
       }
       if (canPay(s, id, COSTS.omen)) add({ type: 'buyOmen' });
-      for (const give of RESOURCES) {
-        if (me.hand[give] < tradeRatio(s, id, give)) continue;
-        for (const get of RESOURCES) if (get !== give) add({ type: 'bankTrade', give, get });
+      const kinds = s.hf ? [...RESOURCES, ...COMMODITIES] : RESOURCES;
+      for (const give of kinds) {
+        if (stocks(s, id, give).hand[give] < tradeRatio(s, id, give)) continue;
+        for (const get of kinds) if (get !== give) add({ type: 'bankTrade', give, get });
       }
       break;
   }
@@ -130,12 +140,14 @@ export function autoAct(s: GameState, id: PlayerId): ApplyResult {
   let err: string | null;
   if (ph.k === 'roll') err = step({ type: 'roll' });
   else if (ph.k === 'discard') {
-    const cards = RESOURCES.flatMap((r) => Array<Resource>(player(s, id).hand[r]).fill(r));
-    let mixed: Resource[];
+    const kinds = s.hf ? [...RESOURCES, ...COMMODITIES] : RESOURCES;
+    const cards = kinds.flatMap((k) => Array<Resource | Commodity>(stocks(s, id, k).hand[k]).fill(k));
+    let mixed: (Resource | Commodity)[];
     [mixed, rng] = shuffle(cards, rng);
     const c = emptyCounts();
-    for (const r of mixed.slice(0, ph.pending[id])) c[r]++;
-    err = step({ type: 'discard', cards: c });
+    const commodities = { vellum: 0, silk: 0, sigil: 0 };
+    for (const k of mixed.slice(0, ph.pending[id])) isCommodity(k) ? commodities[k]++ : c[k]++;
+    err = step(s.hf ? { type: 'discard', cards: c, commodities } : { type: 'discard', cards: c });
   } else if (ph.k === 'main') {
     err = null;
     for (const o of s.offers) if (o.from === id && !err) err = step({ type: 'cancelTrade', offerId: o.id });

@@ -1,7 +1,8 @@
-import type { Action, GameState, PlayerId, Resource, ResourceCounts } from '../types';
-import { RESOURCES } from '../constants';
+import type { Action, Commodity, GameState, PlayerId, Resource, ResourceCounts } from '../types';
+import { COMMODITIES, RESOURCES, isCommodity } from '../constants';
 import { edgeVertices } from '../board/geometry';
 import { player, type Result } from './setup';
+import { stocks } from './hf/state';
 
 const have = (s: GameState, id: PlayerId, c: ResourceCounts) => RESOURCES.every((r) => player(s, id).hand[r] >= c[r]);
 const valid = (c: ResourceCounts) => RESOURCES.every((r) => Number.isInteger(c[r]) && c[r] >= 0);
@@ -9,7 +10,8 @@ const total = (c: ResourceCounts) => RESOURCES.reduce((n, r) => n + c[r], 0);
 const nonzero = (c: ResourceCounts): Partial<ResourceCounts> =>
   Object.fromEntries(RESOURCES.filter((r) => c[r]).map((r) => [r, c[r]]));
 
-export function tradeRatio(s: GameState, id: PlayerId, resource: Resource): 2 | 3 | 4 {
+export function tradeRatio(s: GameState, id: PlayerId, resource: Resource | Commodity): 2 | 3 | 4 {
+  if (isCommodity(resource)) return 4; // ports do not apply to commodities
   let best: 2 | 3 | 4 = 4;
   for (const port of s.board.ports) {
     if (port.kind !== 'any' && port.kind !== resource) continue;
@@ -21,15 +23,16 @@ export function tradeRatio(s: GameState, id: PlayerId, resource: Resource): 2 | 
 
 export function bankTrade(s: GameState, id: PlayerId, a: Extract<Action, { type: 'bankTrade' }>): Result {
   if (s.phase.k !== 'main') return 'cannot trade now';
-  if (!RESOURCES.includes(a.give) || !RESOURCES.includes(a.get) || a.give === a.get) return 'bad trade';
+  const kinds: string[] = s.hf ? [...RESOURCES, ...COMMODITIES] : RESOURCES;
+  if (!kinds.includes(a.give) || !kinds.includes(a.get) || a.give === a.get) return 'bad trade';
   const n = tradeRatio(s, id, a.give);
-  const p = player(s, id);
-  if (p.hand[a.give] < n) return 'cannot afford';
-  if (s.bank[a.get] < 1) return 'vault is out of that resource';
-  p.hand[a.give] -= n;
-  s.bank[a.give] += n;
-  s.bank[a.get]--;
-  p.hand[a.get]++;
+  const give = stocks(s, id, a.give), get = stocks(s, id, a.get);
+  if (give.hand[a.give] < n) return 'cannot afford';
+  if (get.bank[a.get] < 1) return 'vault is out of that resource';
+  give.hand[a.give] -= n;
+  give.bank[a.give] += n;
+  get.bank[a.get]--;
+  get.hand[a.get]++;
   return [{ type: 'traded', a: id, b: 'bank', aGave: { [a.give]: n }, bGave: { [a.get]: 1 } }];
 }
 
