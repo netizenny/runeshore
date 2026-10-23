@@ -3,3 +3,4 @@ export * from './types';
 export * from './constants';
 export * from './rng';
 export * from './board/geometry';
+export * from './board/generate';
