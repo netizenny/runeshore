@@ -4,3 +4,5 @@ export * from './constants';
 export * from './rng';
 export * from './board/geometry';
 export * from './board/generate';
+export * from './engine/create';
+export * from './engine/apply';
