@@ -98,7 +98,7 @@ this with friends before any expansion work starts.
 
 ## Phase 2: Polish and hosting (1–2 sessions)
 
-### [ ] Session 9: Playtest fixes and real hosting
+### [x] Session 9: Playtest fixes and real hosting
 
 - Fix the friend-playtest bug list first.
 - Pick a free host that supports WebSockets, keeps files, and doesn't sleep mid-game.
@@ -106,6 +106,7 @@ this with friends before any expansion work starts.
 - Start prompt: "Fix the playtest bugs in <list>, then plan and do hosting per the spec."
 - Done when: a public URL hosts a game, and a redeploy keeps a running game.
 - If the bug list is long, split this into two sessions: fixes, then hosting.
+- Done 2026-10-23: bugs skipped; deploy by owner via Render free blueprint. Redeploys lose running games (accepted).
 
 ## Phase 3: Siege of the Hollow Fleet (Cities & Knights) (~7 sessions)
 
