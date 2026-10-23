@@ -68,3 +68,24 @@ it('3 clients create, join, start, and see only their own hand', async () => {
   expect((await lost.next('error')).code).toBe('no_room');
   [a, b, c, lost].forEach((x) => x.ws.close());
 });
+
+it('failed create leaves no room; failed join can be retried', async () => {
+  const rooms = new Rooms(mkdtempSync(join(tmpdir(), 'rs-ws2-')));
+  server.close();
+  server = startServer(0, rooms);
+  await new Promise((r) => server.once('listening', r));
+  const port = (server.address() as AddressInfo).port;
+
+  const a = client(port);
+  await a.send({ t: 'create', name: '  ' });
+  expect((await a.next('error')).code).toBe('bad_name');
+  expect((rooms as unknown as { rooms: Map<string, unknown> }).rooms.size).toBe(0);
+
+  await a.send({ t: 'create', name: 'Ann' });
+  const { roomId } = await a.next('joined');
+  const b = client(port);
+  await b.send({ t: 'join', roomId, name: ' ' });
+  expect((await b.next('error')).code).toBe('bad_name');
+  await b.send({ t: 'join', roomId, name: 'Bo' });
+  await b.next('joined');
+});

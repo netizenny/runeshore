@@ -64,7 +64,8 @@ export class Room {
 
   // ---- connections ----
 
-  join(conn: Conn, rawName: string, token?: string): void {
+  // Returns whether conn got a seat.
+  join(conn: Conn, rawName: string, token?: string): boolean {
     const back = token ? this.seats.find((s) => s.seatToken && s.seatToken === token) : undefined;
     let seat = back;
     if (back) {
@@ -76,10 +77,10 @@ export class Room {
       }
       back.autopilot = false;
     } else {
-      if (this.game) return this.put(conn, bad('started', 'This game already began.'));
-      if (this.seats.length >= MAX_SEATS) return this.put(conn, bad('full', 'This room is full.'));
+      if (this.game) return this.put(conn, bad('started', 'This game already began.')), false;
+      if (this.seats.length >= MAX_SEATS) return this.put(conn, bad('full', 'This room is full.')), false;
       const base = String(rawName ?? '').trim().slice(0, 20);
-      if (!base) return this.put(conn, bad('bad_name', 'Pick a name first.'));
+      if (!base) return this.put(conn, bad('bad_name', 'Pick a name first.')), false;
       let name = base;
       for (let n = 2; this.seats.some((s) => s.name === name); n++) name = `${base} ${n}`;
       seat = {
@@ -98,6 +99,7 @@ export class Room {
     this.clearIdle();
     this.put(conn, { t: 'joined', roomId: this.id, you: seat!.id, seatToken: seat!.seatToken, host: this.seats[0] === seat });
     this.changed();
+    return true;
   }
 
   disconnect(conn: Conn): void {
