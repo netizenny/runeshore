@@ -4,6 +4,7 @@ import { discard, endTurn, moveShade, roll, steal } from './turn';
 import { buildCitadel, buildOutpost, buildPath } from './build';
 import { bankTrade, cancelTrade, confirmTrade, offerTrade, respondTrade } from './trade';
 import { buyOmen, playOmen } from './omens';
+import { checkWin, updateAwards } from './awards';
 
 export const currentPlayer = (s: GameState): PlayerId => s.order[s.current];
 
@@ -24,6 +25,8 @@ export function applyAction(state: GameState, playerId: PlayerId, action: Action
   const next = structuredClone(state);
   const res = handler(next, playerId, action);
   if (typeof res === 'string') return { ok: false, error: res };
-  next.log.push(...res);
-  return { ok: true, state: next, events: res };
+  const events = [...res, ...updateAwards(next)];
+  events.push(...checkWin(next));
+  next.log.push(...events);
+  return { ok: true, state: next, events };
 }
