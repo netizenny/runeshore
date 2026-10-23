@@ -303,6 +303,7 @@ Cards **[verify each]**: Bishop ×2 (move the Shade, steal one card from each ad
 - [ ] **Step 2:** Panels: hand with commodities, three-track improve panel with costs, Arcana hand with per-card argument pickers, Sentinel actions via board click modes, pending-choice overlays for `fleetLoss`, `fleetReward`, `displaced` (reuse the style of `Discard.tsx`).
 - [ ] **Step 3:** Comic panels: Fleet advances, Fleet attack (win and loss), Shield awarded, Spire claimed, Arcana played.
 - [ ] **Step 4:** Greys out buttons using `legalActions` only; no rules in the client.
+- [ ] **Step 4b:** Rulebook: add a "Siege of the Hollow Fleet" tab to `client/src/rules/content.ts` with every new term (Vellum, Silk, Sigil, Lore, Guild, Crown, Sentinel ranks, Bulwark, Spire, Shield of the shore, Peddler, The Hollow Fleet), how the fleet track and attack work, and one entry per Arcana card (text from `constants.ts`).
 - [ ] **Step 5:** Commit per piece, `feat(hf-ui): …`.
 
 ---
