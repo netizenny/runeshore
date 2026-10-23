@@ -63,7 +63,7 @@ this with friends before any expansion work starts.
 - Done when: fuzz test runs 50 seeds × 3 and 4 players with all invariants holding.
   The rules engine is complete at this point.
 
-### [ ] Session 5: Server (Task 11)
+### [x] Session 5: Server (Task 11)
 
 - Rooms, seat tokens, protocol, one-action-at-a-time queue, turn timer, disconnect
   handling, host commands, disk snapshots.

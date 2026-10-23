@@ -1,0 +1,41 @@
+import { randomInt } from 'node:crypto';
+import { deleteRoom, loadRooms, saveRoom, DATA_DIR } from './persist';
+import { Room } from './room';
+
+const ALPHABET = 'ABCDEFGHJKMNPQRSTVWXYZ23456789';
+
+export class Rooms {
+  private rooms = new Map<string, Room>();
+
+  constructor(private dir = DATA_DIR) {}
+
+  private opts() {
+    return {
+      save: (snap: Parameters<typeof saveRoom>[0]) => saveRoom(snap, this.dir),
+      onExpire: (room: Room) => {
+        room.dispose();
+        this.rooms.delete(room.id);
+        deleteRoom(room.id, this.dir);
+      },
+    };
+  }
+
+  get(id: string): Room | undefined {
+    return this.rooms.get(id);
+  }
+
+  create(): Room {
+    let id: string;
+    do id = Array.from({ length: 6 }, () => ALPHABET[randomInt(ALPHABET.length)]).join('');
+    while (this.rooms.has(id));
+    const room = new Room(id, this.opts());
+    this.rooms.set(id, room);
+    return room;
+  }
+
+  load(): number {
+    const snaps = loadRooms(this.dir);
+    for (const s of snaps) this.rooms.set(s.id, Room.restore(s, this.opts()));
+    return snaps.length;
+  }
+}

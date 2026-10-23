@@ -9,3 +9,4 @@ export * from './engine/apply';
 export * from './engine/awards';
 export * from './engine/legal';
 export * from './view';
+export * from './protocol';
