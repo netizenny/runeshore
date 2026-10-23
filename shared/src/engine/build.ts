@@ -59,14 +59,19 @@ export function buildOutpost(s: GameState, id: PlayerId, a: Extract<Action, { ty
 
 export function buildCitadel(s: GameState, id: PlayerId, a: Extract<Action, { type: 'buildCitadel' }>): Result {
   if (s.phase.k !== 'main') return 'cannot build now';
-  const b = s.buildings[a.vertex];
+  return upgradeOutpost(s, id, a.vertex, COSTS.citadel);
+}
+
+// `cost` is discounted by the Apothecary Arcana card.
+export function upgradeOutpost(s: GameState, id: PlayerId, vertex: string, cost: ResourceCounts): Result {
+  const b = s.buildings[vertex];
   const p = player(s, id);
   if (b?.owner !== id || b.kind !== 'outpost') return 'citadel needs your outpost';
   if (p.piecesLeft.citadel < 1) return 'no citadels left';
-  if (!canPay(s, id, COSTS.citadel)) return 'cannot afford';
-  pay(s, id, COSTS.citadel);
+  if (!canPay(s, id, cost)) return 'cannot afford';
+  pay(s, id, cost);
   b.kind = 'citadel';
   p.piecesLeft.citadel--;
   p.piecesLeft.outpost++;
-  return [{ type: 'built', player: id, piece: 'citadel', at: a.vertex }];
+  return [{ type: 'built', player: id, piece: 'citadel', at: vertex }];
 }

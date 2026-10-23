@@ -2,6 +2,7 @@ import type { Action, GameEvent, GameState, PlayerId, Track } from '../../types'
 import { ARCANA_HAND_MAX, IMPROVE_MAX, RESOURCES, TRACK_COMMODITY } from '../../constants';
 import type { Result } from '../setup';
 import { hfPlayer } from './state';
+import { drawArcana } from './arcana';
 
 const citadels = (s: GameState, id: PlayerId) => Object.keys(s.buildings).filter((v) => s.buildings[v].owner === id && s.buildings[v].kind === 'citadel');
 const spireAt = (s: GameState, v: string) => Object.values(s.hf!.spires).some((sp) => sp?.vertex === v);
@@ -26,9 +27,10 @@ export function improve(s: GameState, id: PlayerId, a: Extract<Action, { type: '
   if (level >= IMPROVE_MAX) return 'already at the top level';
   if (!citadels(s, id).length) return 'improving needs a Citadel';
   const com = TRACK_COMMODITY[a.track];
-  const cost = level + 1;
+  const cost = level + 1 - (s.hf.turnFlags.crane ? 1 : 0); // a Winch discounts one improvement
   if (me.commodities[com] < cost) return 'cannot afford';
   if (a.vertex && s.buildings[a.vertex]?.kind !== 'citadel') return 'a Spire needs a Citadel';
+  delete s.hf.turnFlags.crane;
   me.commodities[com] -= cost;
   s.hf.bank[com] += cost;
   me.level[a.track]++;
@@ -41,8 +43,7 @@ export function gateDraws(s: GameState, track: Track, red: number): GameEvent[] 
   for (const id of s.order) {
     const p = hfPlayer(s, id), deck = s.hf!.arcanaDecks[track];
     if (p.level[track] < 1 || red > p.level[track] + 1 || p.arcana.length >= ARCANA_HAND_MAX || !deck.length) continue;
-    p.arcana.push(deck.shift()!);
-    events.push({ type: 'arcanaDrawn', player: id, track });
+    events.push(...drawArcana(s, id, track));
   }
   return events;
 }

@@ -27,7 +27,8 @@ export function rollHF(s: GameState, _id: PlayerId): Result {
   [y, s.rngState] = randInt(s.rngState, 6);
   [r, s.rngState] = randInt(s.rngState, 6);
   [e, s.rngState] = randInt(s.rngState, 6);
-  s.dice = [y + 1, r + 1];
+  s.dice = hf.turnFlags.alchemist ?? [y + 1, r + 1]; // a Fatecaster fixes both production dice
+  delete hf.turnFlags.alchemist;
   hf.eventDie = FACES[e];
   const total = s.dice[0] + s.dice[1];
   const events: GameEvent[] = [

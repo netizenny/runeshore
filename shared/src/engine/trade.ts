@@ -12,8 +12,8 @@ const nonzero = (c: ResourceCounts): Partial<ResourceCounts> =>
 
 export function tradeRatio(s: GameState, id: PlayerId, resource: Resource | Commodity): 2 | 3 | 4 {
   // ports do not apply to commodities; Guild level 3 makes them 2:1
-  if (isCommodity(resource)) return s.hf!.players[id].level.guild >= 3 ? 2 : 4;
-  let best: 2 | 3 | 4 = s.hf?.peddler?.owner === id && s.board.hexes[s.hf.peddler.hex].terrain === resource ? 2 : 4;
+  if (isCommodity(resource)) return s.hf!.players[id].level.guild >= 3 || s.hf!.turnFlags.merchantFleet === resource ? 2 : 4;
+  let best: 2 | 3 | 4 = s.hf?.turnFlags.merchantFleet === resource || (s.hf?.peddler?.owner === id && s.board.hexes[s.hf.peddler.hex].terrain === resource) ? 2 : 4;
   for (const port of s.board.ports) {
     if (port.kind !== 'any' && port.kind !== resource) continue;
     if (!edgeVertices(port.edge).some((v) => s.buildings[v]?.owner === id)) continue;

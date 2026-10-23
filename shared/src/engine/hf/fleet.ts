@@ -3,6 +3,7 @@ import { ARCANA_HAND_MAX, FLEET_TRACK } from '../../constants';
 import { player, type Result } from '../setup';
 import { TRACKS, hfPlayer } from './state';
 import { afterFleet } from './dice';
+import { drawArcana } from './arcana';
 
 const citadels = (s: GameState, id: PlayerId) => Object.keys(s.buildings).filter((v) => s.buildings[v].owner === id && s.buildings[v].kind === 'citadel');
 // Citadels under a Spire are safe from the Fleet.
@@ -77,8 +78,7 @@ export function chooseReward(s: GameState, id: PlayerId, a: Extract<Action, { ty
   if (ph.k !== 'fleetReward' || !ph.pending.includes(id)) return 'no reward to pick';
   const deck = s.hf!.arcanaDecks[a.track];
   if (!deck?.length) return 'that stack is empty';
-  hfPlayer(s, id).arcana.push(deck.shift()!);
-  const events: GameEvent[] = [{ type: 'arcanaDrawn', player: id, track: a.track }];
+  const events: GameEvent[] = drawArcana(s, id, a.track);
   // Someone later in the list may now find every stack empty.
   ph.pending = ph.pending.filter((x) => x !== id && canDraw(s, x));
   if (!ph.pending.length) events.push(...afterFleet(s, ph.total));

@@ -8,7 +8,27 @@ export type PlayerId = string;
 export type OmenKind = 'warden' | 'relic' | 'waymaking' | 'bounty' | 'hoard';
 export type Commodity = 'vellum' | 'silk' | 'sigil';
 export type Track = 'lore' | 'guild' | 'crown'; // lore<->vellum, guild<->silk, crown<->sigil
-export type ArcanaCard = string; // placeholder until Task H9 names the cards
+export type ArcanaCard = string; // a key of ARCANA in constants.ts
+
+// Per-card arguments; each card reads only the fields it needs.
+export interface ArcanaArg {
+  hex?: HexId;
+  hexes?: [HexId, HexId];
+  vertex?: VertexId;
+  vertices?: VertexId[];
+  edge?: EdgeId;
+  edges?: EdgeId[];
+  target?: PlayerId;
+  resource?: Resource;
+  commodity?: Commodity;
+  kind?: Resource | Commodity;
+  dice?: [number, number];
+  take?: (Resource | Commodity)[];
+  takeCard?: ArcanaCard;
+  offers?: Record<PlayerId, Resource>;
+  place?: VertexId;
+  rebuild?: EdgeId;
+}
 export type PlayerColor = 'ember' | 'tide' | 'moss' | 'bone';
 
 export interface Hex {
@@ -66,6 +86,9 @@ export type Phase =
   | { k: 'displaced'; owner: PlayerId; vertex: VertexId; rank: 1 | 2 | 3; active: boolean }
   | { k: 'fleetLoss'; pending: PlayerId[]; total: number }
   | { k: 'fleetReward'; pending: PlayerId[]; total: number }
+  // Opponents owe cards to `by` (give), to the vault (discard), or one commodity for the offered resource (harbor).
+  | { k: 'arcanaGive'; by: PlayerId; mode: 'give' | 'discard' | 'harbor'; pending: Record<PlayerId, number>; offers?: Record<PlayerId, Resource> }
+  | { k: 'deserter'; by: PlayerId; target: PlayerId; place?: VertexId }
   | { k: 'ended'; winner: PlayerId };
 
 export interface HFState {
@@ -85,7 +108,7 @@ export interface HFState {
   spires: Record<Track, { vertex: VertexId; owner: PlayerId } | null>;
   peddler: { hex: HexId; owner: PlayerId } | null;
   arcanaDecks: Record<Track, ArcanaCard[]>; // hidden
-  turnFlags: { alchemist?: [number, number]; merchantFleet?: Resource | Commodity };
+  turnFlags: { alchemist?: [number, number]; merchantFleet?: Resource | Commodity; crane?: boolean };
 }
 
 export interface TradeOffer {
@@ -152,6 +175,9 @@ export type Action =
   | { type: 'chooseLoss'; vertex: VertexId }
   | { type: 'chooseReward'; track: Track }
   | { type: 'improve'; track: Track; vertex?: VertexId }
+  | { type: 'playArcana'; card: ArcanaCard; arg?: ArcanaArg }
+  | { type: 'arcanaGive'; cards: ResourceCounts; commodities?: Record<Commodity, number> }
+  | { type: 'arcanaPickSentinel'; vertex: VertexId }
   | { type: 'endTurn' };
 
 export type GameEvent =
@@ -168,6 +194,8 @@ export type GameEvent =
   | { type: 'shieldAwarded'; player: PlayerId }
   | { type: 'citadelLost'; player: PlayerId; vertex: VertexId }
   | { type: 'arcanaDrawn'; player: PlayerId; track: Track }
+  | { type: 'arcanaPlayed'; player: PlayerId; card: ArcanaCard }
+  | { type: 'arcanaGave'; from: PlayerId; to: PlayerId | 'bank'; count: number }
   | { type: 'peddlerPlaced'; player: PlayerId; hex: HexId }
   | { type: 'improved'; player: PlayerId; track: Track; level: number }
   | { type: 'spire'; player: PlayerId; track: Track; vertex: VertexId }

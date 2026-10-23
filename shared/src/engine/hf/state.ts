@@ -1,5 +1,5 @@
 import type { Commodity, GameState, HFState, PlayerId, Resource, Track } from '../../types';
-import { ARCANA_PER_TRACK, COMMODITIES, HF_BANK_EACH, isCommodity } from '../../constants';
+import { ARCANA, COMMODITIES, HF_BANK_EACH, isCommodity } from '../../constants';
 import { shuffle } from '../../rng';
 
 export const TRACKS: Track[] = ['lore', 'guild', 'crown'];
@@ -8,7 +8,7 @@ const zeroCom = (): Record<Commodity, number> => ({ vellum: 0, silk: 0, sigil: 0
 
 export function initHF(players: PlayerId[], rng: number): [HFState, number] {
   const arcanaDecks = per<string[]>(() => []);
-  for (const t of TRACKS) [arcanaDecks[t], rng] = shuffle(Array.from({ length: ARCANA_PER_TRACK }, (_, i) => `${t}-${i}`), rng);
+  for (const t of TRACKS) [arcanaDecks[t], rng] = shuffle(ARCANA.filter((c) => c.track === t).flatMap((c) => Array<string>(c.count).fill(c.key)), rng);
   const hf: HFState = {
     fleetPos: 0,
     shadeActive: false,

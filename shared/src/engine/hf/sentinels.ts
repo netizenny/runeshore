@@ -6,7 +6,7 @@ import type { Result } from '../setup';
 import { hfPlayer } from './state';
 
 type Rank = 1 | 2 | 3;
-const empty = (s: GameState, v: VertexId) => !s.buildings[v] && !s.hf!.sentinels[v];
+export const empty = (s: GameState, v: VertexId) => !s.buildings[v] && !s.hf!.sentinels[v];
 
 // Vertices a Sentinel at `from` can reach over its owner's Paths. Opponent Sentinels end the walk
 // (they are only a target); opponent buildings block it; own pieces are passed through.
@@ -45,7 +45,7 @@ function actor(s: GameState, id: PlayerId, v: VertexId) {
   return k;
 }
 
-const count = (s: GameState, id: PlayerId, rank: Rank) =>
+export const count = (s: GameState, id: PlayerId, rank: Rank) =>
   Object.values(s.hf!.sentinels).filter((k) => k.owner === id && k.rank === rank).length;
 
 export function buildSentinel(s: GameState, id: PlayerId, a: Extract<Action, { type: 'buildSentinel' }>): Result {
@@ -71,16 +71,22 @@ export function activateSentinel(s: GameState, id: PlayerId, a: Extract<Action, 
 }
 
 export function promoteSentinel(s: GameState, id: PlayerId, a: Extract<Action, { type: 'promoteSentinel' }>): Result {
-  const k = s.hf?.sentinels[a.vertex];
-  if (s.phase.k !== 'main' || !k || k.owner !== id) return 'no Sentinel of yours there';
+  if (s.phase.k !== 'main') return 'no Sentinel of yours there';
+  return promote(s, id, a.vertex, false);
+}
+
+// `free` is the Forgemaster Arcana card.
+export function promote(s: GameState, id: PlayerId, vertex: VertexId, free: boolean): Result {
+  const k = s.hf?.sentinels[vertex];
+  if (!k || k.owner !== id) return 'no Sentinel of yours there';
   if (k.rank === 3) return 'already Mighty';
   const next = (k.rank + 1) as Rank;
   if (next === 3 && hfPlayer(s, id).level.crown < 3) return 'Mighty needs Crown level 3';
   if (count(s, id, next) >= SENTINELS_PER_RANK) return 'no Sentinels of that rank left';
-  if (!canPay(s, id, COSTS.sentinel)) return 'cannot afford';
-  pay(s, id, COSTS.sentinel);
+  if (!free && !canPay(s, id, COSTS.sentinel)) return 'cannot afford';
+  if (!free) pay(s, id, COSTS.sentinel);
   k.rank = next; // keeps its active state
-  return [{ type: 'sentinel', player: id, did: 'promoted', at: a.vertex }];
+  return [{ type: 'sentinel', player: id, did: 'promoted', at: vertex }];
 }
 
 export function moveSentinel(s: GameState, id: PlayerId, a: Extract<Action, { type: 'moveSentinel' }>): Result {

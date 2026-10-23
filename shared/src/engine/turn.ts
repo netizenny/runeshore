@@ -95,7 +95,7 @@ export function steal(s: GameState, id: PlayerId, a: Extract<Action, { type: 'st
   return [stealCard(s, id, a.victim)];
 }
 
-function stealCard(s: GameState, thief: PlayerId, victim: PlayerId) {
+export function stealCard(s: GameState, thief: PlayerId, victim: PlayerId) {
   const v = player(s, victim);
   const cards = RESOURCES.flatMap((r) => Array<Resource>(v.hand[r]).fill(r));
   let i: number;
@@ -111,6 +111,7 @@ export function endTurn(s: GameState, id: PlayerId): Result {
   s.turn++;
   s.offers = [];
   s.omenPlayedThisTurn = false;
+  if (s.hf) s.hf.turnFlags = {};
   s.phase = { k: 'roll' };
   return [{ type: 'turnEnded', player: id }];
 }
