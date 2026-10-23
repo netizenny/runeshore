@@ -12,12 +12,14 @@ export class Rooms {
   private opts() {
     return {
       save: (snap: Parameters<typeof saveRoom>[0]) => saveRoom(snap, this.dir),
-      onExpire: (room: Room) => {
-        room.dispose();
-        this.rooms.delete(room.id);
-        deleteRoom(room.id, this.dir);
-      },
+      onExpire: (room: Room) => this.drop(room),
     };
+  }
+
+  drop(room: Room): void {
+    room.dispose();
+    this.rooms.delete(room.id);
+    deleteRoom(room.id, this.dir);
   }
 
   get(id: string): Room | undefined {

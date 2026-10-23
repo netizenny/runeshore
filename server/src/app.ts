@@ -43,7 +43,8 @@ export function startServer(port: number, rooms = new Rooms()): Server {
         const r = msg.t === 'create' ? rooms.create() : rooms.get(String(msg.roomId));
         if (!r) return err('no_room', 'That room does not exist.');
         r.join(ws, msg.name, msg.t === 'join' ? msg.seatToken : undefined);
-        room = r;
+        if (r.seats.length) room = r;
+        else rooms.drop(r); // failed create (bad name): do not leak an empty room
       } else if (room) room.handle(ws, msg);
       else err('not_seated', 'Join a room first.');
     });
