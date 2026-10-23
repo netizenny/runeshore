@@ -27,7 +27,7 @@ session with a half-written task uncommitted.
 Goal: friends can play a full base game by link. Milestone from the spec: playtest
 this with friends before any expansion work starts.
 
-### [ ] Session 1: Scaffold and foundations (Tasks 1–3)
+### [x] Session 1: Scaffold and foundations (Tasks 1–3)
 
 - Monorepo, `npm run dev`, Vitest wired up.
 - Types, constants, seeded RNG.
