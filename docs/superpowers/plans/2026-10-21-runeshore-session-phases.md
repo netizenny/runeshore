@@ -38,7 +38,7 @@ this with friends before any expansion work starts.
 - Done when: `npm test` passes, `npm run dev` serves `/health` and the client page,
   3 commits made.
 
-### [ ] Session 2: Board and first turns (Tasks 4–5)
+### [x] Session 2: Board and first turns (Tasks 4–5)
 
 - Random fair board and starter board.
 - `createGame`, `applyAction` dispatcher, setup snake order, roll and production,
