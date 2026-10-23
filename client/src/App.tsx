@@ -4,7 +4,7 @@ import { Home } from './screens/Home';
 import { Lobby } from './screens/Lobby';
 import { Game } from './screens/Game';
 
-const roomOf = () => /^\/r\/([A-Za-z0-9]+)/.exec(location.pathname)?.[1]?.toUpperCase() ?? null;
+const roomOf = () => /^#\/r\/([A-Za-z0-9]+)/.exec(location.hash)?.[1]?.toUpperCase() ?? null; // hash route: Pages has no SPA fallback
 
 export function App() {
   const [roomId, setRoomId] = useState(roomOf);
@@ -12,13 +12,13 @@ export function App() {
 
   useEffect(() => {
     const f = () => setRoomId(roomOf());
-    addEventListener('popstate', f);
-    return () => removeEventListener('popstate', f);
+    addEventListener('hashchange', f);
+    return () => removeEventListener('hashchange', f);
   }, []);
   // A fresh create lands us in its room.
   useEffect(() => {
     if (g.joined && g.joined.roomId !== roomId) {
-      history.pushState(null, '', `/r/${g.joined.roomId}`);
+      location.hash = `/r/${g.joined.roomId}`;
       setRoomId(g.joined.roomId);
     }
   }, [g.joined, roomId]);

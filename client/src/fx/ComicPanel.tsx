@@ -35,7 +35,7 @@ export function ComicPanel({ events, view }: { events: GameEvent[]; view: Player
         <h1>{n(view, view.phase.winner)} rules Runeshore!</h1>
         <table><tbody>{rows.map((p) => <tr key={p.id}><td>{p.name}</td><td>★ {renown(view, p.id)}</td></tr>)}</tbody></table>
         <small>Hidden Relics decided the rest.</small>
-        <button onClick={() => { location.href = '/'; }}>Back to lobby</button>
+        <button onClick={() => { location.href = location.pathname; }}>Back to lobby</button>
       </div>
     );
   }
