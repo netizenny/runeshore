@@ -110,41 +110,42 @@ this with friends before any expansion work starts.
 
 ## Phase 3: Siege of the Hollow Fleet (Cities & Knights) (~7 sessions)
 
-No detailed plan exists yet. Session 10 writes it.
+Detailed plan: `docs/superpowers/plans/2026-10-23-runeshore-hollow-fleet.md` (Tasks H1–H17).
 
-### [ ] Session 10: Plan the expansion
+### [x] Session 10: Plan the expansion
 
 - Write `docs/superpowers/plans/<date>-runeshore-hollow-fleet.md` from the spec's C&K
   scope, in the same task format as the base-game plan.
 - Decide how expansions plug into the engine (settings flag, phase additions, event die).
 - Start prompt: "Write the implementation plan for Siege of the Hollow Fleet."
 - Done when: plan committed and split into sessions 11–16 below (adjust if needed).
+- Done 2026-10-23: plan written; sessions 11–16 keep their shape, task map at the end of the plan.
 
-### [ ] Session 11: Engine hooks, event die, commodities
+### [ ] Session 11: Engine hooks, event die, commodities (Tasks H1–H3)
 
 - Expansion flag in settings; 13 Renown default; no Omen deck in this mode.
 - Event die and red/yellow dice production; Vellum, Silk, Sigil from citadels.
 
-### [ ] Session 12: Sentinels and Bulwarks
+### [ ] Session 12: Sentinels and Bulwarks (Tasks H4–H5)
 
 - Build, activate, upgrade, move, displace, chase the Shade. Bulwarks raise discard limit.
 
-### [ ] Session 13: Hollow Fleet attacks and improvements
+### [ ] Session 13: Hollow Fleet attacks and improvements (Tasks H6–H8)
 
 - Fleet track, attack resolution, citadel loss, Shield of the shore.
 - Lore / Guild / Crown improvement tracks, Spires.
 
-### [ ] Session 14: Arcana deck
+### [ ] Session 14: Arcana deck (Tasks H9–H12)
 
 - All three suits and the full card list. This is the biggest rules chunk; it may run
   into a second session.
 
-### [ ] Session 15: Expansion autopilot, views, fuzz
+### [ ] Session 15: Expansion autopilot, views, fuzz (Tasks H13–H14)
 
 - `legalActions` and `autoAct` for every new decision point. Hidden info for Arcana.
 - Extend the fuzz test with the expansion on.
 
-### [ ] Session 16: Expansion UI and playtest
+### [ ] Session 16: Expansion UI and playtest (Tasks H15–H17)
 
 - Panels, board pieces and comic panels for the new parts. Full playtest. Deploy.
 
