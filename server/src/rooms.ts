@@ -2,6 +2,7 @@ import { randomInt } from 'node:crypto';
 import { deleteRoom, loadRooms, saveRoom, DATA_DIR } from './persist';
 import { Room } from './room';
 
+const MAX_ROOMS = 200;
 const ALPHABET = 'ABCDEFGHJKMNPQRSTVWXYZ23456789';
 
 export class Rooms {
@@ -26,7 +27,8 @@ export class Rooms {
     return this.rooms.get(id);
   }
 
-  create(): Room {
+  create(): Room | null {
+    if (this.rooms.size >= MAX_ROOMS) return null;
     let id: string;
     do id = Array.from({ length: 6 }, () => ALPHABET[randomInt(ALPHABET.length)]).join('');
     while (this.rooms.has(id));
@@ -37,7 +39,13 @@ export class Rooms {
 
   load(): number {
     const snaps = loadRooms(this.dir);
-    for (const s of snaps) this.rooms.set(s.id, Room.restore(s, this.opts()));
-    return snaps.length;
+    for (const s of snaps) {
+      try {
+        this.rooms.set(s.id, Room.restore(s, this.opts()));
+      } catch (e) {
+        console.warn(`skipping unrestorable room ${s.id}`, e);
+      }
+    }
+    return this.rooms.size;
   }
 }

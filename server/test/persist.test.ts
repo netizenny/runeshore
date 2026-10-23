@@ -42,3 +42,11 @@ it('round-trips a mid-game room and the restored room accepts the next action', 
   expect(existsSync(join(dir, 'ABC234.json'))).toBe(false);
   expect(loadRooms(dir)).toEqual([]);
 });
+
+it('boot skips a snapshot that cannot be restored', async () => {
+  const { Rooms } = await import('../src/rooms');
+  const room = new Room('GOOD22', { save: (s) => saveRoom(s, dir) });
+  room.join(sock(), 'Ann');
+  saveRoom({ id: 'BAD222', seats: [{ id: 'x', name: 'X', color: 'ember', seatToken: 't', autopilot: false }], settings: room.settings, game: { phase: { k: 'roll' } } as never }, dir);
+  expect(new Rooms(dir).load()).toBe(1);
+});

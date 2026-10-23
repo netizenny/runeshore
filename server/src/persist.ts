@@ -5,7 +5,6 @@ import type { GameState, PlayerColor, PlayerId, Settings } from '@runeshore/shar
 export type RoomSnapshot = {
   id: string;
   seats: { id: PlayerId; name: string; color: PlayerColor; seatToken: string; autopilot: boolean }[];
-  host: PlayerId;
   settings: Settings;
   game: GameState | null;
 };

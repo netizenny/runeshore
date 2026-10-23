@@ -88,3 +88,13 @@ describe('player trades', () => {
     expect(ok(dec, { type: 'cancelTrade', offerId: id }).offers).toEqual([]);
   });
 });
+
+describe('offer ids', () => {
+  it('stay unique when several offers are posted in one turn', () => {
+    const s = stateWith();
+    hand(s, s.order[0]).clay = 3;
+    const o = (give: Partial<ReturnType<typeof emptyCounts>>) => ({ type: 'offerTrade', give: c(give), get: c({ fleece: 1 }), to: 'all' }) as Action;
+    const t = ok(ok(ok(s, o({ clay: 1 })), o({ clay: 2 })), o({ clay: 3 }));
+    expect(new Set(t.offers.map((x) => x.id)).size).toBe(3);
+  });
+});

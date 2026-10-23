@@ -69,12 +69,6 @@ export const edgeVertices = (e: EdgeId): [VertexId, VertexId] => {
   return [vertexId([a, b, c1]), vertexId([a, b, c2])];
 };
 
-export const edgeNeighbors = (e: EdgeId): EdgeId[] => {
-  const out = new Set<EdgeId>();
-  for (const v of edgeVertices(e)) for (const n of vertexEdges(v)) if (n !== e) out.add(n);
-  return [...out];
-};
-
 export const hexVertices = (h: HexId): VertexId[] => [0, 1, 2, 3, 4, 5].map((i) => cornerVertex(h, i));
 
 export function hexPixel(h: HexId, size: number): { x: number; y: number } {

@@ -181,7 +181,7 @@ describe('disconnects and host commands', () => {
     room.disconnect(back);
     vi.advanceTimersByTime(120_000);
     const g = room.game!;
-    room.game = { ...g, players: g.players.map((p) => (p.id === 'c' ? { ...p, hand: { ...p.hand, clay: 2 } } : p)), bank: { ...g.bank, clay: g.bank.clay - 2 } };
+    room.game = { ...g, players: g.players.map((p) => (p.id === 'c' ? { ...p, hand: { ...p.hand, clay: p.hand.clay + 2 } } : p)), bank: { ...g.bank, clay: g.bank.clay - 2 } };
     room.handle(socks[0], { t: 'host', cmd: 'remove', player: 'c' });
     const after = room.game!;
     expect(after.players.find((p) => p.id === 'c')!.hand.clay).toBe(0);

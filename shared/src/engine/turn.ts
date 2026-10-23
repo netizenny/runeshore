@@ -52,7 +52,7 @@ export function discard(s: GameState, id: PlayerId, a: Extract<Action, { type: '
 export function moveShade(s: GameState, id: PlayerId, a: Extract<Action, { type: 'moveShade' }>): Result {
   const ph = s.phase;
   if (ph.k !== 'moveShade') return 'not moving the Shade';
-  if (!s.board.hexes[a.hex]) return 'no such hex';
+  if (!Object.hasOwn(s.board.hexes, a.hex)) return 'no such hex';
   if (a.hex === s.shadeHex) return 'the Shade must move';
   s.shadeHex = a.hex;
   const victims = [...new Set(hexVertices(a.hex).map((v) => s.buildings[v]?.owner))].filter(

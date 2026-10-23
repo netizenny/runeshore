@@ -27,7 +27,7 @@ export function startServer(port: number, rooms = new Rooms()): Server {
     res.end();
   });
 
-  const wss = new WebSocketServer({ server: http, path: '/ws' });
+  const wss = new WebSocketServer({ server: http, path: '/ws', maxPayload: 16 * 1024 });
   wss.on('connection', (ws: WebSocket) => {
     let room: Room | null = null;
     const err = (code: string, message: string) => ws.send(JSON.stringify({ t: 'error', code, message }));
@@ -41,12 +41,13 @@ export function startServer(port: number, rooms = new Rooms()): Server {
       if (msg?.t === 'create' || msg?.t === 'join') {
         if (room) return err('already_joined', 'Already in a room.');
         const r = msg.t === 'create' ? rooms.create() : rooms.get(String(msg.roomId));
-        if (!r) return err('no_room', 'That room does not exist.');
+        if (!r) return msg.t === 'create' ? err('busy', 'Too many rooms right now. Try again later.') : err('no_room', 'That room does not exist.');
         if (r.join(ws, msg.name, msg.t === 'join' ? msg.seatToken : undefined)) room = r;
         else if (msg.t === 'create') rooms.drop(r); // failed create (bad name): do not leak an empty room
       } else if (room) room.handle(ws, msg);
       else err('not_seated', 'Join a room first.');
     });
+    ws.on('error', () => {}); // bad frames: ws closes the socket itself; an unhandled 'error' would kill the process
     ws.on('close', () => room?.disconnect(ws));
   });
 

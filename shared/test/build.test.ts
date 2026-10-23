@@ -85,3 +85,14 @@ describe('build', () => {
     bad(s, { type: 'buildCitadel', vertex: v });
   });
 });
+
+describe('moveShade input', () => {
+  it('rejects keys that are not hexes, like __proto__', () => {
+    const s = stateWith({ phase: { k: 'moveShade', then: 'main' } });
+    const id = s.order[s.current];
+    for (const hex of ['__proto__', 'constructor', 'toString']) {
+      const r = applyAction(s, id, { type: 'moveShade', hex });
+      expect(r.ok, hex).toBe(false);
+    }
+  });
+});

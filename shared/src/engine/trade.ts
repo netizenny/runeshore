@@ -42,7 +42,7 @@ export function offerTrade(s: GameState, id: PlayerId, a: Extract<Action, { type
     if (!a.to.length || a.to.some((t) => t === id || !s.players.some((p) => p.id === t))) return 'bad recipients';
   }
   s.offers.push({
-    id: `t${s.turn}-${s.log.length}`,
+    id: `t${s.turn}-${Math.max(-1, ...s.offers.map((o) => +o.id.split('-')[1])) + 1}`,
     from: id,
     give: { ...a.give },
     get: { ...a.get },

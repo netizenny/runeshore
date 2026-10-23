@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 import {
-  ALL_EDGES, ALL_VERTICES, COAST_EDGES, LAND_HEXES, edgeNeighbors, edgeVertices, hexId, hexPixel,
+  ALL_EDGES, ALL_VERTICES, COAST_EDGES, LAND_HEXES, edgeVertices, hexId, hexPixel,
   hexVertices, vertexEdges, vertexHexes, vertexId, vertexNeighbors, vertexPixel,
 } from '../src/board/geometry';
 
@@ -32,7 +32,6 @@ test('edge endpoints are neighbors; edges chain', () => {
     expect(vertexNeighbors(a)).toContain(b);
     expect(vertexNeighbors(b)).toContain(a);
     expect(vertexEdges(a)).toContain(e);
-    expect(edgeNeighbors(e).length).toBeGreaterThanOrEqual(2);
   }
 });
 

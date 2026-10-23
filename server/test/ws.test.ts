@@ -89,3 +89,18 @@ it('failed create leaves no room; failed join can be retried', async () => {
   await b.send({ t: 'join', roomId, name: 'Bo' });
   await b.next('joined');
 });
+
+it('survives an invalid text frame', async () => {
+  server.close();
+  server = startServer(0, new Rooms(mkdtempSync(join(tmpdir(), 'rs-ws3-'))));
+  await new Promise((r) => server.once('listening', r));
+  const port = (server.address() as AddressInfo).port;
+  const bad = new WebSocket(`ws://localhost:${port}/ws`);
+  await new Promise((r) => bad.on('open', r));
+  bad.on('error', () => {});
+  bad.send(Buffer.from([0xff, 0xfe]), { binary: false });
+  await new Promise((r) => bad.on('close', r));
+  const a = client(port);
+  await a.send({ t: 'create', name: 'Ann' });
+  await a.next('joined');
+});

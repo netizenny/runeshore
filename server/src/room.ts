@@ -56,7 +56,6 @@ export class Room {
     return {
       id: this.id,
       seats: this.seats.map(({ conn: _c, offlineSince: _o, ...s }) => s),
-      host: this.seats[0]?.id ?? '',
       settings: this.settings,
       game: this.game,
     };
@@ -172,7 +171,8 @@ export class Room {
   private act(conn: Conn, seat: Seat, action: unknown) {
     if (!this.game) return this.put(conn, bad('not_started', 'The game has not begun.'));
     if (typeof (action as { type?: unknown })?.type !== 'string') return this.put(conn, bad('bad_msg', 'Malformed action.'));
-    const r = applyAction(this.game, seat.id, action as never);
+    // Fresh entropy per action, so dice and steals can't be predicted from past rolls. A rejected action leaves this.game untouched.
+    const r = applyAction({ ...this.game, rngState: randomInt(2 ** 32) }, seat.id, action as never);
     if (!r.ok) return this.put(conn, bad('illegal', r.error));
     this.game = r.state;
     this.settle([...r.events]);
@@ -215,9 +215,7 @@ export class Room {
       for (const id of pending) {
         if (this.pendingSince.has(id)) continue;
         this.pendingSince.set(id, Date.now());
-        if (this.settings.turnTimerSec > 0) {
-          this.timers.set(id, setTimeout(() => this.expire(id), this.settings.turnTimerSec * 1000));
-        }
+        this.timers.set(id, setTimeout(() => this.expire(id), this.settings.turnTimerSec * 1000));
       }
       const auto = pending.find((id) => this.seats.find((s) => s.id === id)?.autopilot);
       if (!auto || !this.step(auto, events)) return;
@@ -231,6 +229,7 @@ export class Room {
   }
 
   private step(id: PlayerId, events: GameEvent[]): boolean {
+    this.game!.rngState = randomInt(2 ** 32);
     const r = autoAct(this.game!, id);
     if (!r.ok) return false;
     this.game = r.state;
@@ -306,7 +305,7 @@ export class Room {
   private broadcast(events: GameEvent[]) {
     const g = this.game!;
     const waitingOn = [...this.pendingSince].map(([player, since]) => ({ player, since }));
-    const deadline = this.settings.turnTimerSec > 0 && waitingOn.length ? Math.min(...waitingOn.map((w) => w.since)) + this.settings.turnTimerSec * 1000 : null;
+    const deadline = waitingOn.length ? Math.min(...waitingOn.map((w) => w.since)) + this.settings.turnTimerSec * 1000 : null;
     for (const s of this.seats) {
       if (!s.conn) continue;
       this.put(s.conn, { t: 'game', view: viewFor(g, s.id), events: events.map((e) => eventFor(e, s.id)), legal: legalActions(g, s.id), deadline, waitingOn });
