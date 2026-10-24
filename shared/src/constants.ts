@@ -11,6 +11,7 @@ export const FLEET_TRACK = 7;
 export const SENTINELS_PER_RANK = 2;
 export const BULWARKS_MAX = 3;
 export const IMPROVE_MAX = 5;
+export const SPIRE_LEVEL = 4; // first to reach it claims the track's Spire
 export const TRACK_COMMODITY: Record<Track, Commodity> = { lore: 'vellum', guild: 'silk', crown: 'sigil' };
 export const ARCANA_PER_TRACK = 18;
 export const ARCANA_HAND_MAX = 4;

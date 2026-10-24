@@ -56,6 +56,11 @@ describe('improvements', () => {
     expect(legalActions(s, a).some((x) => x.type === 'improve' && x.track === 'lore')).toBe(true);
   });
 
+  it('no Spire below level 4', () => {
+    const { s, a } = setup();
+    expect(up(s, a, 'crown', 3).hf!.spires.crown).toBeNull();
+  });
+
   it('level 4 claims the Spire on a chosen Citadel; one Spire per Citadel', () => {
     const { s, a } = setup();
     const t = up(up(s, a, 'lore', 4, V[1]), a, 'guild', 4);

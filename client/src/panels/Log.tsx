@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { OMEN_NAME, type GameEvent, type PlayerView } from '@runeshore/shared';
+import { ARCANA_BY_KEY, OMEN_NAME, type GameEvent, type PlayerView } from '@runeshore/shared';
 import { Cards } from './util';
 
 export function Log({ view }: { view: PlayerView }) {
@@ -23,6 +23,18 @@ export function Log({ view }: { view: PlayerView }) {
       case 'omenPlayed': return `${n(e.player)} played ${OMEN_NAME[e.kind]}`;
       case 'traded': return <>{n(e.a)} traded <Cards c={e.aGave} /> with {e.b === 'bank' ? 'the vault' : n(e.b)} for <Cards c={e.bGave} /></>;
       case 'awardChanged': return `${e.award === 'longestPath' ? 'Longest Trail' : 'Warlord'} ${e.player ? `goes to ${n(e.player)}` : 'is lost'}`;
+      case 'eventDie': return `Event die: ${e.face}`;
+      case 'sentinel': return `${n(e.player)}'s Sentinel ${e.did}`;
+      case 'fleetAdvanced': return `The Hollow Fleet advances to ${e.pos}`;
+      case 'fleetAttack': return `The Hollow Fleet attacks (${e.strength} vs ${e.defence}): ${e.held ? 'held' : 'it breaks through'}`;
+      case 'shieldAwarded': return `${n(e.player)} wins a Shield of the shore`;
+      case 'citadelLost': return `${n(e.player)} loses a Citadel`;
+      case 'arcanaDrawn': return `${n(e.player)} draws a ${e.track} Arcana`;
+      case 'arcanaPlayed': return `${n(e.player)} plays ${ARCANA_BY_KEY[e.card]?.name ?? e.card}`;
+      case 'arcanaGave': return `${n(e.from)} gives ${e.count} to ${e.to === 'bank' ? 'the vault' : n(e.to)}`;
+      case 'peddlerPlaced': return `${n(e.player)} places the Peddler`;
+      case 'improved': return `${n(e.player)} improves ${e.track} to ${e.level}`;
+      case 'spire': return `${n(e.player)} raises the ${e.track} Spire`;
       case 'turnEnded': return `${n(e.player)} ended their turn`;
       case 'autoActed': return `${n(e.player)} ran out of time`;
       case 'won': return `${n(e.player)} wins!`;

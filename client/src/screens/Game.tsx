@@ -64,7 +64,7 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
   const owed = ph.k === 'discard' ? ph.pending[view.you] : 0;
 
   return (
-    <div className="game">
+    <div className="game" data-hf={!!hf}>
       <div className="bar"><b>{prompt}</b>{view.dice && ph.k !== 'roll' && <span>🎲 {view.dice[0]} + {view.dice[1]}</span>}</div>
       <div className="board"><button className="book" title="Rulebook" onClick={() => setBook(true)}>📖</button><Board view={view} legal={legal} mode={mode} onAction={act} pick={pick} /></div>
       <aside className="side">

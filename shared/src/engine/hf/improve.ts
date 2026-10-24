@@ -1,5 +1,5 @@
 import type { Action, GameEvent, GameState, PlayerId, Track } from '../../types';
-import { ARCANA_HAND_MAX, IMPROVE_MAX, RESOURCES, TRACK_COMMODITY } from '../../constants';
+import { ARCANA_HAND_MAX, IMPROVE_MAX, RESOURCES, SPIRE_LEVEL, TRACK_COMMODITY } from '../../constants';
 import type { Result } from '../setup';
 import { hfPlayer } from './state';
 import { drawArcana } from './arcana';
@@ -11,7 +11,7 @@ const spireAt = (s: GameState, v: string) => Object.values(s.hf!.spires).some((s
 function spire(s: GameState, id: PlayerId, track: Track, want?: string): GameEvent[] {
   const held = s.hf!.spires[track];
   const level = hfPlayer(s, id).level[track];
-  if (held?.owner === id || (held && (level < IMPROVE_MAX || hfPlayer(s, held.owner).level[track] >= level))) return [];
+  if (level < SPIRE_LEVEL || held?.owner === id || (held && (level < IMPROVE_MAX || hfPlayer(s, held.owner).level[track] >= level))) return [];
   const free = citadels(s, id).filter((v) => !spireAt(s, v));
   const vertex = want && free.includes(want) ? want : free[0];
   if (!vertex) return [];
