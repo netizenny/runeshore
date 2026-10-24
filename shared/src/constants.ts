@@ -70,6 +70,7 @@ export const PIECES = { path: 15, outpost: 5, citadel: 4 };
 export const BOATS_PER_PLAYER = 15;
 export const LANDFALL_GLORY = 2;
 export const BANK_EACH = 19;
+export const BANK_EACH_BIG = 24; // 5-6 players: the extension adds 5 of each
 
 const rep = <T>(x: T, n: number): T[] => Array<T>(n).fill(x);
 
@@ -80,6 +81,8 @@ export const OMEN_DECK: OmenKind[] = [
   ...rep<OmenKind>('bounty', 2),
   ...rep<OmenKind>('hoard', 2),
 ];
+// 5-6 players: the extension adds 6 Warriors and one each of Twin Paths, Bounty and Hoard.
+export const OMEN_DECK_BIG: OmenKind[] = [...OMEN_DECK, ...rep<OmenKind>('warden', 6), 'waymaking', 'bounty', 'hoard'];
 
 export const OMEN_TEXT: Record<OmenKind, string> = {
   warden: 'Warriors: move the Shade and steal',

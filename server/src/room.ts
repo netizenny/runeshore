@@ -1,8 +1,10 @@
 import { randomBytes, randomInt } from 'node:crypto';
 import {
   DEFAULT_SETTINGS,
+  SCENARIOS,
   applyAction,
   autoAct,
+  boardGeometry,
   createGame,
   eventFor,
   logFor,
@@ -24,11 +26,11 @@ export type RoomOpts = { save?: (snap: RoomSnapshot) => void; onExpire?: (room: 
 
 type Seat = { id: PlayerId; name: string; color: PlayerColor; seatToken: string; autopilot: boolean; conn: Conn | null; offlineSince: number };
 
-const COLORS: PlayerColor[] = ['ember', 'tide', 'moss', 'bone'];
+const COLORS: PlayerColor[] = ['ember', 'tide', 'moss', 'bone', 'dusk', 'rose'];
 const IDLE_MS = 10 * 60_000;
 const HOST_WAIT_MS = 120_000;
 const LOBBY_MS = 30 * 60_000; // a room that never starts a game is dropped, even with sockets attached
-const MAX_SEATS = 4;
+const MAX_SEATS = 6;
 
 const bad = (code: string, message: string): ServerMsg => ({ t: 'error', code, message });
 
@@ -50,6 +52,8 @@ export class Room {
   }
 
   static restore(snap: RoomSnapshot, opts: RoomOpts = {}): Room {
+    // A board this build does not know (a dropped scenario) would crash later on a timer.
+    if (snap.game && !boardGeometry(snap.game.board)) throw new Error(`unknown board ${Object.keys(snap.game.board.hexes)[0]}`);
     const r = new Room(snap.id, opts);
     r.settings = { ...DEFAULT_SETTINGS, ...snap.settings };
     r.game = snap.game;
@@ -155,11 +159,9 @@ export class Room {
   private setSettings(conn: Conn, seat: Seat, p: Partial<Settings>) {
     if (this.game || seat !== this.seats[0]) return this.put(conn, bad('not_host', 'Only the host can change settings in the lobby.'));
     const next = { ...this.settings, ...p };
-    // Expansions are mutually exclusive; the one just switched on wins, and Drowned Isles needs the standard map.
+    // Expansions are mutually exclusive; the one just switched on wins. Drowned Isles maps come from the scenario, not boardSize.
     if (p.drownedIsles === true && p.hollowFleet !== true) next.hollowFleet = false;
     if (p.hollowFleet === true && p.drownedIsles !== true) next.drownedIsles = false;
-    if (p.drownedIsles === true && p.boardSize !== 'large') next.boardSize = 'standard';
-    if (p.boardSize === 'large' && p.drownedIsles !== true) next.drownedIsles = false;
     // Toggling the mode moves the default target unless the host sent one too.
     const target = (x: Settings) => (x.hollowFleet ? 13 : x.drownedIsles ? 14 : 10);
     if (p.gloryTarget === undefined && target(next) !== target(this.settings)) next.gloryTarget = target(next);
@@ -167,8 +169,7 @@ export class Room {
       typeof next.hollowFleet === 'boolean' &&
       typeof next.drownedIsles === 'boolean' &&
       !(next.hollowFleet && next.drownedIsles) &&
-      ['landfall', 'quartet', 'veiled'].includes(next.scenario) &&
-      !(next.drownedIsles && next.boardSize === 'large') &&
+      Object.hasOwn(SCENARIOS, next.scenario) &&
       ['random', 'starter'].includes(next.boardMode) &&
       ['standard', 'large'].includes(next.boardSize) &&
       Number.isInteger(next.gloryTarget) && next.gloryTarget >= 7 && next.gloryTarget <= 15 &&
@@ -182,6 +183,9 @@ export class Room {
   private start(conn: Conn, seat: Seat) {
     if (this.game || seat !== this.seats[0]) return this.put(conn, bad('not_host', 'Only the host can begin.'));
     if (this.seats.length < 2) return this.put(conn, bad('too_few', 'Need at least 2 players.'));
+    const big = this.settings.drownedIsles ? !!SCENARIOS[this.settings.scenario].big : this.settings.boardSize === 'large';
+    if (this.seats.length > 4 && !big) return this.put(conn, bad('map_seats', 'Five or six players need the Large map (Sextet Reach in Drowned Isles).'));
+    if (this.seats.length <= 4 && this.settings.drownedIsles && big) return this.put(conn, bad('map_seats', 'Sextet Reach is for five or six players.'));
     const players = this.seats.map(({ id, name, color }) => ({ id, name, color }));
     this.game = createGame(players, this.settings, randomInt(1, 2 ** 31));
     this.settle([]);

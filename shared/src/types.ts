@@ -29,7 +29,7 @@ export interface ArcanaArg {
   place?: VertexId;
   rebuild?: EdgeId;
 }
-export type PlayerColor = 'ember' | 'tide' | 'moss' | 'bone';
+export type PlayerColor = 'ember' | 'tide' | 'moss' | 'bone' | 'dusk' | 'rose';
 
 export interface Hex {
   id: HexId;
@@ -57,7 +57,7 @@ export interface Settings {
   turnTimerSec: 15 | 30 | 45;
   hollowFleet: boolean;
   drownedIsles: boolean;
-  scenario: 'landfall' | 'quartet' | 'veiled';
+  scenario: 'landfall' | 'quartet' | 'veiled' | 'sextet';
 }
 
 export const DEFAULT_SETTINGS: Settings = {

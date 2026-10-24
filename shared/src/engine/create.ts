@@ -1,5 +1,5 @@
 import type { GameState, PlayerColor, PlayerId, PlayerState, Settings } from '../types';
-import { BANK_EACH, BOATS_PER_PLAYER, OMEN_DECK, PIECES, RESOURCES, emptyCounts } from '../constants';
+import { BANK_EACH, BANK_EACH_BIG, BOATS_PER_PLAYER, OMEN_DECK, OMEN_DECK_BIG, PIECES, RESOURCES, emptyCounts } from '../constants';
 import { generateBoard, scenarioBoard, scenarioIsles } from '../board/generate';
 import { SCENARIOS } from '../board/scenarios/landfall';
 import { shuffle } from '../rng';
@@ -17,10 +17,10 @@ export function createGame(players: { id: PlayerId; name: string; color: PlayerC
   const mistHexes = Object.values(board.hexes).filter((h) => h.terrain === 'mist').map((h) => h.id);
   const [mist, afterMist] = sc && mistHexes.length ? dealMist(sc, mistHexes, afterBoard) : [undefined, afterBoard];
   // No Omen deck in the expansion; skipping the shuffle keeps mode-off rng use unchanged.
-  const [omenDeck, afterDeck] = settings.hollowFleet ? [[], afterMist] : shuffle(OMEN_DECK, afterMist);
+  const [omenDeck, afterDeck] = settings.hollowFleet ? [[], afterMist] : shuffle(players.length > 4 ? OMEN_DECK_BIG : OMEN_DECK, afterMist);
   const [hf, afterHF] = settings.hollowFleet ? initHF(players.map((p) => p.id), afterDeck) : [undefined, afterDeck];
   const bank = emptyCounts();
-  for (const r of RESOURCES) bank[r] = BANK_EACH;
+  for (const r of RESOURCES) bank[r] = players.length > 4 ? BANK_EACH_BIG : BANK_EACH;
   const states: PlayerState[] = players.map((p) => ({
     ...p,
     hand: emptyCounts(),

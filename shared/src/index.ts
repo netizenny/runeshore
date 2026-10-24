@@ -3,6 +3,7 @@ export * from './constants';
 export * from './rng';
 export * from './board/geometry';
 export * from './board/generate';
+export { SCENARIOS } from './board/scenarios/landfall';
 export * from './engine/create';
 export * from './engine/apply';
 export * from './engine/awards';

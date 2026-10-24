@@ -51,6 +51,19 @@ it('boot skips a snapshot that cannot be restored', async () => {
   expect(new Rooms(dir).load()).toBe(1);
 });
 
+it('restore refuses a board from a scenario this build does not have', () => {
+  const room = new Room('OLD222');
+  const socks = ['Ann', 'Bo'].map((n) => {
+    const s = sock();
+    room.join(s, n);
+    return s;
+  });
+  room.handle(socks[0], { t: 'start' });
+  const snap = JSON.parse(JSON.stringify(room.snapshot()));
+  snap.game.board.hexes = Object.fromEntries(Object.entries(snap.game.board.hexes).map(([k, h]) => [`Zz${k}`, h]));
+  expect(() => Room.restore(snap)).toThrow('unknown board');
+});
+
 it('caps live rooms per ip', async () => {
   const { Rooms } = await import('../src/rooms');
   const rooms = new Rooms(mkdtempSync(join(tmpdir(), 'rs-cap-')));

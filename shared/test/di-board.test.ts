@@ -150,3 +150,32 @@ describe('Veiled Reach Mist', () => {
     expect(s.phase).toEqual({ k: 'glimmer', pending: { [id]: 1 } });
   });
 });
+
+describe('Sextet Reach', () => {
+  const six = Array.from({ length: 6 }, (_, i) => ({ id: 'abcdef'[i], name: `P${i}`, color: 'ember' as const }));
+  const sx = () => createGame(six, { ...DEFAULT_SETTINGS, drownedIsles: true, scenario: 'sextet' }, 5);
+
+  it('builds 6 isles of 6 hexes with every resource, 12 ports on land-deep edges, a 5-6 bank', () => {
+    const s = sx();
+    const land = Object.values(s.board.hexes).filter((h) => h.terrain !== 'deep');
+    expect(Object.keys(s.board.hexes)).toHaveLength(91);
+    expect(land).toHaveLength(36);
+    expect(land.filter((h) => h.terrain === 'ashen')).toHaveLength(1);
+    const isles = new Set(Object.values(s.di!.isleOf));
+    expect(isles.size).toBe(6);
+    for (const isle of isles) {
+      const terrains = land.filter((h) => s.di!.isleOf[h.id] === isle).map((h) => h.terrain);
+      expect(terrains).toHaveLength(6);
+      for (const r of ['clay', 'timber', 'fleece', 'harvest', 'starmetal']) expect(terrains).toContain(r);
+    }
+    expect(s.board.ports).toHaveLength(12);
+    for (const p of s.board.ports) {
+      const [a, b] = p.edge.split('~');
+      expect(s.board.hexes[a] && s.board.hexes[b]).toBeTruthy();
+      expect([a, b].filter((h) => s.board.hexes[h].terrain !== 'deep')).toHaveLength(1);
+    }
+    expect(s.bank.clay).toBe(24);
+    expect(s.omenDeck).toHaveLength(34);
+    expect(s.di!.homeIsle).toBe('');
+  });
+});

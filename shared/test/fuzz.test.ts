@@ -5,14 +5,15 @@ import type { GameState } from '../src/types';
 import { drive, newGame } from './drive';
 
 function invariants(s: GameState) {
+  const big = s.players.length > 4;
   for (const r of RESOURCES) {
     const total = s.bank[r] + s.players.reduce((n, p) => n + p.hand[r], 0);
-    if (total !== 19) throw new Error(`${r} total ${total}`);
+    if (total !== (big ? 24 : 19)) throw new Error(`${r} total ${total}`);
     if (s.bank[r] < 0 || s.players.some((p) => p.hand[r] < 0)) throw new Error(`negative ${r}`);
   }
   const held = s.players.reduce((n, p) => n + p.omens.length, 0);
   const played = s.log.filter((e) => e.type === 'omenPlayed').length;
-  if (!s.hf && s.omenDeck.length + held + played !== 25) throw new Error(`omens ${s.omenDeck.length}+${held}+${played}`);
+  if (!s.hf && s.omenDeck.length + held + played !== (big ? 34 : 25)) throw new Error(`omens ${s.omenDeck.length}+${held}+${played}`);
   for (const p of s.players) {
     if (p.piecesLeft.path < 0 || p.piecesLeft.outpost < 0 || p.piecesLeft.citadel < 0) throw new Error('pieces < 0');
   }
@@ -52,7 +53,7 @@ function hfInvariants(s: GameState) {
 }
 
 describe('fuzz with Hollow Fleet', () => {
-  for (const n of [3, 4]) {
+  for (const n of [3, 4, 6]) {
     it(`40 seeds with ${n} players end with a winner and keep invariants`, () => {
       for (let seed = 1; seed <= 40; seed++) {
         const { state, steps } = drive(newGame(seed, n, { hollowFleet: true, gloryTarget: 13 }), seed, 6000, hfInvariants);
@@ -64,7 +65,7 @@ describe('fuzz with Hollow Fleet', () => {
 });
 
 describe('fuzz, large board', () => {
-  for (const n of [3, 4]) {
+  for (const n of [3, 4, 5, 6]) {
     it(`20 seeds with ${n} players end with a winner`, () => {
       for (let seed = 1; seed <= 20; seed++) {
         const { state, steps } = drive(newGame(seed, n, { boardSize: 'large' }), seed, 4000, invariants);
@@ -85,7 +86,7 @@ function diInvariants(s: GameState) {
 }
 
 describe('fuzz, Drowned Isles', () => {
-  for (const [n, scenario] of [[3, 'landfall'], [4, 'landfall'], [3, 'quartet'], [4, 'quartet'], [3, 'veiled'], [4, 'veiled']] as const) {
+  for (const [n, scenario] of [[3, 'landfall'], [4, 'landfall'], [3, 'quartet'], [4, 'quartet'], [3, 'veiled'], [4, 'veiled'], [5, 'sextet'], [6, 'sextet']] as const) {
     it(`50 seeds with ${n} players on ${scenario} end with a winner and keep invariants`, () => {
       for (let seed = 1; seed <= 50; seed++) {
         const { state, steps } = drive(newGame(seed, n, { drownedIsles: true, scenario, gloryTarget: 8 }), seed, 4000, diInvariants);

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { ClientMsg, ServerMsg, Settings } from '@runeshore/shared';
+import { SCENARIOS, type ClientMsg, type ServerMsg, type Settings } from '@runeshore/shared';
 import { savedName } from '../state/useGame';
 
 type Lobby = Extract<ServerMsg, { t: 'lobby' }>;
@@ -20,6 +20,10 @@ export function Lobby(p: {
   const isHost = !!lobby && lobby.host === p.you;
   const set = (s: Partial<Settings>) => send({ t: 'settings', settings: s });
   const copy = () => navigator.clipboard?.writeText(location.href).then(() => setCopied(true));
+  const many = (lobby?.seats.length ?? 0) > 4;
+  // 5-6 players need a big map; Drowned Isles big maps are 5-6 only. The server checks the same.
+  const big = !!lobby && (lobby.settings.drownedIsles ? !!SCENARIOS[lobby.settings.scenario].big : lobby.settings.boardSize === 'large');
+  const mapFits = many ? big : !(lobby?.settings.drownedIsles && big);
 
   return (
     <div className="screen">
@@ -50,11 +54,15 @@ export function Lobby(p: {
               <option value="random">Random</option>
               <option value="starter">Starter</option>
             </select>
-            <label>Map size</label>
-            <select value={lobby.settings.boardSize} onChange={(e) => set({ boardSize: e.target.value as Settings['boardSize'] })}>
-              <option value="standard">Standard</option>
-              <option value="large">Large</option>
-            </select>
+            {!lobby.settings.drownedIsles && (
+              <>
+                <label>Map size</label>
+                <select value={lobby.settings.boardSize} onChange={(e) => set({ boardSize: e.target.value as Settings['boardSize'] })}>
+                  <option value="standard">Standard (2-4)</option>
+                  <option value="large">Large (2-6)</option>
+                </select>
+              </>
+            )}
             <label>Glory target</label>
             <select value={lobby.settings.gloryTarget} onChange={(e) => set({ gloryTarget: +e.target.value })}>
               {range(7, 15).map((n) => <option key={n}>{n}</option>)}
@@ -73,9 +81,9 @@ export function Lobby(p: {
               <>
                 <label>Scenario</label>
                 <select value={lobby.settings.scenario} onChange={(e) => set({ scenario: e.target.value as Settings['scenario'] })}>
-                  <option value="landfall">First Landfall</option>
-                  <option value="quartet">Quartet Reach</option>
-                  <option value="veiled">Veiled Reach</option>
+                  {Object.values(SCENARIOS).map((sc) => (
+                    <option key={sc.id} value={sc.id} disabled={!!sc.big !== many}>{sc.name} ({sc.big ? '5-6' : '2-4'})</option>
+                  ))}
                 </select>
               </>
             )}
@@ -84,7 +92,8 @@ export function Lobby(p: {
               {[15, 30, 45].map((n) => <option key={n} value={n}>{n} s</option>)}
             </select>
           </div>
-          <button disabled={lobby.seats.length < 2 || lobby.seats.length > 4} onClick={() => send({ t: 'start' })}>Begin</button>
+          {!mapFits && <div className="err">{many ? 'Five or six players need a 5-6 map.' : 'That map is for five or six players.'}</div>}
+          <button disabled={lobby.seats.length < 2 || !mapFits} onClick={() => send({ t: 'start' })}>Begin</button>
         </>
       )}
       {p.seated && !isHost && <div>Waiting for the host to begin.</div>}

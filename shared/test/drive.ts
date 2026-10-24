@@ -4,11 +4,11 @@ import { autoAct, legalActions, pendingPlayers } from '../src/engine/legal';
 import { nextRandom } from '../src/rng';
 import { DEFAULT_SETTINGS, type Action, type GameState } from '../src/types';
 
-const COLORS = ['ember', 'tide', 'moss', 'bone'] as const;
+const COLORS = ['ember', 'tide', 'moss', 'bone', 'dusk', 'rose'] as const;
 const PREFER: Action['type'][] = ['buildCitadel', 'buildOutpost', 'buyOmen', 'playOmen', 'buildBoat'];
 
 export function newGame(seed: number, n: number, partial = {}): GameState {
-  const players = Array.from({ length: n }, (_, i) => ({ id: 'abcd'[i], name: `P${i}`, color: COLORS[i] }));
+  const players = Array.from({ length: n }, (_, i) => ({ id: 'abcdef'[i], name: `P${i}`, color: COLORS[i] }));
   return createGame(players, { ...DEFAULT_SETTINGS, ...partial }, seed);
 }
 

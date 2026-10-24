@@ -39,13 +39,8 @@ Names and art are Runeshore-only (nothing matches Catan or Colonist).
 | Heading for New Shores | First Landfall | 3 isles, easiest, default |
 | Four Islands | Quartet Reach | 4 isles, start anywhere |
 | Fog Islands | Veiled Reach | Mist-heavy |
-| Through the Desert | Ashen Crossing | uses `ashen` terrain strip |
-| Forgotten Tribe | Hollow Kin | native settlements, trade rewards |
-| Cloth for Catan | Silk Tithe | villages pay Silk tokens |
-| Pirate Islands | Raider Cove | Raider raids, fortress capture |
-| Wonders of Catan | Spires | build-a-spire race |
 
-Scope cut (ponytail): Phases 1-5 ship First Landfall + Quartet Reach + Veiled Reach. The other five scenarios are Phase 6, optional, one at a time.
+Scope cut (ponytail): the DLC ships First Landfall + Quartet Reach + Veiled Reach, plus 5-6 player versions (Phase 7). Ashen Crossing, Hollow Kin, Silk Tithe, Raider Cove and Spires are dropped (decided 2026-10-24).
 
 ## Touchpoints (from graph)
 
@@ -142,14 +137,25 @@ Sources: official 5th-ed rules text (ultraboardgames summary) + catan.com FAQ. C
 - Done when: playtested with WS bots plus the built-in browser, mobile width checked.
 - Done notes: Glimmer/Mist art, `BoatPiece`/`RaiderPiece`/`LandfallFlag` in `art.tsx`; Board draws boats, raider, flags; `Build` gets a Boat button (new boat spot, or click own boat then destination, via `Pick` edges in `Game.tsx`); `panels/Glimmer.tsx` picker; Landfall counted in client glory; ComicPanel landfall + raider; rulebook tab "Drowned Isles". tsc clean, hand-played setup, boats, raider, 7 flow in browser vs WS bot. NOT hand-tested: my own boat build/move clicks, Glimmer picker modal (dice never hit), mobile width.
 
-### [ ] Phase 6: More scenarios (optional, one per sitting)
+### [x] Phase 6: More scenarios (done 2026-10-24; remaining scenarios dropped)
 - [x] Quartet Reach (done 2026-10-24): `scenarios/quartet.ts` (radius 4, 4 isles x 6 hexes, 8 ports, `anywhere: true` so `homeIsle` is '' and setup may start on any isle); `claimLandfall` skips any isle where the player already holds a building; lobby Scenario select; rulebook line; fuzz now runs both scenarios. Not hand-checked in browser (board art fits viewBox by math only).
 - [x] Veiled Reach (done 2026-10-24): `scenarios/veiled.ts` (radius 4, 4 isles, 6 Mist hexes on isle fringes, `fog` pool dealt by rng in `createGame`); `engine/mist.ts` `liftMist` runs on path, setup path, boat build and boat move: reveals hex (`di.mist` hidden, stripped in `viewFor`), pays 1 card of its kind or a Glimmer pick in main phase only. Shortcut: Mist hides land only (no hidden sea), so isles/geometry stay static. Tests in `di-board.test.ts`, fuzz adds veiled. Not hand-checked in browser.
-- Next: Ashen Crossing, Hollow Kin, Silk Tithe, Raider Cove, Spires.
-- Each: map, scenario rules module, tests, art, rulebook entry.
 
-### [ ] Phase 7: Ship it
-- Full fuzz with Drowned Isles on (Hollow Fleet off) and each alone, update memory/docs, `/graphify . --update`.
+### [x] Phase 7: 5-6 player Drowned Isles (done 2026-10-24)
+- Done: the whole game seats 2-6 (user chose all modes, no Special Building Phase). `MAX_SEATS = 6`, colors `dusk` and `rose`. With 5+ players `createGame` uses `BANK_EACH_BIG` (24) and `OMEN_DECK_BIG` (34: +6 Warriors, +1 Twin Paths, Bounty, Hoard), per the official 5-6 extension. 5-6 needs the Large map, or in Drowned Isles a `big` scenario; `start` refuses a mismatch (`map_seats`) and the lobby greys out unfit maps. Drowned Isles no longer reads `boardSize`.
+- Sextet Reach (`scenarios/sextet.ts`, prefix `Sx`, radius 5): Quartet Reach XL, six 6-hex isles built by rotating one isle, 12 ports, the large board's 35 tokens. Board viewBox scale 1.75 for radius 5. Checked in browser with 6 seats. First Landfall XL and Veiled Reach XL skipped.
+- Not changed: Hollow Fleet commodity bank stays 12 each at 5-6 (C&K 5-6 counts not verified).
+- `Room.restore` now refuses a snapshot whose board this build does not know (a stale room from a discarded attempt crashed the server on a turn timer).
+- Original notes:
+- Blocker today: `server/src/room.ts` (~L161-171) forbids `drownedIsles` with `boardSize: 'large'`; scenario boards are fixed 3-4 player layouts.
+- Maps: Quartet Reach XL first (5-6 isles, bigger radius, more ports, `anywhere: true`); First Landfall XL and Veiled Reach XL if cheap. Each gets its own prefix + universe in `geometry.ts` and an entry in `SCENARIOS`.
+- Allow `drownedIsles` + large in the server settings check; lobby shows only maps that fit the seat count (3-4 vs 5-6).
+- Check piece counts, bank size, boatsLeft, Landfall and setup order with 5 and 6 players.
+- Tests + fuzz with 5 and 6 players; art fit (viewBox) on the larger maps; rulebook line.
+- Done when: a 6-player Drowned Isles game plays start to finish in the lobby and fuzz is clean.
+
+### [ ] Phase 8: Ship it
+- Update memory/docs, `/graphify . --update`. (No separate full fuzz: the Phase 7 fuzz run already covers every mode alone at 3-6 players; user decided 2026-10-24.)
 - Single commit set already per phase; then `git push` and Render redeploy (explicitly requested by user for this DLC).
 
 ## Risks

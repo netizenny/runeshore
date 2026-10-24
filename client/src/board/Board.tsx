@@ -14,7 +14,7 @@ const PATH: Action['type'][] = ['placePath', 'buildPath'];
 export function Board({ view, legal, mode, onAction, pick = [] }: { view: PlayerView; legal: Action[]; mode: Mode; onAction(a: Action): void; pick?: Pick[] }) {
   const colorOf = (id: string) => `var(--${view.players.find((p) => p.id === id)!.color})`;
   const hexes = Object.values(view.board.hexes);
-  const k = hexes.length > 19 ? 1.4 : 1;
+  const k = hexes.length > 61 ? 1.75 : hexes.length > 19 ? 1.4 : 1;
   const edgePts = useMemo(
     () => Object.fromEntries(boardGeometry(view.board).edges.map((e) => [e, edgeVertices(e).map((v) => vertexPixel(v, S))])),
     [view.board],

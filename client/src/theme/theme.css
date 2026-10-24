@@ -9,6 +9,8 @@
   --tide: #4fa3c7;
   --moss: #7fb35a;
   --bone: #d9d2bf;
+  --dusk: #9b7fd4;
+  --rose: #d46a9a;
 }
 * { box-sizing: border-box; }
 html, body, #root { height: 100%; margin: 0; }

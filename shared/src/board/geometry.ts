@@ -1,6 +1,7 @@
 import type { Board, EdgeId, HexId, VertexId } from '../types';
 import { LANDFALL, type Scenario } from './scenarios/landfall';
 import { QUARTET } from './scenarios/quartet';
+import { SEXTET } from './scenarios/sextet';
 import { VEILED } from './scenarios/veiled';
 
 // Pointy-top axial layout. Directions run clockwise on screen (y down) from east;
@@ -92,7 +93,7 @@ const scenarioUniverse = (sc: Scenario) => {
   const lit = new Set(sc.land.map(([q, r]) => `${q},${r}`));
   return universe(sc.radius, sc.prefix, (q, r) => lit.has(`${q},${r}`));
 };
-const UNIVERSES: Record<string, typeof STANDARD> = { '': STANDARD, L: LARGE, [LANDFALL.prefix]: scenarioUniverse(LANDFALL), [QUARTET.prefix]: scenarioUniverse(QUARTET), [VEILED.prefix]: scenarioUniverse(VEILED) };
+const UNIVERSES: Record<string, typeof STANDARD> = { '': STANDARD, L: LARGE, [LANDFALL.prefix]: scenarioUniverse(LANDFALL), [QUARTET.prefix]: scenarioUniverse(QUARTET), [VEILED.prefix]: scenarioUniverse(VEILED), [SEXTET.prefix]: scenarioUniverse(SEXTET) };
 const of = (id: string) => UNIVERSES[prefixOf(id)];
 
 export const geometry = (pre: string | boolean) => UNIVERSES[pre === true ? 'L' : pre || ''];

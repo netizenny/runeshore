@@ -8,13 +8,13 @@ beforeEach(() => vi.useFakeTimers());
 afterEach(() => vi.useRealTimers());
 
 // Room with n seated players; seat ids are renamed a,b,c,d so tests can use stateWith.
-function lobby(n = 3, names = ['Ann', 'Bo', 'Cy', 'Di']) {
+function lobby(n = 3, names = ['Ann', 'Bo', 'Cy', 'Di', 'Ed', 'Flo']) {
   const room = new Room('ROOM01');
   const socks: Sock[] = [];
   for (let i = 0; i < n; i++) {
     const s = sock();
     room.join(s, names[i]);
-    room.seats[i].id = 'abcd'[i];
+    room.seats[i].id = 'abcdef'[i];
     socks.push(s);
   }
   return { room, socks };
@@ -32,10 +32,13 @@ describe('join rules', () => {
     room.join(sock(), 'Ann');
     room.join(sock(), 'Ann');
     room.join(sock(), 'Ann');
-    expect(room.seats.map((s) => s.name)).toEqual(['x'.repeat(20), 'Ann', 'Ann 2', 'Ann 3']);
-    const s5 = sock();
-    room.join(s5, 'Eve');
-    expect(errCode(s5)).toBe('full');
+    room.join(sock(), 'Bo');
+    room.join(sock(), 'Cy');
+    expect(room.seats.map((s) => s.name)).toEqual(['x'.repeat(20), 'Ann', 'Ann 2', 'Ann 3', 'Bo', 'Cy']);
+    expect(room.seats.map((s) => s.color)).toEqual(['ember', 'tide', 'moss', 'bone', 'dusk', 'rose']);
+    const s7 = sock();
+    room.join(s7, 'Eve');
+    expect(errCode(s7)).toBe('full');
   });
 
   it('gives colors in seat order; host passes on when they leave', () => {
@@ -49,7 +52,7 @@ describe('join rules', () => {
     expect(room.seats[0].color).toBe('ember');
   });
 
-  it('only the host starts, and only with 2-4 players', () => {
+  it('only the host starts, and only with at least 2 players', () => {
     const { room, socks } = lobby(3);
     room.handle(socks[1], { t: 'start' });
     expect(errCode(socks[1])).toBe('not_host');
@@ -67,7 +70,23 @@ describe('join rules', () => {
     expect(room.settings).toMatchObject({ gloryTarget: 12, turnTimerSec: 30 });
   });
 
-  it('drownedIsles and hollowFleet exclude each other; large map turns Isles off', () => {
+  it('5-6 players need a 5-6 map; Sextet Reach needs 5-6 players', () => {
+    const { room, socks } = lobby(5);
+    room.handle(socks[0], { t: 'start' });
+    expect(errCode(socks[0])).toBe('map_seats');
+    room.handle(socks[0], { t: 'settings', settings: { drownedIsles: true, scenario: 'sextet' } });
+    room.handle(socks[0], { t: 'start' });
+    expect(room.game?.board.ports).toHaveLength(12);
+    const small = lobby(4);
+    small.room.handle(small.socks[0], { t: 'settings', settings: { drownedIsles: true, scenario: 'sextet' } });
+    small.room.handle(small.socks[0], { t: 'start' });
+    expect(errCode(small.socks[0])).toBe('map_seats');
+    small.room.handle(small.socks[0], { t: 'settings', settings: { drownedIsles: false, boardSize: 'large' } });
+    small.room.handle(small.socks[0], { t: 'start' });
+    expect(small.room.game).not.toBeNull();
+  });
+
+  it('drownedIsles and hollowFleet exclude each other', () => {
     const { room, socks } = lobby(3);
     room.handle(socks[0], { t: 'settings', settings: { hollowFleet: true } });
     room.handle(socks[0], { t: 'settings', settings: { drownedIsles: true } });
@@ -75,8 +94,6 @@ describe('join rules', () => {
     room.handle(socks[0], { t: 'settings', settings: { hollowFleet: true } });
     expect(room.settings).toMatchObject({ drownedIsles: false, hollowFleet: true, gloryTarget: 13 });
     room.handle(socks[0], { t: 'settings', settings: { drownedIsles: true, hollowFleet: false } });
-    room.handle(socks[0], { t: 'settings', settings: { boardSize: 'large' } });
-    expect(room.settings).toMatchObject({ drownedIsles: false, boardSize: 'large' });
   });
 
   it('hollowFleet toggle: host only, moves glory target 10 <-> 13, explicit target wins', () => {
