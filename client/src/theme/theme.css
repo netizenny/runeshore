@@ -31,6 +31,7 @@ button:disabled { opacity: .4; cursor: default; }
 .dot.on { background: var(--moss); }
 .settings { display: grid; grid-template-columns: 1fr auto; gap: .5rem; align-items: center; }
 .hit { stroke: var(--ink-gold); stroke-width: 1.5; stroke-dasharray: 3 3; fill: var(--ink-gold); fill-opacity: .15; cursor: pointer; }
+circle.hit:not(:hover) { fill: #000; fill-opacity: .4; }
 line.hit { stroke-width: 8; stroke-dasharray: 6 5; stroke-opacity: .85; }
 .hit:hover { fill-opacity: .6; stroke-opacity: .9; }
 line.hit:hover { stroke-dasharray: none; stroke-opacity: 1; }

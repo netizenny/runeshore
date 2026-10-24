@@ -1,6 +1,6 @@
 import type { Commodity, GameState, PlayerId, Resource } from '../../types';
 import { COMMODITIES, RESOURCES, isCommodity } from '../../constants';
-import { renown } from '../awards';
+import { glory } from '../awards';
 import { player } from '../setup';
 import { placePeddler } from './peddler';
 import { hfPlayer, stocks } from './state';
@@ -40,7 +40,7 @@ export const TRADE: Record<string, Play> = {
   },
   mastermerchant(s, id, { target, take }) {
     if (!target || target === id || !s.players.some((p) => p.id === target)) return 'pick an opponent';
-    if (renown(s, target, true) <= renown(s, id, true)) return 'they need more Renown than you';
+    if (glory(s, target, true) <= glory(s, id, true)) return 'they need more Glory than you';
     const n = Math.min(2, cardTotal(s, target));
     if (take?.length !== n) return `take exactly ${n} cards`;
     const need: Record<string, number> = {};

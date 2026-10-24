@@ -102,7 +102,7 @@ describe('lore arcana', () => {
     expect(t.players.find((p) => p.id === 'a')!.hand).toMatchObject({ harvest: 0, starmetal: 0 });
   });
 
-  it('Chronicle gives Renown only when drawn (covered in core), never from the hand', () => {
+  it('Chronicle gives Glory only when drawn (covered in core), never from the hand', () => {
     expect(err(play(arcState(), 'a', 'printer'))).toMatch(/drawn/);
   });
 

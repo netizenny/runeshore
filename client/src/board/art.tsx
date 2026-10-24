@@ -13,6 +13,9 @@ export const TERRAIN_FILL: Record<Terrain, string> = {
   harvest: '#8a6c2c',
   starmetal: '#3f3d7a',
   ashen: '#3b3749',
+  deep: '#12363f',
+  glimmer: '#5a3d7a',
+  mist: '#6b6455',
 };
 
 const pine = (x: number, y: number, k = 1) => (
@@ -75,6 +78,14 @@ const TERRAIN_ART: Record<Terrain, ReactNode> = {
       </g>
     </g>
   ),
+  deep: (
+    <g {...ink} fill="none" opacity={0.5}>
+      <path d="M-30 -6 Q-15 -16 0 -6 T30 -6" />
+      <path d="M-24 14 Q-9 4 6 14 T36 14" />
+    </g>
+  ),
+  glimmer: <g />,
+  mist: <g />,
 };
 
 export const TerrainArt = ({ terrain }: { terrain: Terrain }) => <g opacity={0.9}>{TERRAIN_ART[terrain]}</g>;

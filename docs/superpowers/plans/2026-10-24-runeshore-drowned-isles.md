@@ -117,11 +117,12 @@ Sources: official 5th-ed rules text (ultraboardgames summary) + catan.com FAQ. C
 - Resolve all [verify] items above; write results into this file.
 - Done when: spec section + final rules table committed; no engine code.
 
-### [ ] Phase 2: Board and setup
+### [x] Phase 2: Board and setup (done 2026-10-24)
 - Layout loader for First Landfall; vertex/edge validity (sea edges, coastal vertices); ports on islands.
 - Setup placement allowed on the home isle only for First Landfall (per scenario rule).
 - Lobby toggle + scenario picker; `RoomOpts` and persistence.
 - Done when: generate/setup tests pass, fuzz still green with toggle off.
+- Done notes: `shared/src/board/scenarios/landfall.ts` (radius-3 disc, 16 land hexes in 3 isles, 9 ports, rest Deep); geometry keyed by id prefix (`''`, `L`, `Sf`), `isPathEdge`; `createGame` sets `state.di = {isleOf, homeIsle}` (boats/raider fields arrive in phases 3-4); `setupSpotOk` limits setup to home isle; lobby Mode option + server exclusivity (HF / large map), default target 14. Tests: `di-board.test.ts`, fuzz block, room test. 174 shared + 23 server green. Not hand-clicked in browser (deep hexes use placeholder art until phase 5).
 
 ### [ ] Phase 3: Boats and routes
 - Build boat (1 timber + 1 fleece), 15 cap, adjacency rules, move open-end boat once per turn.

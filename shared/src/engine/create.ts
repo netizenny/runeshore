@@ -1,6 +1,7 @@
 import type { GameState, PlayerColor, PlayerId, PlayerState, Settings } from '../types';
 import { BANK_EACH, OMEN_DECK, PIECES, RESOURCES, emptyCounts } from '../constants';
-import { generateBoard } from '../board/generate';
+import { generateBoard, scenarioBoard, scenarioIsles } from '../board/generate';
+import { SCENARIOS } from '../board/scenarios/landfall';
 import { shuffle } from '../rng';
 import { initHF } from './hf/state';
 
@@ -8,7 +9,10 @@ export function createGame(players: { id: PlayerId; name: string; color: PlayerC
   let rng = seed >>> 0;
   let order: PlayerId[];
   [order, rng] = shuffle(players.map((p) => p.id), rng);
-  const [board, afterBoard] = generateBoard(settings.boardMode, rng, settings.boardSize === 'large');
+  const sc = settings.drownedIsles ? SCENARIOS[settings.scenario] : undefined;
+  if (settings.drownedIsles && !sc) throw new Error('scenario not built yet');
+  // Scenario boards are fixed, so they leave rng untouched.
+  const [board, afterBoard] = sc ? [scenarioBoard(sc), rng] : generateBoard(settings.boardMode, rng, settings.boardSize === 'large');
   // No Omen deck in the expansion; skipping the shuffle keeps mode-off rng use unchanged.
   const [omenDeck, afterDeck] = settings.hollowFleet ? [[], afterBoard] : shuffle(OMEN_DECK, afterBoard);
   const [hf, afterHF] = settings.hollowFleet ? initHF(players.map((p) => p.id), afterDeck) : [undefined, afterDeck];
@@ -42,6 +46,7 @@ export function createGame(players: { id: PlayerId; name: string; color: PlayerC
     grandHost: null,
     dice: null,
     ...(hf && { hf }),
+    ...(sc && { di: scenarioIsles(sc, board) }),
     log: [],
   };
 }

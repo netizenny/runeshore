@@ -56,7 +56,7 @@ export function Lobby(p: {
               <option value="large">Large</option>
             </select>
             <label>Glory target</label>
-            <select value={lobby.settings.renownTarget} onChange={(e) => set({ renownTarget: +e.target.value })}>
+            <select value={lobby.settings.gloryTarget} onChange={(e) => set({ gloryTarget: +e.target.value })}>
               {range(7, 15).map((n) => <option key={n}>{n}</option>)}
             </select>
             <label>Discard limit</label>
@@ -64,9 +64,10 @@ export function Lobby(p: {
               {range(7, 10).map((n) => <option key={n}>{n}</option>)}
             </select>
             <label>Mode</label>
-            <select value={lobby.settings.hollowFleet ? 'hf' : 'original'} onChange={(e) => set({ hollowFleet: e.target.value === 'hf' })}>
+            <select value={lobby.settings.hollowFleet ? 'hf' : lobby.settings.drownedIsles ? 'di' : 'original'} onChange={(e) => set({ hollowFleet: e.target.value === 'hf', drownedIsles: e.target.value === 'di' })}>
               <option value="original">Original</option>
               <option value="hf">Siege of the Hollow Fleet</option>
+              <option value="di">Drowned Isles (First Landfall)</option>
             </select>
             <label>Turn timer</label>
             <select value={lobby.settings.turnTimerSec} onChange={(e) => set({ turnTimerSec: +e.target.value as Settings['turnTimerSec'] })}>

@@ -61,22 +61,34 @@ describe('join rules', () => {
 
   it('validates settings', () => {
     const { room, socks } = lobby(3);
-    room.handle(socks[0], { t: 'settings', settings: { renownTarget: 99 } });
+    room.handle(socks[0], { t: 'settings', settings: { gloryTarget: 99 } });
     expect(errCode(socks[0])).toBe('bad_settings');
-    room.handle(socks[0], { t: 'settings', settings: { renownTarget: 12, turnTimerSec: 30 } });
-    expect(room.settings).toMatchObject({ renownTarget: 12, turnTimerSec: 30 });
+    room.handle(socks[0], { t: 'settings', settings: { gloryTarget: 12, turnTimerSec: 30 } });
+    expect(room.settings).toMatchObject({ gloryTarget: 12, turnTimerSec: 30 });
   });
 
-  it('hollowFleet toggle: host only, moves renown target 10 <-> 13, explicit target wins', () => {
+  it('drownedIsles and hollowFleet exclude each other; large map turns Isles off', () => {
+    const { room, socks } = lobby(3);
+    room.handle(socks[0], { t: 'settings', settings: { hollowFleet: true } });
+    room.handle(socks[0], { t: 'settings', settings: { drownedIsles: true } });
+    expect(room.settings).toMatchObject({ drownedIsles: true, hollowFleet: false, gloryTarget: 14 });
+    room.handle(socks[0], { t: 'settings', settings: { hollowFleet: true } });
+    expect(room.settings).toMatchObject({ drownedIsles: false, hollowFleet: true, gloryTarget: 13 });
+    room.handle(socks[0], { t: 'settings', settings: { drownedIsles: true, hollowFleet: false } });
+    room.handle(socks[0], { t: 'settings', settings: { boardSize: 'large' } });
+    expect(room.settings).toMatchObject({ drownedIsles: false, boardSize: 'large' });
+  });
+
+  it('hollowFleet toggle: host only, moves glory target 10 <-> 13, explicit target wins', () => {
     const { room, socks } = lobby(3);
     room.handle(socks[1], { t: 'settings', settings: { hollowFleet: true } });
     expect(errCode(socks[1])).toBe('not_host');
     room.handle(socks[0], { t: 'settings', settings: { hollowFleet: true } });
-    expect(room.settings).toMatchObject({ hollowFleet: true, renownTarget: 13 });
+    expect(room.settings).toMatchObject({ hollowFleet: true, gloryTarget: 13 });
     room.handle(socks[0], { t: 'settings', settings: { hollowFleet: false } });
-    expect(room.settings).toMatchObject({ hollowFleet: false, renownTarget: 10 });
-    room.handle(socks[0], { t: 'settings', settings: { hollowFleet: true, renownTarget: 11 } });
-    expect(room.settings).toMatchObject({ hollowFleet: true, renownTarget: 11 });
+    expect(room.settings).toMatchObject({ hollowFleet: false, gloryTarget: 10 });
+    room.handle(socks[0], { t: 'settings', settings: { hollowFleet: true, gloryTarget: 11 } });
+    expect(room.settings).toMatchObject({ hollowFleet: true, gloryTarget: 11 });
     room.handle(socks[0], { t: 'start' });
     expect(room.game!.hf).toBeDefined();
     const back = Room.restore(JSON.parse(JSON.stringify(room.snapshot())));
@@ -217,6 +229,27 @@ describe('disconnects and host commands', () => {
     vi.advanceTimersByTime(9 * 60_000);
     expect(onExpire).not.toHaveBeenCalled();
     vi.advanceTimersByTime(60_000);
+    expect(onExpire).toHaveBeenCalledWith(room);
+  });
+});
+
+describe('log delivery and lobby expiry', () => {
+  it('sends the full log once per connection, then only events', () => {
+    const { room, socks } = lobby(2);
+    room.handle(socks[0], { t: 'start' });
+    expect(socks[0].last('game')!.log).toBeDefined();
+    room.disconnect(socks[1]); // triggers another broadcast to the host
+    expect(socks[0].last('game')!.log).toBeUndefined();
+    const back = sock();
+    room.join(back, 'Bo', socks[1].last('joined')!.seatToken);
+    expect(back.last('game')!.log).toBeDefined(); // a new connection gets the full log
+  });
+
+  it('drops a lobby that never starts, even with a socket attached', () => {
+    const onExpire = vi.fn();
+    const room = new Room('R', { onExpire });
+    room.join(sock(), 'Ann');
+    vi.advanceTimersByTime(30 * 60_000);
     expect(onExpire).toHaveBeenCalledWith(room);
   });
 });

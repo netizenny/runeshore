@@ -16,7 +16,7 @@ describe('peddler', () => {
     return { s, a, b, h1, h2 };
   };
 
-  it('sits next to your building, gives 1 Renown and 2:1 on that hex resource', () => {
+  it('sits next to your building, gives 1 Glory and 2:1 on that hex resource', () => {
     const { s, a, h1 } = setup();
     const kind = h1.terrain as never;
     expect(tradeRatio(s, a, kind)).toBe(4);

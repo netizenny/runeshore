@@ -74,6 +74,7 @@ export function moveShade(s: GameState, id: PlayerId, a: Extract<Action, { type:
   if (ph.k !== 'moveShade') return 'not moving the Shade';
   if (!Object.hasOwn(s.board.hexes, a.hex)) return 'no such hex';
   if (a.hex === s.shadeHex) return 'the Shade must move';
+  if (s.board.hexes[a.hex].terrain === 'deep') return 'the Shade stays on land';
   s.shadeHex = a.hex;
   const victims = [...new Set(hexVertices(a.hex).map((v) => s.buildings[v]?.owner))].filter(
     (o): o is PlayerId => !!o && o !== id && handSize(player(s, o).hand) > 0,
@@ -120,13 +121,14 @@ export function produce(s: GameState, total: number) {
   type Kind = Resource | Commodity;
   const owed: Record<PlayerId, Partial<Record<Kind, number>>> = {};
   for (const hex of Object.values(s.board.hexes)) {
-    if (hex.token !== total || hex.id === s.shadeHex || hex.terrain === 'ashen') continue;
+    if (hex.token !== total || hex.id === s.shadeHex || !RESOURCES.includes(hex.terrain as Resource)) continue;
+    const t = hex.terrain as Resource;
     for (const v of hexVertices(hex.id)) {
       const b = s.buildings[v];
       if (!b) continue;
       const o = (owed[b.owner] ??= {});
-      const com = s.hf && b.kind === 'citadel' ? COMMODITY_OF[hex.terrain] : undefined;
-      o[hex.terrain] = (o[hex.terrain] ?? 0) + (com ? 1 : b.kind === 'citadel' ? 2 : 1);
+      const com = s.hf && b.kind === 'citadel' ? COMMODITY_OF[t] : undefined;
+      o[t] = (o[t] ?? 0) + (com ? 1 : b.kind === 'citadel' ? 2 : 1);
       if (com) o[com] = (o[com] ?? 0) + 1;
     }
   }

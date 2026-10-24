@@ -11,13 +11,13 @@ export type Play = (s: GameState, id: PlayerId, arg: ArcanaArg) => Result;
 const refuse: Play = () => 'that card is played the moment it is drawn';
 const PLAYS: Record<string, Play> = { ...SCIENCE, ...TRADE, ...POLITICS, printer: refuse, constitution: refuse };
 
-// Draw the top card of a stack. Renown cards go straight to the table; callers check hand room first.
+// Draw the top card of a stack. Glory cards go straight to the table; callers check hand room first.
 export function drawArcana(s: GameState, id: PlayerId, track: Track): GameEvent[] {
   const p = hfPlayer(s, id);
   const card = s.hf!.arcanaDecks[track].shift()!;
   const events: GameEvent[] = [{ type: 'arcanaDrawn', player: id, track }];
   if (ARCANA_INSTANT.includes(card)) {
-    p.extraRenown++;
+    p.extraGlory++;
     events.push({ type: 'arcanaPlayed', player: id, card });
   } else p.arcana.push(card);
   return events;

@@ -1,10 +1,15 @@
-import type { Action, GameEvent, GameState, PlayerId } from '../types';
-import { edgeVertices, vertexHexes, vertexNeighbors, boardGeometry } from '../board/geometry';
+import type { Action, GameEvent, GameState, PlayerId, Resource } from '../types';
+import { RESOURCES } from '../constants';
+import { edgeVertices, isPathEdge, vertexHexes, vertexNeighbors, boardGeometry } from '../board/geometry';
 
 // Handlers mutate the (already cloned) state and return events, or an error string.
 export type Result = GameEvent[] | string;
 
 export const player = (s: GameState, id: PlayerId) => s.players.find((p) => p.id === id)!;
+
+// Setup outposts must touch land, and on a Drowned Isles board only the home isle.
+export const setupSpotOk = (s: GameState, v: string) =>
+  vertexHexes(v).some((h) => !s.di || s.di.isleOf[h] === s.di.homeIsle);
 
 export function placeOutpost(s: GameState, id: PlayerId, a: Extract<Action, { type: 'placeOutpost' }>): Result {
   const ph = s.phase;
@@ -12,6 +17,7 @@ export function placeOutpost(s: GameState, id: PlayerId, a: Extract<Action, { ty
   const v = a.vertex;
   if (!boardGeometry(s.board).vertexSet.has(v)) return 'no such vertex';
   if (s.buildings[v] || vertexNeighbors(v).some((n) => s.buildings[n])) return 'too close to another building';
+  if (!setupSpotOk(s, v)) return s.di ? 'start on the home isle' : 'no land there';
   const p = player(s, id);
   // In the expansion the second outpost is a Citadel.
   const kind = s.hf && ph.round === 2 ? 'citadel' : 'outpost';
@@ -20,9 +26,9 @@ export function placeOutpost(s: GameState, id: PlayerId, a: Extract<Action, { ty
   if (ph.round === 2) {
     for (const h of vertexHexes(v)) {
       const t = s.board.hexes[h].terrain;
-      if (t !== 'ashen' && s.bank[t] > 0) {
-        s.bank[t]--;
-        p.hand[t]++;
+      if (RESOURCES.includes(t as Resource) && s.bank[t as Resource] > 0) {
+        s.bank[t as Resource]--;
+        p.hand[t as Resource]++;
       }
     }
   }
@@ -35,6 +41,7 @@ export function placePath(s: GameState, id: PlayerId, a: Extract<Action, { type:
   if (ph.k !== 'setup' || ph.step !== 'path') return 'not placing a path';
   if (!boardGeometry(s.board).edgeSet.has(a.edge)) return 'no such edge';
   if (s.paths[a.edge]) return 'path already there';
+  if (!isPathEdge(a.edge)) return 'paths need land';
   if (!edgeVertices(a.edge).includes(ph.lastOutpost!)) return 'path must touch the new outpost';
   s.paths[a.edge] = id;
   player(s, id).piecesLeft.path--;

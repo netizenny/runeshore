@@ -4,7 +4,7 @@ import { autoAct, legalActions, pendingPlayers } from '../src/engine/legal';
 import type { GameState } from '../src/types';
 import { drive, newGame } from './drive';
 
-const hf = (seed: number) => newGame(seed, 3, { hollowFleet: true, renownTarget: 13 });
+const hf = (seed: number) => newGame(seed, 3, { hollowFleet: true, gloryTarget: 13 });
 
 describe('hf legalActions and autoAct', () => {
   it('every legal action applies, and autoAct always finishes the phase, over seeded mid-game states', () => {

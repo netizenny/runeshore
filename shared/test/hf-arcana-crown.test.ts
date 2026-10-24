@@ -138,12 +138,12 @@ describe('crown arcana', () => {
     expect(err(play(s, 'a', 'intrigue', { vertex: mine.far }))).toMatch(/opponent Sentinel/);
   });
 
-  it('Wrecker makes every opponent with as much Renown discard half, rounded down', () => {
+  it('Wrecker makes every opponent with as much Glory discard half, rounded down', () => {
     const s = arcState();
     s.buildings.x1 = { owner: 'a', kind: 'outpost' };
     s.buildings.x2 = { owner: 'b', kind: 'outpost' };
     Object.assign(hand(s, 'b'), { clay: 5 });
-    Object.assign(hand(s, 'c'), { clay: 4 }); // no Renown: spared
+    Object.assign(hand(s, 'c'), { clay: 4 }); // no Glory: spared
     const t = ok(play(s, 'a', 'saboteur'));
     expect(t.phase).toMatchObject({ k: 'arcanaGive', mode: 'discard', pending: { b: 2 } });
     expect(applyAction(t, 'b', { type: 'arcanaGive', cards: { ...zero, clay: 1 } })).toMatchObject({ ok: false });
@@ -191,9 +191,9 @@ describe('crown arcana', () => {
     ok(play(arcState(), 'a', 'warlord')); // no Sentinels: legal
   });
 
-  it('Dowry: each opponent with more Renown gives you 2 cards of their choice', () => {
+  it('Dowry: each opponent with more Glory gives you 2 cards of their choice', () => {
     const s = arcState();
-    s.hf!.players.b.extraRenown = 3;
+    s.hf!.players.b.extraGlory = 3;
     Object.assign(hand(s, 'b'), { clay: 1 });
     s.hf!.players.b.commodities.silk = 1;
     const t = ok(play(s, 'a', 'wedding'));
@@ -207,8 +207,8 @@ describe('crown arcana', () => {
 
   it('Dowry takes 1 from a one-card opponent, nothing from an empty hand or a poorer player', () => {
     const s = arcState();
-    s.hf!.players.b.extraRenown = 3;
-    s.hf!.players.c.extraRenown = 3;
+    s.hf!.players.b.extraGlory = 3;
+    s.hf!.players.c.extraGlory = 3;
     Object.assign(hand(s, 'b'), { clay: 1 });
     expect(ok(play(s, 'a', 'wedding')).phase).toMatchObject({ pending: { b: 1 } });
     expect(ok(play(arcState(), 'a', 'wedding')).phase.k).toBe('main');
@@ -216,7 +216,7 @@ describe('crown arcana', () => {
 
   it('only the owed player may answer, and only while the phase is open', () => {
     const s = arcState();
-    s.hf!.players.b.extraRenown = 3;
+    s.hf!.players.b.extraGlory = 3;
     Object.assign(hand(s, 'b'), { clay: 2 });
     const t = ok(play(s, 'a', 'wedding'));
     const give = { type: 'arcanaGive' as const, cards: { ...zero, clay: 2 }, commodities: NONE };

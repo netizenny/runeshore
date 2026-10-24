@@ -51,7 +51,7 @@ export class Room {
 
   static restore(snap: RoomSnapshot, opts: RoomOpts = {}): Room {
     const r = new Room(snap.id, opts);
-    r.settings = snap.settings;
+    r.settings = { ...DEFAULT_SETTINGS, ...snap.settings };
     r.game = snap.game;
     r.seats = snap.seats.map((s) => ({ ...s, conn: null, offlineSince: Date.now() }));
     r.settle([]);
@@ -155,17 +155,27 @@ export class Room {
   private setSettings(conn: Conn, seat: Seat, p: Partial<Settings>) {
     if (this.game || seat !== this.seats[0]) return this.put(conn, bad('not_host', 'Only the host can change settings in the lobby.'));
     const next = { ...this.settings, ...p };
+    // Expansions are mutually exclusive; the one just switched on wins, and Drowned Isles needs the standard map.
+    if (p.drownedIsles === true && p.hollowFleet !== true) next.hollowFleet = false;
+    if (p.hollowFleet === true && p.drownedIsles !== true) next.drownedIsles = false;
+    if (p.drownedIsles === true && p.boardSize !== 'large') next.boardSize = 'standard';
+    if (p.boardSize === 'large' && p.drownedIsles !== true) next.drownedIsles = false;
     // Toggling the mode moves the default target unless the host sent one too.
-    if (typeof p.hollowFleet === 'boolean' && p.hollowFleet !== this.settings.hollowFleet && p.renownTarget === undefined) next.renownTarget = p.hollowFleet ? 13 : 10;
+    const target = (x: Settings) => (x.hollowFleet ? 13 : x.drownedIsles ? 14 : 10);
+    if (p.gloryTarget === undefined && target(next) !== target(this.settings)) next.gloryTarget = target(next);
     const ok =
       typeof next.hollowFleet === 'boolean' &&
+      typeof next.drownedIsles === 'boolean' &&
+      !(next.hollowFleet && next.drownedIsles) &&
+      next.scenario === 'landfall' && // other scenarios arrive in phase 6
+      !(next.drownedIsles && next.boardSize === 'large') &&
       ['random', 'starter'].includes(next.boardMode) &&
       ['standard', 'large'].includes(next.boardSize) &&
-      Number.isInteger(next.renownTarget) && next.renownTarget >= 7 && next.renownTarget <= 15 &&
+      Number.isInteger(next.gloryTarget) && next.gloryTarget >= 7 && next.gloryTarget <= 15 &&
       Number.isInteger(next.discardLimit) && next.discardLimit >= 7 && next.discardLimit <= 10 &&
       [15, 30, 45].includes(next.turnTimerSec);
     if (!ok) return this.put(conn, bad('bad_settings', 'Those settings are out of range.'));
-    this.settings = { boardMode: next.boardMode, boardSize: next.boardSize, renownTarget: next.renownTarget, discardLimit: next.discardLimit, turnTimerSec: next.turnTimerSec, hollowFleet: next.hollowFleet };
+    this.settings = { boardMode: next.boardMode, boardSize: next.boardSize, gloryTarget: next.gloryTarget, discardLimit: next.discardLimit, turnTimerSec: next.turnTimerSec, hollowFleet: next.hollowFleet, drownedIsles: next.drownedIsles, scenario: next.scenario };
     this.changed();
   }
 

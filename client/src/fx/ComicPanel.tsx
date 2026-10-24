@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { GameEvent, PlayerView } from '@runeshore/shared';
 import { ARCANA_BY_KEY } from '@runeshore/shared';
-import { renown } from '../panels/Players';
+import { glory } from '../panels/Players';
 
 type Cap = { big: string; small: string };
 const n = (v: PlayerView, id: string) => v.players.find((p) => p.id === id)?.name ?? '?';
@@ -35,11 +35,11 @@ export function ComicPanel({ events, view }: { events: GameEvent[]; view: Player
   }, [queue]);
 
   if (view.phase.k === 'ended') {
-    const rows = [...view.players].sort((a, b) => renown(view, b.id) - renown(view, a.id));
+    const rows = [...view.players].sort((a, b) => glory(view, b.id) - glory(view, a.id));
     return (
       <div className="comic win">
         <h1>{n(view, view.phase.winner)} rules Runeshore!</h1>
-        <table><tbody>{rows.map((p) => <tr key={p.id}><td>{p.name}</td><td>★ {renown(view, p.id)}</td></tr>)}</tbody></table>
+        <table><tbody>{rows.map((p) => <tr key={p.id}><td>{p.name}</td><td>★ {glory(view, p.id)}</td></tr>)}</tbody></table>
         <small>Hidden Relics decided the rest.</small>
         <button onClick={() => { location.hash = ''; location.reload(); }}>Back to lobby</button> {/* reload: the socket is still seated in the finished room */}
       </div>

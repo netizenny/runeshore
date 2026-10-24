@@ -1,5 +1,5 @@
 export type Resource = 'clay' | 'timber' | 'fleece' | 'harvest' | 'starmetal';
-export type Terrain = Resource | 'ashen';
+export type Terrain = Resource | 'ashen' | 'deep' | 'glimmer' | 'mist';
 export type ResourceCounts = Record<Resource, number>;
 export type HexId = string; // "q,r"
 export type VertexId = string;
@@ -52,19 +52,23 @@ export interface Board {
 export interface Settings {
   boardMode: 'random' | 'starter';
   boardSize: 'standard' | 'large';
-  renownTarget: number;
+  gloryTarget: number;
   discardLimit: number;
   turnTimerSec: 15 | 30 | 45;
   hollowFleet: boolean;
+  drownedIsles: boolean;
+  scenario: 'landfall' | 'quartet' | 'veiled';
 }
 
 export const DEFAULT_SETTINGS: Settings = {
   boardMode: 'random',
   boardSize: 'standard',
-  renownTarget: 10,
+  gloryTarget: 10,
   discardLimit: 7,
   turnTimerSec: 30,
   hollowFleet: false,
+  drownedIsles: false,
+  scenario: 'landfall',
 };
 
 export interface PlayerState {
@@ -103,7 +107,7 @@ export interface HFState {
     level: Record<Track, number>; // 0..5
     arcana: ArcanaCard[]; // hidden
     shields: number; // Shield of the shore points
-    extraRenown: number; // Printer / Constitution
+    extraGlory: number; // Printer / Constitution
   }>;
   sentinels: Record<VertexId, { owner: PlayerId; rank: 1 | 2 | 3; active: boolean; actedTurn: number }>;
   bulwarks: VertexId[]; // vertices of citadels with a Bulwark
@@ -121,6 +125,12 @@ export interface TradeOffer {
   to: PlayerId[] | 'all';
   accepted: PlayerId[];
   declined: PlayerId[];
+}
+
+// Drowned Isles slice; only present when the expansion is on. Boats arrive in phase 3.
+export interface DIState {
+  isleOf: Record<HexId, string>; // land hex -> isle id
+  homeIsle: string; // setup outposts must touch it
 }
 
 export interface GameState {
@@ -144,6 +154,7 @@ export interface GameState {
   grandHost: PlayerId | null;
   dice: [number, number] | null; // [yellow, red] when hf is on
   hf?: HFState;
+  di?: DIState;
   log: GameEvent[];
 }
 

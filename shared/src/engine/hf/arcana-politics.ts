@@ -1,7 +1,7 @@
 import type { Action, GameEvent, GameState, PlayerId, VertexId } from '../../types';
 import { ARCANA_HAND_MAX, COMMODITIES, RESOURCES, SENTINELS_PER_RANK, isCommodity } from '../../constants';
 import { boardGeometry, edgeVertices, hexVertices, vertexEdges } from '../../board/geometry';
-import { renown } from '../awards';
+import { glory } from '../awards';
 import { pathSpotOk } from '../build';
 import { player, type Result } from '../setup';
 import { stealCard } from '../turn';
@@ -91,7 +91,7 @@ export const POLITICS: Record<string, Play> = {
     const pending: Record<PlayerId, number> = {};
     for (const o of others(s, id)) {
       const n = Math.floor(cardTotal(s, o) / 2);
-      if (n > 0 && renown(s, o, true) >= renown(s, id, true)) pending[o] = n;
+      if (n > 0 && glory(s, o, true) >= glory(s, id, true)) pending[o] = n;
     }
     if (Object.keys(pending).length) s.phase = { k: 'arcanaGive', by: id, mode: 'discard', pending };
     return [];
@@ -118,7 +118,7 @@ export const POLITICS: Record<string, Play> = {
     const pending: Record<PlayerId, number> = {};
     for (const o of others(s, id)) {
       const n = Math.min(2, cardTotal(s, o));
-      if (n > 0 && renown(s, o, true) > renown(s, id, true)) pending[o] = n;
+      if (n > 0 && glory(s, o, true) > glory(s, id, true)) pending[o] = n;
     }
     if (Object.keys(pending).length) s.phase = { k: 'arcanaGive', by: id, mode: 'give', pending };
     return [];

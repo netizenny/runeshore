@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { applyAction } from '../src/engine/apply';
-import { checkWin, longestPathLength, renown, updateAwards } from '../src/engine/awards';
+import { checkWin, longestPathLength, glory, updateAwards } from '../src/engine/awards';
 import { ALL_VERTICES, edgeVertices, vertexEdges } from '../src/board/geometry';
 import type { EdgeId, GameState, VertexId } from '../src/types';
 import { stateWith } from './helpers';
@@ -101,7 +101,7 @@ describe('awards', () => {
   });
 });
 
-describe('renown and win', () => {
+describe('glory and win', () => {
   it('scores buildings, awards and relics', () => {
     const s = stateWith();
     s.buildings[ALL_VERTICES[0]] = { owner: 'a', kind: 'outpost' };
@@ -109,13 +109,13 @@ describe('renown and win', () => {
     s.longestPath = 'a';
     s.grandHost = 'a';
     s.players[0].omens = [{ kind: 'relic', boughtTurn: 0 }, { kind: 'warden', boughtTurn: 0 }];
-    expect(renown(s, 'a', false)).toBe(1 + 2 + 2 + 2);
-    expect(renown(s, 'a', true)).toBe(8);
+    expect(glory(s, 'a', false)).toBe(1 + 2 + 2 + 2);
+    expect(glory(s, 'a', true)).toBe(8);
   });
   it('wins for the current player at the target, counting hidden relics', () => {
     const s = stateWith();
     const cur = s.order[s.current];
-    s.settings = { ...s.settings, renownTarget: 3 };
+    s.settings = { ...s.settings, gloryTarget: 3 };
     s.buildings[ALL_VERTICES[0]] = { owner: cur, kind: 'citadel' };
     s.players.find((p) => p.id === cur)!.omens = [{ kind: 'relic', boughtTurn: 0 }];
     expect(checkWin(s)).toEqual([{ type: 'won', player: cur }]);
@@ -123,14 +123,14 @@ describe('renown and win', () => {
   });
   it('does not win for a non-current player', () => {
     const s = stateWith();
-    s.settings = { ...s.settings, renownTarget: 1 };
+    s.settings = { ...s.settings, gloryTarget: 1 };
     s.buildings[ALL_VERTICES[0]] = { owner: s.order[1], kind: 'outpost' };
     expect(checkWin(s)).toEqual([]);
   });
   it('applyAction ends the game when an action reaches the target', () => {
     const s = stateWith();
     const cur = s.order[s.current];
-    s.settings = { ...s.settings, renownTarget: 2 };
+    s.settings = { ...s.settings, gloryTarget: 2 };
     s.buildings[ALL_VERTICES[0]] = { owner: cur, kind: 'outpost' };
     s.players.find((p) => p.id === cur)!.hand = { clay: 0, timber: 0, fleece: 0, harvest: 2, starmetal: 3 };
     const r = applyAction(s, cur, { type: 'buildCitadel', vertex: ALL_VERTICES[0] });

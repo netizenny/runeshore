@@ -2,6 +2,7 @@ import type { Board, Hex, HexId, Terrain } from '../types';
 import { PORTS, PORTS_LARGE, TILES, TILES_LARGE, TOKENS, TOKENS_LARGE } from '../constants';
 import { shuffle } from '../rng';
 import { edgeId, geometry, hexId } from './geometry';
+import type { Scenario } from './scenarios/landfall';
 
 const PORT_SLOTS = [0, 3, 7, 10, 13, 17, 20, 23, 27];
 const PORT_SLOTS_LARGE = [0, 4, 7, 11, 15, 19, 22, 26, 30, 34, 38];
@@ -37,4 +38,37 @@ export function generateBoard(mode: 'random' | 'starter', rngState: number, big 
   [kinds, s] = shuffle(big ? PORTS_LARGE : PORTS, s);
   const ports = (big ? PORT_SLOTS_LARGE : PORT_SLOTS).map((slot, i) => ({ edge: COAST_EDGES[slot], kind: kinds[i] }));
   return [{ hexes, ports }, mode === 'starter' ? rngState : s];
+}
+
+// Drowned Isles boards are hand-authored: no shuffling, no rng use. Hexes outside `land` are Deep.
+export function scenarioBoard(sc: Scenario): Board {
+  const { all } = geometry(sc.prefix);
+  const hexes: Record<HexId, Hex> = {};
+  for (const { q, r } of all) {
+    const id = hexId(q, r, sc.prefix);
+    hexes[id] = { id, q, r, terrain: 'deep', token: null };
+  }
+  for (const [q, r, terrain, token] of sc.land) hexes[hexId(q, r, sc.prefix)] = { ...hexes[hexId(q, r, sc.prefix)], terrain, token };
+  const ports = sc.ports.map(([q1, r1, q2, r2, kind]) => ({ edge: edgeId(hexId(q1, r1, sc.prefix), hexId(q2, r2, sc.prefix)), kind }));
+  return { hexes, ports };
+}
+
+// Land hexes grouped into isles by flood fill over shared edges; the home isle holds the `home` hex.
+export function scenarioIsles(sc: Scenario, board: Board): { isleOf: Record<HexId, string>; homeIsle: string } {
+  const isleOf: Record<HexId, string> = {};
+  const { edgeSet } = geometry(sc.prefix);
+  const land = Object.values(board.hexes).filter((h) => h.terrain !== 'deep').map((h) => h.id);
+  let n = 0;
+  for (const start of land) {
+    if (isleOf[start]) continue;
+    const id = `i${n++}`;
+    const todo = [start];
+    isleOf[start] = id;
+    while (todo.length) {
+      const h = todo.pop()!;
+      for (const o of land) if (!isleOf[o] && edgeSet.has(edgeId(h, o))) (isleOf[o] = id), todo.push(o);
+    }
+  }
+  const [hq, hr] = sc.land.find((l) => l[4])!;
+  return { isleOf, homeIsle: isleOf[hexId(hq, hr, sc.prefix)] };
 }

@@ -15,7 +15,7 @@ export function initHF(players: PlayerId[], rng: number): [HFState, number] {
     eventDie: null,
     bank: Object.fromEntries(COMMODITIES.map((c) => [c, HF_BANK_EACH])) as Record<Commodity, number>,
     players: Object.fromEntries(
-      players.map((id) => [id, { commodities: zeroCom(), level: per(() => 0), arcana: [], shields: 0, extraRenown: 0 }]),
+      players.map((id) => [id, { commodities: zeroCom(), level: per(() => 0), arcana: [], shields: 0, extraGlory: 0 }]),
     ),
     sentinels: {},
     bulwarks: [],

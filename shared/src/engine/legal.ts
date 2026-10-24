@@ -1,11 +1,11 @@
 import type { Action, ApplyResult, Commodity, GameEvent, GameState, PlayerId, Resource, ResourceCounts } from '../types';
 import { COMMODITIES, COSTS, IMPROVE_MAX, TRACK_COMMODITY, RESOURCES, emptyCounts, isCommodity } from '../constants';
-import { boardGeometry, vertexEdges, vertexNeighbors } from '../board/geometry';
+import { boardGeometry, isPathEdge, vertexEdges, vertexNeighbors } from '../board/geometry';
 import { randInt, shuffle } from '../rng';
 import { applyAction, currentPlayer } from './apply';
 import { canPay, pathSpotOk } from './build';
 import { tradeRatio } from './trade';
-import { player } from './setup';
+import { player, setupSpotOk } from './setup';
 import { TRACKS, hfPlayer, stocks } from './hf/state';
 import { reach } from './hf/sentinels';
 import { arcanaCandidates } from './hf/arcana-legal';
@@ -89,14 +89,14 @@ export function legalActions(s: GameState, id: PlayerId): Action[] {
     case 'setup':
       if (ph.step === 'outpost') {
         for (const v of boardGeometry(s.board).vertices) {
-          if (!s.buildings[v] && !vertexNeighbors(v).some((n) => s.buildings[n])) out.push({ type: 'placeOutpost', vertex: v });
+          if (!s.buildings[v] && !vertexNeighbors(v).some((n) => s.buildings[n]) && setupSpotOk(s, v)) out.push({ type: 'placeOutpost', vertex: v });
         }
       } else {
-        for (const e of vertexEdges(ph.lastOutpost!)) if (!s.paths[e]) out.push({ type: 'placePath', edge: e });
+        for (const e of vertexEdges(ph.lastOutpost!)) if (!s.paths[e] && isPathEdge(e)) out.push({ type: 'placePath', edge: e });
       }
       return out;
     case 'moveShade':
-      for (const h of Object.keys(s.board.hexes)) if (h !== s.shadeHex) out.push({ type: 'moveShade', hex: h });
+      for (const h of Object.keys(s.board.hexes)) if (h !== s.shadeHex && s.board.hexes[h].terrain !== 'deep') out.push({ type: 'moveShade', hex: h });
       return out;
     case 'steal':
       for (const victim of ph.victims) out.push({ type: 'steal', victim });

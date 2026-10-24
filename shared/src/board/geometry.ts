@@ -1,19 +1,21 @@
 import type { Board, EdgeId, HexId, VertexId } from '../types';
+import { LANDFALL, type Scenario } from './scenarios/landfall';
 
 // Pointy-top axial layout. Directions run clockwise on screen (y down) from east;
 // corner i of a hex sits between neighbor directions i and i+1.
 const DIRS: [number, number][] = [[1, 0], [0, 1], [-1, 1], [-1, 0], [0, -1], [1, -1]];
 
-// Large-board ids carry an 'L' prefix, so every id says which board it belongs to.
-const isBig = (id: string) => id[0] === 'L';
-export const hexId = (q: number, r: number, big = false): HexId => `${big ? 'L' : ''}${q},${r}`;
+// Every id carries its board's letter prefix: none = standard, 'L' = large, 'S?' = a Drowned Isles scenario.
+// `true` still means the large board.
+const prefixOf = (id: string) => /^[A-Za-z]*/.exec(id)![0];
+export const hexId = (q: number, r: number, pre: string | boolean = ''): HexId => `${pre === true ? 'L' : pre || ''}${q},${r}`;
 const parse = (h: HexId): [number, number] => {
-  const [q, r] = (isBig(h) ? h.slice(1) : h).split(',').map(Number);
+  const [q, r] = h.slice(prefixOf(h).length).split(',').map(Number);
   return [q, r];
 };
 const hexNeighbor = (h: HexId, d: number): HexId => {
   const [q, r] = parse(h);
-  return hexId(q + DIRS[d % 6][0], r + DIRS[d % 6][1], isBig(h));
+  return hexId(q + DIRS[d % 6][0], r + DIRS[d % 6][1], prefixOf(h));
 };
 
 export const vertexId = (hexes: [HexId, HexId, HexId]): VertexId => [...hexes].sort().join('|');
@@ -36,16 +38,18 @@ export function vertexPixel(v: VertexId, size: number): { x: number; y: number }
   return { x: (ps[0].x + ps[1].x + ps[2].x) / 3, y: (ps[0].y + ps[1].y + ps[2].y) / 3 };
 }
 
-// Everything that depends on how many hexes the board has, built once per size.
-function universe(radius: number, big: boolean) {
-  const land: { q: number; r: number }[] = [];
+// Everything that depends on the board's shape, built once per board. `isLand` is false for Deep hexes,
+// which sit in the disc (so boats can use their edges) but never produce or take buildings.
+function universe(radius: number, pre: string, isLand: (q: number, r: number) => boolean = () => true) {
+  const all: { q: number; r: number }[] = [];
   for (let q = -radius; q <= radius; q++)
-    for (let r = -radius; r <= radius; r++) if (Math.max(Math.abs(q), Math.abs(r), Math.abs(q + r)) <= radius) land.push({ q, r });
-  const landSet = new Set(land.map((h) => hexId(h.q, h.r, big)));
+    for (let r = -radius; r <= radius; r++) if (Math.max(Math.abs(q), Math.abs(r), Math.abs(q + r)) <= radius) all.push({ q, r });
+  const land = all.filter((h) => isLand(h.q, h.r));
+  const landSet = new Set(land.map((h) => hexId(h.q, h.r, pre)));
   const vertexSet = new Set<VertexId>();
   const edgeSet = new Set<EdgeId>();
-  for (const { q, r } of land) {
-    const h = hexId(q, r, big);
+  for (const { q, r } of all) {
+    const h = hexId(q, r, pre);
     for (let i = 0; i < 6; i++) {
       vertexSet.add(cornerVertex(h, i));
       edgeSet.add(edgeId(h, hexNeighbor(h, i)));
@@ -77,15 +81,22 @@ function universe(radius: number, big: boolean) {
     })
     .sort((p, q) => p.ang - q.ang)
     .map((p) => p.e);
-  return { land, landSet, vertexSet, edgeSet, vertices: [...vertexSet], edges: [...edgeSet], coast, vertexEdges, vertexNeighbors };
+  return { all, land, landSet, vertexSet, edgeSet, vertices: [...vertexSet], edges: [...edgeSet], coast, vertexEdges, vertexNeighbors };
 }
 
-const STANDARD = universe(2, false);
-const LARGE = universe(3, true);
-const of = (id: string) => (isBig(id) ? LARGE : STANDARD);
+const STANDARD = universe(2, '');
+const LARGE = universe(3, 'L');
+const scenarioUniverse = (sc: Scenario) => {
+  const lit = new Set(sc.land.map(([q, r]) => `${q},${r}`));
+  return universe(sc.radius, sc.prefix, (q, r) => lit.has(`${q},${r}`));
+};
+const UNIVERSES: Record<string, typeof STANDARD> = { '': STANDARD, L: LARGE, [LANDFALL.prefix]: scenarioUniverse(LANDFALL) };
+const of = (id: string) => UNIVERSES[prefixOf(id)];
 
-export const geometry = (big: boolean) => (big ? LARGE : STANDARD);
-export const boardGeometry = (b: Board) => geometry(isBig(Object.keys(b.hexes)[0]));
+export const geometry = (pre: string | boolean) => UNIVERSES[pre === true ? 'L' : pre || ''];
+export const boardGeometry = (b: Board) => of(Object.keys(b.hexes)[0]);
+// A path needs land on at least one side; open-water edges are for Boats.
+export const isPathEdge = (e: EdgeId): boolean => split(e, '~').some((h) => of(e).landSet.has(h));
 
 // The standard board's lists, kept for callers that only ever see that board.
 export const LAND_HEXES = STANDARD.land;

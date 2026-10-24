@@ -38,7 +38,7 @@ function hfInvariants(s: GameState) {
     if (total !== HF_BANK_EACH || hf.bank[c] < 0) throw new Error(`${c} total ${total}`);
     if (s.players.some((p) => hf.players[p.id].commodities[c] < 0)) throw new Error(`negative ${c}`);
   }
-  const cards = TRACKS.reduce((n, t) => n + hf.arcanaDecks[t].length, 0) + s.players.reduce((n, p) => n + hf.players[p.id].arcana.length + hf.players[p.id].extraRenown, 0);
+  const cards = TRACKS.reduce((n, t) => n + hf.arcanaDecks[t].length, 0) + s.players.reduce((n, p) => n + hf.players[p.id].arcana.length + hf.players[p.id].extraGlory, 0);
   if (cards !== 54) throw new Error(`arcana ${cards}`);
   for (const p of s.players) {
     for (const rank of [1, 2, 3]) {
@@ -55,7 +55,7 @@ describe('fuzz with Hollow Fleet', () => {
   for (const n of [3, 4]) {
     it(`40 seeds with ${n} players end with a winner and keep invariants`, () => {
       for (let seed = 1; seed <= 40; seed++) {
-        const { state, steps } = drive(newGame(seed, n, { hollowFleet: true, renownTarget: 13 }), seed, 6000, hfInvariants);
+        const { state, steps } = drive(newGame(seed, n, { hollowFleet: true, gloryTarget: 13 }), seed, 6000, hfInvariants);
         expect(state.phase.k, `seed ${seed} after ${steps} steps`).toBe('ended');
         hfInvariants(state);
       }
@@ -68,6 +68,18 @@ describe('fuzz, large board', () => {
     it(`20 seeds with ${n} players end with a winner`, () => {
       for (let seed = 1; seed <= 20; seed++) {
         const { state, steps } = drive(newGame(seed, n, { boardSize: 'large' }), seed, 4000, invariants);
+        expect(state.phase.k, `seed ${seed} after ${steps} steps`).toBe('ended');
+      }
+    }, 120_000);
+  }
+});
+
+// Phase 2 has no boats yet, so a game plays on the home isle only (the Landfall renown arrives in phase 3).
+describe('fuzz, Drowned Isles', () => {
+  for (const n of [3, 4]) {
+    it(`20 seeds with ${n} players end with a winner`, () => {
+      for (let seed = 1; seed <= 20; seed++) {
+        const { state, steps } = drive(newGame(seed, n, { drownedIsles: true, gloryTarget: 8 }), seed, 4000, invariants);
         expect(state.phase.k, `seed ${seed} after ${steps} steps`).toBe('ended');
       }
     }, 120_000);

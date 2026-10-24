@@ -50,3 +50,11 @@ it('boot skips a snapshot that cannot be restored', async () => {
   saveRoom({ id: 'BAD222', seats: [{ id: 'x', name: 'X', color: 'ember', seatToken: 't', autopilot: false }], settings: room.settings, game: { phase: { k: 'roll' } } as never }, dir);
   expect(new Rooms(dir).load()).toBe(1);
 });
+
+it('caps live rooms per ip', async () => {
+  const { Rooms } = await import('../src/rooms');
+  const rooms = new Rooms(mkdtempSync(join(tmpdir(), 'rs-cap-')));
+  for (let i = 0; i < 5; i++) expect(rooms.create('1.2.3.4')).not.toBeNull();
+  expect(rooms.create('1.2.3.4')).toBeNull();
+  expect(rooms.create('5.6.7.8')).not.toBeNull();
+});

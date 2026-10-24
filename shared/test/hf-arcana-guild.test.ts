@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { applyAction } from '../src/engine/apply';
 import { tradeRatio } from '../src/engine/trade';
 import { hexVertices } from '../src/board/geometry';
-import { renown } from '../src/engine/awards';
+import { glory } from '../src/engine/awards';
 import type { GameState } from '../src/types';
 import { arcState, play } from './helpers';
 
@@ -39,13 +39,13 @@ describe('guild arcana', () => {
     expect(t.phase.k).toBe('main');
   });
 
-  it('Silver Tongue takes 2 cards from a player with more Renown only', () => {
+  it('Silver Tongue takes 2 cards from a player with more Glory only', () => {
     const s = arcState();
     Object.assign(hand(s, 'b'), { clay: 1 });
     s.hf!.players.b.commodities.sigil = 1;
-    expect(err(play(s, 'a', 'mastermerchant', { target: 'b', take: ['clay', 'sigil'] }))).toMatch(/more Renown/);
-    s.hf!.players.b.extraRenown = 2;
-    expect(renown(s, 'b', true)).toBeGreaterThan(renown(s, 'a', true));
+    expect(err(play(s, 'a', 'mastermerchant', { target: 'b', take: ['clay', 'sigil'] }))).toMatch(/more Glory/);
+    s.hf!.players.b.extraGlory = 2;
+    expect(glory(s, 'b', true)).toBeGreaterThan(glory(s, 'a', true));
     expect(err(play(s, 'a', 'mastermerchant', { target: 'b', take: ['clay'] }))).toMatch(/exactly 2/);
     expect(err(play(s, 'a', 'mastermerchant', { target: 'b', take: ['clay', 'clay'] }))).toMatch(/do not hold/);
     const t = ok(play(s, 'a', 'mastermerchant', { target: 'b', take: ['clay', 'sigil'] }));
@@ -56,7 +56,7 @@ describe('guild arcana', () => {
 
   it('Silver Tongue on a target with nothing takes nothing', () => {
     const s = arcState();
-    s.hf!.players.b.extraRenown = 2;
+    s.hf!.players.b.extraGlory = 2;
     const t = ok(play(s, 'a', 'mastermerchant', { target: 'b', take: [] }));
     expect(hand(t, 'b')).toEqual(hand(s, 'b'));
   });

@@ -51,7 +51,7 @@ export function updateAwards(s: GameState): GameEvent[] {
 }
 
 // includeHidden counts unplayed Relics, which only their owner may see.
-export function renown(s: GameState, id: PlayerId, includeHidden: boolean): number {
+export function glory(s: GameState, id: PlayerId, includeHidden: boolean): number {
   let n = 0;
   for (const b of Object.values(s.buildings)) if (b.owner === id) n += b.kind === 'citadel' ? 2 : 1;
   if (s.longestPath === id) n += 2;
@@ -64,7 +64,7 @@ export function renown(s: GameState, id: PlayerId, includeHidden: boolean): numb
 export function checkWin(s: GameState): GameEvent[] {
   if (s.phase.k === 'setup' || s.phase.k === 'ended') return [];
   const id = s.order[s.current];
-  if (renown(s, id, true) < s.settings.renownTarget) return [];
+  if (glory(s, id, true) < s.settings.gloryTarget) return [];
   s.phase = { k: 'ended', winner: id };
   return [{ type: 'won', player: id }];
 }

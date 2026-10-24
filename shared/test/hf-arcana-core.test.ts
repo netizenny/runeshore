@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { applyAction } from '../src/engine/apply';
 import { drawArcana } from '../src/engine/hf/arcana';
 import { gateDraws } from '../src/engine/hf/improve';
-import { renown } from '../src/engine/awards';
+import { glory } from '../src/engine/awards';
 import { ARCANA, ARCANA_BY_KEY } from '../src/constants';
 import { arcState, play } from './helpers';
 
@@ -17,13 +17,13 @@ describe('arcana deck', () => {
     expect(s.hf!.arcanaDecks.guild.filter((c) => c === 'peddler')).toHaveLength(6);
   });
 
-  it('draws a Renown card straight to the table, anything else into the hand', () => {
+  it('draws a Glory card straight to the table, anything else into the hand', () => {
     const s = arcState();
     s.hf!.arcanaDecks.lore = ['printer', 'smith'];
-    const before = renown(s, 'a', false);
+    const before = glory(s, 'a', false);
     drawArcana(s, 'a', 'lore');
     expect(s.hf!.players.a.arcana).toEqual([]);
-    expect(renown(s, 'a', false)).toBe(before + 1);
+    expect(glory(s, 'a', false)).toBe(before + 1);
     drawArcana(s, 'a', 'lore');
     expect(s.hf!.players.a.arcana).toEqual(['smith']);
   });
@@ -49,7 +49,7 @@ describe('playArcana', () => {
     expect(applyAction(s, 'a', { type: 'playArcana', card: 'crane' })).toMatchObject({ ok: false, error: /cannot play/ });
   });
 
-  it('is refused with the mode off, and Renown cards cannot be played from the hand', () => {
+  it('is refused with the mode off, and Glory cards cannot be played from the hand', () => {
     const s = arcState();
     const r = play(s, 'a', 'printer');
     expect(r).toMatchObject({ ok: false });
