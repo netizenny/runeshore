@@ -82,7 +82,7 @@ export function Lobby(p: {
                 <label>Scenario</label>
                 <select value={lobby.settings.scenario} onChange={(e) => set({ scenario: e.target.value as Settings['scenario'] })}>
                   {Object.values(SCENARIOS).map((sc) => (
-                    <option key={sc.id} value={sc.id} disabled={!!sc.big !== many}>{sc.name} ({sc.big ? '5-6' : '2-4'})</option>
+                    <option key={sc.id} value={sc.id}>{sc.name} ({sc.big ? '5-6' : '2-4'})</option>
                   ))}
                 </select>
               </>
