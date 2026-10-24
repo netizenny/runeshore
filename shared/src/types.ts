@@ -127,10 +127,15 @@ export interface TradeOffer {
   declined: PlayerId[];
 }
 
-// Drowned Isles slice; only present when the expansion is on. Boats arrive in phase 3.
+// Drowned Isles slice; only present when the expansion is on. The raider arrives in phase 4.
 export interface DIState {
   isleOf: Record<HexId, string>; // land hex -> isle id
   homeIsle: string; // setup outposts must touch it
+  boats: Record<EdgeId, PlayerId>;
+  boatsLeft: Record<PlayerId, number>;
+  builtTurn: Record<EdgeId, number>; // turn each boat was built or last moved to
+  movedTurn: number; // turn a boat last moved (one move per turn)
+  landfall: Record<PlayerId, string[]>; // isles with a Landfall mark
 }
 
 export interface GameState {
@@ -168,6 +173,8 @@ export type Action =
   | { type: 'buildPath'; edge: EdgeId }
   | { type: 'buildOutpost'; vertex: VertexId }
   | { type: 'buildCitadel'; vertex: VertexId }
+  | { type: 'buildBoat'; edge: EdgeId }
+  | { type: 'moveBoat'; from: EdgeId; to: EdgeId }
   | { type: 'buyOmen' }
   | { type: 'playOmen'; kind: 'warden' }
   | { type: 'playOmen'; kind: 'waymaking' }
@@ -200,7 +207,9 @@ export type GameEvent =
   | { type: 'discarded'; player: PlayerId; count: number }
   | { type: 'shadeMoved'; player: PlayerId; hex: HexId }
   | { type: 'stole'; thief: PlayerId; victim: PlayerId; resource: Resource | null }
-  | { type: 'built'; player: PlayerId; piece: 'path' | 'outpost' | 'citadel' | 'bulwark'; at: string }
+  | { type: 'built'; player: PlayerId; piece: 'path' | 'outpost' | 'citadel' | 'bulwark' | 'boat'; at: string }
+  | { type: 'boatMoved'; player: PlayerId; from: EdgeId; to: EdgeId }
+  | { type: 'landfall'; player: PlayerId; isle: string }
   | { type: 'sentinel'; player: PlayerId; did: 'built' | 'activated' | 'promoted' | 'moved' | 'displaced' | 'lost' | 'chased'; at: VertexId }
   | { type: 'fleetAdvanced'; pos: number }
   | { type: 'fleetAttack'; strength: number; defence: number; held: boolean }

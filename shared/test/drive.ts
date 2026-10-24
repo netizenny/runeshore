@@ -5,7 +5,7 @@ import { nextRandom } from '../src/rng';
 import { DEFAULT_SETTINGS, type Action, type GameState } from '../src/types';
 
 const COLORS = ['ember', 'tide', 'moss', 'bone'] as const;
-const PREFER: Action['type'][] = ['buildCitadel', 'buildOutpost', 'buyOmen', 'playOmen'];
+const PREFER: Action['type'][] = ['buildCitadel', 'buildOutpost', 'buyOmen', 'playOmen', 'buildBoat'];
 
 export function newGame(seed: number, n: number, partial = {}): GameState {
   const players = Array.from({ length: n }, (_, i) => ({ id: 'abcd'[i], name: `P${i}`, color: COLORS[i] }));

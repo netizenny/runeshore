@@ -1,28 +1,44 @@
 import type { EdgeId, GameEvent, GameState, PlayerId, VertexId } from '../types';
-import { edgeVertices, vertexEdges } from '../board/geometry';
+import { LANDFALL_GLORY } from '../constants';
+import { edgeVertices, vertexEdges, vertexHexes } from '../board/geometry';
 import { player } from './setup';
 import { hfScore } from './hf/score';
 
-// Longest simple trail of the player's paths; an opponent building ends the trail at that vertex.
+// Longest simple trail of the player's paths and boats; an opponent building ends the trail at that vertex.
+// A trail may switch between paths and boats only at the player's own building.
 export function longestPathLength(s: GameState, id: PlayerId): number {
-  const mine = Object.keys(s.paths).filter((e) => s.paths[e] === id);
+  const boats = s.di?.boats ?? {};
+  const kind = (e: EdgeId) => (s.paths[e] === id ? 'p' : boats[e] === id ? 'b' : null);
+  const mine = [...Object.keys(s.paths), ...Object.keys(boats)].filter(kind);
   const blocked = (v: VertexId) => !!s.buildings[v] && s.buildings[v].owner !== id;
   const used = new Set<EdgeId>();
   let best = 0;
-  const walk = (v: VertexId, len: number) => {
+  const walk = (v: VertexId, len: number, from: 'p' | 'b' | null) => {
     best = Math.max(best, len);
     for (const e of vertexEdges(v)) {
-      if (s.paths[e] !== id || used.has(e)) continue;
+      const k = kind(e);
+      if (!k || used.has(e) || (from && from !== k && s.buildings[v]?.owner !== id)) continue;
       const [a, b] = edgeVertices(e);
       const u = a === v ? b : a;
       used.add(e);
       if (blocked(u)) best = Math.max(best, len + 1);
-      else walk(u, len + 1);
+      else walk(u, len + 1, k);
       used.delete(e);
     }
   };
-  for (const e of mine) for (const v of edgeVertices(e)) walk(v, 0);
+  for (const e of mine) for (const v of edgeVertices(e)) walk(v, 0, null);
   return best;
+}
+
+// First outpost on each isle other than the home isle earns a Landfall mark.
+export function claimLandfall(s: GameState, id: PlayerId, vertex: VertexId): GameEvent[] {
+  const di = s.di;
+  if (!di) return [];
+  const isles = new Set(vertexHexes(vertex).map((h) => di.isleOf[h]));
+  return [...isles].filter((i) => i !== di.homeIsle && !di.landfall[id].includes(i)).map((isle) => {
+    di.landfall[id].push(isle);
+    return { type: 'landfall' as const, player: id, isle };
+  });
 }
 
 // Mutates the state, like the action handlers.
@@ -56,6 +72,7 @@ export function glory(s: GameState, id: PlayerId, includeHidden: boolean): numbe
   for (const b of Object.values(s.buildings)) if (b.owner === id) n += b.kind === 'citadel' ? 2 : 1;
   if (s.longestPath === id) n += 2;
   if (s.grandHost === id) n += 2;
+  if (s.di) n += LANDFALL_GLORY * s.di.landfall[id].length;
   if (s.hf) n += hfScore(s, id);
   if (includeHidden) n += player(s, id).omens.filter((o) => o.kind === 'relic').length;
   return n;

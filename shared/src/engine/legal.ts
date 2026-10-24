@@ -4,6 +4,7 @@ import { boardGeometry, isPathEdge, vertexEdges, vertexNeighbors } from '../boar
 import { randInt, shuffle } from '../rng';
 import { applyAction, currentPlayer } from './apply';
 import { canPay, pathSpotOk } from './build';
+import { boatMovable, boatSpotOk } from './boats';
 import { tradeRatio } from './trade';
 import { player, setupSpotOk } from './setup';
 import { TRACKS, hfPlayer, stocks } from './hf/state';
@@ -110,11 +111,19 @@ export function legalActions(s: GameState, id: PlayerId): Action[] {
     case 'main':
       out.push({ type: 'endTurn' });
       if (canPay(s, id, COSTS.path)) for (const e of boardGeometry(s.board).edges) if (pathSpotOk(s, id, e)) add({ type: 'buildPath', edge: e });
+      if (s.di) {
+        const edges = boardGeometry(s.board).edges;
+        if (s.di.boatsLeft[id] > 0 && canPay(s, id, COSTS.boat)) for (const edge of edges) if (boatSpotOk(s, id, edge)) out.push({ type: 'buildBoat', edge });
+        for (const from of Object.keys(s.di.boats)) {
+          if (!boatMovable(s, id, from)) continue;
+          for (const to of edges) if (to !== from && boatSpotOk(s, id, to, from)) out.push({ type: 'moveBoat', from, to });
+        }
+      }
       const [outpost, citadel] = [canPay(s, id, COSTS.outpost), canPay(s, id, COSTS.citadel)];
       for (const v of boardGeometry(s.board).vertices) {
         const b = s.buildings[v];
         if (citadel && b?.owner === id && b.kind === 'outpost') add({ type: 'buildCitadel', vertex: v });
-        else if (outpost && !b && vertexEdges(v).some((e) => s.paths[e] === id)) add({ type: 'buildOutpost', vertex: v });
+        else if (outpost && !b && vertexEdges(v).some((e) => s.paths[e] === id || s.di?.boats[e] === id)) add({ type: 'buildOutpost', vertex: v });
       }
       if (canPay(s, id, COSTS.omen)) add({ type: 'buyOmen' });
       const kinds = s.hf ? [...RESOURCES, ...COMMODITIES] : RESOURCES;

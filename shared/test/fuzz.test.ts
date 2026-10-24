@@ -74,14 +74,23 @@ describe('fuzz, large board', () => {
   }
 });
 
-// Phase 2 has no boats yet, so a game plays on the home isle only (the Landfall renown arrives in phase 3).
+function diInvariants(s: GameState) {
+  invariants(s);
+  const di = s.di!;
+  for (const p of s.players) {
+    const n = Object.values(di.boats).filter((o) => o === p.id).length;
+    if (n + di.boatsLeft[p.id] !== 15) throw new Error(`boats ${n}+${di.boatsLeft[p.id]}`);
+  }
+  if (Object.keys(di.boats).some((e) => s.paths[e])) throw new Error('boat and path share an edge');
+}
+
 describe('fuzz, Drowned Isles', () => {
   for (const n of [3, 4]) {
-    it(`20 seeds with ${n} players end with a winner`, () => {
-      for (let seed = 1; seed <= 20; seed++) {
-        const { state, steps } = drive(newGame(seed, n, { drownedIsles: true, gloryTarget: 8 }), seed, 4000, invariants);
+    it(`50 seeds with ${n} players end with a winner and keep invariants`, () => {
+      for (let seed = 1; seed <= 50; seed++) {
+        const { state, steps } = drive(newGame(seed, n, { drownedIsles: true, gloryTarget: 8 }), seed, 4000, diInvariants);
         expect(state.phase.k, `seed ${seed} after ${steps} steps`).toBe('ended');
       }
-    }, 120_000);
+    }, 300_000);
   }
 });

@@ -1,7 +1,8 @@
 import type { Action, EdgeId, GameState, PlayerId, ResourceCounts } from '../types';
 import { COSTS, RESOURCES } from '../constants';
-import { boardGeometry, edgeVertices, isPathEdge, vertexEdges, vertexNeighbors } from '../board/geometry';
+import { boardGeometry, edgeVertices, isPathEdge, vertexEdges, vertexHexes, vertexNeighbors } from '../board/geometry';
 import { player, type Result } from './setup';
+import { claimLandfall } from './awards';
 
 export const canPay = (s: GameState, id: PlayerId, c: ResourceCounts) => RESOURCES.every((r) => player(s, id).hand[r] >= c[r]);
 
@@ -14,7 +15,7 @@ export function pay(s: GameState, id: PlayerId, c: ResourceCounts) {
 
 // A path joins at a vertex where you own a building, or own another path and no opponent building blocks it.
 export function pathSpotOk(s: GameState, id: PlayerId, edge: EdgeId): boolean {
-  if (!boardGeometry(s.board).edgeSet.has(edge) || s.paths[edge] || !isPathEdge(edge)) return false;
+  if (!boardGeometry(s.board).edgeSet.has(edge) || s.paths[edge] || s.di?.boats[edge] || !isPathEdge(edge)) return false;
   return edgeVertices(edge).some((v) => {
     const b = s.buildings[v];
     if (b) return b.owner === id;
@@ -50,12 +51,13 @@ export function buildOutpost(s: GameState, id: PlayerId, a: Extract<Action, { ty
   if (p.piecesLeft.outpost < 1) return 'no outposts left';
   if (s.buildings[v] || vertexNeighbors(v).some((n) => s.buildings[n])) return 'too close to another building';
   if (s.hf?.sentinels[v]) return 'a Sentinel stands there';
-  if (!vertexEdges(v).some((e) => s.paths[e] === id)) return 'outpost must touch your path';
+  if (!vertexEdges(v).some((e) => s.paths[e] === id || s.di?.boats[e] === id)) return 'outpost must touch your path or boat';
+  if (!vertexHexes(v).length) return 'no land there';
   if (!canPay(s, id, COSTS.outpost)) return 'cannot afford';
   pay(s, id, COSTS.outpost);
   s.buildings[v] = { owner: id, kind: 'outpost' };
   p.piecesLeft.outpost--;
-  return [{ type: 'built', player: id, piece: 'outpost', at: v }];
+  return [{ type: 'built', player: id, piece: 'outpost', at: v }, ...claimLandfall(s, id, v)];
 }
 
 export function buildCitadel(s: GameState, id: PlayerId, a: Extract<Action, { type: 'buildCitadel' }>): Result {

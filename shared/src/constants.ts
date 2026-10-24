@@ -63,9 +63,12 @@ export const COSTS = {
   sentinel: cost({ fleece: 1, starmetal: 1 }), // build and each promotion
   activate: cost({ harvest: 1 }),
   bulwark: cost({ clay: 2 }),
+  boat: cost({ timber: 1, fleece: 1 }),
 };
 
 export const PIECES = { path: 15, outpost: 5, citadel: 4 };
+export const BOATS_PER_PLAYER = 15;
+export const LANDFALL_GLORY = 2;
 export const BANK_EACH = 19;
 
 const rep = <T>(x: T, n: number): T[] => Array<T>(n).fill(x);

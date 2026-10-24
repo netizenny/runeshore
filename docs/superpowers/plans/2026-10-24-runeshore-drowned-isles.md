@@ -124,11 +124,12 @@ Sources: official 5th-ed rules text (ultraboardgames summary) + catan.com FAQ. C
 - Done when: generate/setup tests pass, fuzz still green with toggle off.
 - Done notes: `shared/src/board/scenarios/landfall.ts` (radius-3 disc, 16 land hexes in 3 isles, 9 ports, rest Deep); geometry keyed by id prefix (`''`, `L`, `Sf`), `isPathEdge`; `createGame` sets `state.di = {isleOf, homeIsle}` (boats/raider fields arrive in phases 3-4); `setupSpotOk` limits setup to home isle; lobby Mode option + server exclusivity (HF / large map), default target 14. Tests: `di-board.test.ts`, fuzz block, room test. 174 shared + 23 server green. Not hand-clicked in browser (deep hexes use placeholder art until phase 5).
 
-### [ ] Phase 3: Boats and routes
+### [x] Phase 3: Boats and routes (done 2026-10-24)
 - Build boat (1 timber + 1 fleece), 15 cap, adjacency rules, move open-end boat once per turn.
 - Longest route across paths + boats; settlement breaking; Landfall marks (+ VP).
 - legalActions / autoAct / viewFor updates; tests for move legality and route length.
 - Done when: new `di-*.test.ts` green, fuzz over 50 seeds with expansion on.
+- Done notes: `engine/boats.ts` (buildBoat, moveBoat, boatSpotOk, boatMovable); boat state lives in `state.di` (boats, boatsLeft, builtTurn, movedTurn, landfall), not top-level `boats`. `longestPathLength` walks paths + boats, switching kind only at own building. Landfall = +2 renown via `claimLandfall` on outpost build. Outposts can hang off a boat; all-sea vertices refused. Skipped: boat-instead-of-path in setup, boats via Waymaking omen (do in phase 4/5 if wanted). Tests: `di-boats.test.ts`, fuzz 50 seeds x 3/4 players (~4 min).
 
 ### [ ] Phase 4: Raider and Glimmer
 - Seven flow: move shade OR raider; steal from adjacent boat owner; block boat build/move at its hex.

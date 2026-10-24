@@ -1,5 +1,5 @@
 import type { GameState, PlayerColor, PlayerId, PlayerState, Settings } from '../types';
-import { BANK_EACH, OMEN_DECK, PIECES, RESOURCES, emptyCounts } from '../constants';
+import { BANK_EACH, BOATS_PER_PLAYER, OMEN_DECK, PIECES, RESOURCES, emptyCounts } from '../constants';
 import { generateBoard, scenarioBoard, scenarioIsles } from '../board/generate';
 import { SCENARIOS } from '../board/scenarios/landfall';
 import { shuffle } from '../rng';
@@ -46,7 +46,16 @@ export function createGame(players: { id: PlayerId; name: string; color: PlayerC
     grandHost: null,
     dice: null,
     ...(hf && { hf }),
-    ...(sc && { di: scenarioIsles(sc, board) }),
+    ...(sc && {
+      di: {
+        ...scenarioIsles(sc, board),
+        boats: {},
+        boatsLeft: Object.fromEntries(players.map((p) => [p.id, BOATS_PER_PLAYER])),
+        builtTurn: {},
+        movedTurn: 0,
+        landfall: Object.fromEntries(players.map((p) => [p.id, []])),
+      },
+    }),
     log: [],
   };
 }
