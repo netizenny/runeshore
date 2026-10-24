@@ -53,7 +53,7 @@ export function scenarioBoard(sc: Scenario): Board {
   return { hexes, ports };
 }
 
-// Land hexes grouped into isles by flood fill over shared edges; the home isle holds the `home` hex.
+// Land hexes grouped into isles by flood fill over shared edges; the home isle holds the `home` hex ('' when setup may start anywhere).
 export function scenarioIsles(sc: Scenario, board: Board): { isleOf: Record<HexId, string>; homeIsle: string } {
   const isleOf: Record<HexId, string> = {};
   const { edgeSet } = geometry(sc.prefix);
@@ -69,6 +69,6 @@ export function scenarioIsles(sc: Scenario, board: Board): { isleOf: Record<HexI
       for (const o of land) if (!isleOf[o] && edgeSet.has(edgeId(h, o))) (isleOf[o] = id), todo.push(o);
     }
   }
-  const [hq, hr] = sc.land.find((l) => l[4])!;
-  return { isleOf, homeIsle: isleOf[hexId(hq, hr, sc.prefix)] };
+  const home = sc.land.find((l) => l[4]);
+  return { isleOf, homeIsle: home ? isleOf[hexId(home[0], home[1], sc.prefix)] : '' };
 }

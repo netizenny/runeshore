@@ -143,7 +143,8 @@ Sources: official 5th-ed rules text (ultraboardgames summary) + catan.com FAQ. C
 - Done notes: Glimmer/Mist art, `BoatPiece`/`RaiderPiece`/`LandfallFlag` in `art.tsx`; Board draws boats, raider, flags; `Build` gets a Boat button (new boat spot, or click own boat then destination, via `Pick` edges in `Game.tsx`); `panels/Glimmer.tsx` picker; Landfall counted in client glory; ComicPanel landfall + raider; rulebook tab "Drowned Isles". tsc clean, hand-played setup, boats, raider, 7 flow in browser vs WS bot. NOT hand-tested: my own boat build/move clicks, Glimmer picker modal (dice never hit), mobile width.
 
 ### [ ] Phase 6: More scenarios (optional, one per sitting)
-- Quartet Reach, Veiled Reach (Mist reveal on reach, gold on reveal), then Ashen Crossing, Hollow Kin, Silk Tithe, Raider Cove, Spires.
+- [x] Quartet Reach (done 2026-10-24): `scenarios/quartet.ts` (radius 4, 4 isles x 6 hexes, 8 ports, `anywhere: true` so `homeIsle` is '' and setup may start on any isle); `claimLandfall` skips any isle where the player already holds a building; lobby Scenario select; rulebook line; fuzz now runs both scenarios. Not hand-checked in browser (board art fits viewBox by math only).
+- Veiled Reach (Mist reveal on reach, gold on reveal), then Ashen Crossing, Hollow Kin, Silk Tithe, Raider Cove, Spires.
 - Each: map, scenario rules module, tests, art, rulebook entry.
 
 ### [ ] Phase 7: Ship it

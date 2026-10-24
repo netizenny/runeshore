@@ -4,6 +4,7 @@ import { applyAction } from '../src/engine/apply';
 import { legalActions } from '../src/engine/legal';
 import { boardGeometry, edgeVertices, isPathEdge, vertexHexes } from '../src/board/geometry';
 import { DEFAULT_SETTINGS, type GameState } from '../src/types';
+import { claimLandfall } from '../src/engine/awards';
 import { PLAYERS } from './helpers';
 
 const di = () => createGame(PLAYERS, { ...DEFAULT_SETTINGS, drownedIsles: true }, 5);
@@ -67,5 +68,42 @@ describe('Drowned Isles board', () => {
     const s = createGame(PLAYERS, DEFAULT_SETTINGS, 5);
     expect(s.di).toBeUndefined();
     expect(Object.keys(s.board.hexes)).toHaveLength(19);
+  });
+});
+
+describe('Quartet Reach', () => {
+  const qr = () => createGame(PLAYERS, { ...DEFAULT_SETTINGS, drownedIsles: true, scenario: 'quartet' }, 5);
+
+  it('builds 4 isles of 6 hexes, ports on land-deep edges, setup allowed anywhere', () => {
+    const s = qr();
+    const land = Object.values(s.board.hexes).filter((h) => h.terrain !== 'deep');
+    expect(land).toHaveLength(24);
+    expect(new Set(Object.values(s.di!.isleOf)).size).toBe(4);
+    expect(s.di!.homeIsle).toBe('');
+    const { edgeSet } = boardGeometry(s.board);
+    for (const p of s.board.ports) {
+      expect(edgeSet.has(p.edge)).toBe(true);
+      const [a, b] = p.edge.split('~');
+      expect([a, b].filter((h) => s.board.hexes[h]?.terrain !== 'deep' && s.board.hexes[h])).toHaveLength(1);
+    }
+    const isles = new Set(
+      legalActions(s, current(s)).flatMap((a) => (a.type === 'placeOutpost' ? vertexHexes(a.vertex).map((h) => s.di!.isleOf[h]) : [])),
+    );
+    expect(isles.size).toBe(4);
+  });
+
+  it('Landfall skips the isle you started on, pays on a new one', () => {
+    const s = qr();
+    const id = current(s);
+    const { vertices } = boardGeometry(s.board);
+    const onIsle = (isle: string) => vertices.filter((v) => vertexHexes(v).length && vertexHexes(v).every((h) => s.di!.isleOf[h] === isle));
+    const [i0, i1] = [...new Set(Object.values(s.di!.isleOf))];
+    const [start, other] = onIsle(i0);
+    s.buildings[start] = { owner: id, kind: 'outpost' };
+    s.buildings[other] = { owner: id, kind: 'outpost' };
+    expect(claimLandfall(s, id, other)).toEqual([]);
+    const far = onIsle(i1)[0];
+    s.buildings[far] = { owner: id, kind: 'outpost' };
+    expect(claimLandfall(s, id, far)).toEqual([{ type: 'landfall', player: id, isle: i1 }]);
   });
 });

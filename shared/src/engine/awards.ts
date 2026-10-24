@@ -30,12 +30,15 @@ export function longestPathLength(s: GameState, id: PlayerId): number {
   return best;
 }
 
-// First outpost on each isle other than the home isle earns a Landfall mark.
+const ownsOnIsle = (s: GameState, id: PlayerId, isle: string, except: VertexId) =>
+  Object.entries(s.buildings).some(([v, b]) => v !== except && b.owner === id && vertexHexes(v).some((h) => s.di!.isleOf[h] === isle));
+
+// First outpost on each isle other than the ones you started on earns a Landfall mark.
 export function claimLandfall(s: GameState, id: PlayerId, vertex: VertexId): GameEvent[] {
   const di = s.di;
   if (!di) return [];
   const isles = new Set(vertexHexes(vertex).map((h) => di.isleOf[h]));
-  return [...isles].filter((i) => i !== di.homeIsle && !di.landfall[id].includes(i)).map((isle) => {
+  return [...isles].filter((i) => i !== di.homeIsle && !di.landfall[id].includes(i) && !ownsOnIsle(s, id, i, vertex)).map((isle) => {
     di.landfall[id].push(isle);
     return { type: 'landfall' as const, player: id, isle };
   });

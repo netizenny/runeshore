@@ -67,8 +67,17 @@ export function Lobby(p: {
             <select value={lobby.settings.hollowFleet ? 'hf' : lobby.settings.drownedIsles ? 'di' : 'original'} onChange={(e) => set({ hollowFleet: e.target.value === 'hf', drownedIsles: e.target.value === 'di' })}>
               <option value="original">Original</option>
               <option value="hf">Siege of the Hollow Fleet</option>
-              <option value="di">Drowned Isles (First Landfall)</option>
+              <option value="di">Drowned Isles</option>
             </select>
+            {lobby.settings.drownedIsles && (
+              <>
+                <label>Scenario</label>
+                <select value={lobby.settings.scenario} onChange={(e) => set({ scenario: e.target.value as Settings['scenario'] })}>
+                  <option value="landfall">First Landfall</option>
+                  <option value="quartet">Quartet Reach</option>
+                </select>
+              </>
+            )}
             <label>Turn timer</label>
             <select value={lobby.settings.turnTimerSec} onChange={(e) => set({ turnTimerSec: +e.target.value as Settings['turnTimerSec'] })}>
               {[15, 30, 45].map((n) => <option key={n} value={n}>{n} s</option>)}

@@ -167,7 +167,7 @@ export class Room {
       typeof next.hollowFleet === 'boolean' &&
       typeof next.drownedIsles === 'boolean' &&
       !(next.hollowFleet && next.drownedIsles) &&
-      next.scenario === 'landfall' && // other scenarios arrive in phase 6
+      ['landfall', 'quartet'].includes(next.scenario) && // veiled arrives in phase 6
       !(next.drownedIsles && next.boardSize === 'large') &&
       ['random', 'starter'].includes(next.boardMode) &&
       ['standard', 'large'].includes(next.boardSize) &&

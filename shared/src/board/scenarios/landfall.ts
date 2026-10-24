@@ -1,10 +1,12 @@
 import type { Resource, Terrain } from '../../types';
+import { QUARTET } from './quartet';
 
 export interface Scenario {
   id: string; // also the hex-id prefix: `S${letter}`
   prefix: string;
   name: string;
   radius: number; // every hex of this disc not listed in `land` is Deep
+  anywhere?: true; // no home isle: setup may start on any isle
   land: [q: number, r: number, terrain: Terrain, token: number | null, home?: true][];
   ports: [q1: number, r1: number, q2: number, r2: number, kind: Resource | 'any'][];
 }
@@ -49,4 +51,4 @@ export const LANDFALL: Scenario = {
   ],
 };
 
-export const SCENARIOS: Record<string, Scenario> = { landfall: LANDFALL };
+export const SCENARIOS: Record<string, Scenario> = { landfall: LANDFALL, quartet: QUARTET };

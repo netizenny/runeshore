@@ -7,9 +7,9 @@ export type Result = GameEvent[] | string;
 
 export const player = (s: GameState, id: PlayerId) => s.players.find((p) => p.id === id)!;
 
-// Setup outposts must touch land, and on a Drowned Isles board only the home isle.
+// Setup outposts must touch land, and on a Drowned Isles board only the home isle (any isle when it has none).
 export const setupSpotOk = (s: GameState, v: string) =>
-  vertexHexes(v).some((h) => !s.di || s.di.isleOf[h] === s.di.homeIsle);
+  vertexHexes(v).some((h) => !s.di?.homeIsle || s.di.isleOf[h] === s.di.homeIsle);
 
 export function placeOutpost(s: GameState, id: PlayerId, a: Extract<Action, { type: 'placeOutpost' }>): Result {
   const ph = s.phase;
