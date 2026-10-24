@@ -65,7 +65,7 @@ export function Lobby(p: {
               {[15, 30, 45].map((n) => <option key={n} value={n}>{n} s</option>)}
             </select>
           </div>
-          <button disabled={lobby.seats.length < 3 || lobby.seats.length > 4} onClick={() => send({ t: 'start' })}>Begin</button>
+          <button disabled={lobby.seats.length < 2 || lobby.seats.length > 4} onClick={() => send({ t: 'start' })}>Begin</button>
         </>
       )}
       {p.seated && !isHost && <div>Waiting for the host to begin.</div>}

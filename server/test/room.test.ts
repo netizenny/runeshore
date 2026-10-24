@@ -49,13 +49,14 @@ describe('join rules', () => {
     expect(room.seats[0].color).toBe('ember');
   });
 
-  it('only the host starts, and only with 3-4 players', () => {
+  it('only the host starts, and only with 2-4 players', () => {
     const { room, socks } = lobby(3);
     room.handle(socks[1], { t: 'start' });
     expect(errCode(socks[1])).toBe('not_host');
     room.handle(socks[0], { t: 'leave' });
-    room.handle(socks[1], { t: 'start' });
-    expect(errCode(socks[1])).toBe('too_few');
+    room.handle(socks[1], { t: 'leave' });
+    room.handle(socks[2], { t: 'start' });
+    expect(errCode(socks[2])).toBe('too_few');
   });
 
   it('validates settings', () => {

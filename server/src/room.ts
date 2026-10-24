@@ -164,7 +164,7 @@ export class Room {
 
   private start(conn: Conn, seat: Seat) {
     if (this.game || seat !== this.seats[0]) return this.put(conn, bad('not_host', 'Only the host can begin.'));
-    if (this.seats.length < 3) return this.put(conn, bad('too_few', 'Need at least 3 players.'));
+    if (this.seats.length < 2) return this.put(conn, bad('too_few', 'Need at least 2 players.'));
     const players = this.seats.map(({ id, name, color }) => ({ id, name, color }));
     this.game = createGame(players, this.settings, randomInt(1, 2 ** 31));
     this.settle([]);

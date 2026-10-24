@@ -1,6 +1,6 @@
 # Runeshore
 
-A hex-island trading and building game for 3–4 players, played in the browser.
+A hex-island trading and building game for 2–4 players, played in the browser.
 
 ## Play on your own PC
 
