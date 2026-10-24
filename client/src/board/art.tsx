@@ -148,8 +148,15 @@ export const Shade = () => (
   </g>
 );
 
+// Same hex tile as the board: terrain fill + terrain art, so a card matches its hex.
+const HEX = '0,-50 43.3,-25 43.3,25 0,50 -43.3,25 -43.3,-25';
 export const ResIcon = ({ r, size = 18 }: { r: Resource; size?: number }) => (
-  <svg viewBox="-7 -7 14 14" width={size} height={size} fill={TERRAIN_FILL[r]} stroke={GOLD} strokeWidth={1} strokeLinejoin="round" strokeLinecap="round" aria-label={r}>{RESOURCE_GLYPH[r]}</svg>
+  <svg viewBox="-45 -51 90 102" width={size * 0.9} height={size} aria-label={r}>
+    <clipPath id={`hx-${r}`}><polygon points={HEX} /></clipPath>
+    <polygon points={HEX} fill={TERRAIN_FILL[r]} />
+    <g clipPath={`url(#hx-${r})`}><TerrainArt terrain={r} /></g>
+    <polygon points={HEX} fill="none" stroke={GOLD} strokeWidth={4} strokeLinejoin="round" />
+  </svg>
 );
 
 // Expansion pieces. A Sentinel is a pennant on a post: rank = pips, hollow when inactive.
