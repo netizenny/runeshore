@@ -55,7 +55,8 @@ export function Board({ view, legal, mode, onAction, pick = [] }: { view: Player
 
       {view.board.ports.map((p) => {
         const [a, b] = p.edge.split('~');
-        const land = view.board.hexes[a] ? a : b;
+        const isLand = (id: string) => view.board.hexes[id] && view.board.hexes[id].terrain !== 'deep';
+        const land = isLand(a) ? a : b;
         const sea = land === a ? b : a;
         const pl = hexPixel(land, S);
         const ps = hexPixel(sea, S);
