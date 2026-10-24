@@ -99,7 +99,7 @@ Sources: official 5th-ed rules text (ultraboardgames summary) + catan.com FAQ. C
 
 ### Interactions
 
-- Hollow Fleet: Sentinel "chase the shade" may also chase the raider (official C&K+Seafarers). **[ask]** confirm in Phase 4. Fleet attack unchanged.
+- Hollow Fleet and Drowned Isles are mutually exclusive (user decision 2026-10-24): lobby toggling one turns the other off; engine never sees both. No sentinel/raider interaction to build.
 - Large map and Drowned Isles are mutually exclusive in the lobby (scenario picks the board).
 - Toggle off: `boats` is `{}`, no `di`, no new phases; existing tests unchanged.
 
@@ -143,10 +143,9 @@ Sources: official 5th-ed rules text (ultraboardgames summary) + catan.com FAQ. C
 - Each: map, scenario rules module, tests, art, rulebook entry.
 
 ### [ ] Phase 7: Ship it
-- Full fuzz + both expansions toggled together, update memory/docs, `/graphify . --update`.
+- Full fuzz with Drowned Isles on (Hollow Fleet off) and each alone, update memory/docs, `/graphify . --update`.
 - Single commit set already per phase; then `git push` and Render redeploy (explicitly requested by user for this DLC).
 
 ## Risks
 - Hex-id scheme ("q,r", `L` prefix for large map) must extend to arbitrary shapes; Phase 1 decides.
 - Hollow Fleet also uses "fleet" wording and a Fleet panel; keep Boat UI separate to avoid confusion.
-- Combining with Hollow Fleet (C&K) in one game: officially supported; verify interactions (knights vs raider) in Phase 1.
