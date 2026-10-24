@@ -53,7 +53,7 @@ export function Board({ view, legal, mode, onAction, pick = [] }: { view: Player
         const pl = hexPixel(land, S);
         const ps = hexPixel(sea, S);
         const [v1, v2] = edgeVertices(p.edge).map((v) => vertexPixel(v, S));
-        return <Port key={p.edge} kind={p.kind} x={(v1.x + v2.x) / 2} y={(v1.y + v2.y) / 2} ang={Math.atan2(ps.y - pl.y, ps.x - pl.x)} />;
+        return <Port key={p.edge} kind={p.kind} x={(v1.x + v2.x) / 2} y={(v1.y + v2.y) / 2} ang={Math.atan2(ps.y - pl.y, ps.x - pl.x)} c1={v1} c2={v2} />;
       })}
 
       {Object.entries(view.paths).map(([e, owner]) => <PathLine key={e} a={edgePts[e][0]} b={edgePts[e][1]} color={colorOf(owner)} />)}

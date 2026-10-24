@@ -103,12 +103,19 @@ const RESOURCE_GLYPH: Record<Resource, ReactNode> = {
   starmetal: <path d="M0 -5 L3 0 L0 5 L-3 0 Z" />,
 };
 
-// Banner flag at (x,y) on the coast, pointing out to sea along `ang` (radians).
-export function Port({ kind, x, y, ang }: { kind: Resource | 'any'; x: number; y: number; ang: number }) {
+// Banner flag off the coast edge midpoint (x,y), pointing out to sea along `ang` (radians).
+// Two tethers run to the edge's corners `c1`/`c2`: those corners are the spots that dock at the port.
+export function Port({ kind, x, y, ang, c1, c2 }: { kind: Resource | 'any'; x: number; y: number; ang: number; c1: { x: number; y: number }; c2: { x: number; y: number } }) {
+  const fx = Math.cos(ang) * 28, fy = Math.sin(ang) * 28;
   return (
     <g transform={`translate(${x} ${y})`}>
-      <path d={`M0 0 L${Math.cos(ang) * 18} ${Math.sin(ang) * 18}`} stroke={GOLD} strokeWidth={1.2} />
-      <g transform={`translate(${Math.cos(ang) * 28} ${Math.sin(ang) * 28})`}>
+      {[c1, c2].map((c, i) => (
+        <g key={i}>
+          <path d={`M${c.x - x} ${c.y - y} L${fx} ${fy}`} stroke={GOLD} strokeWidth={1.2} />
+          <circle cx={c.x - x} cy={c.y - y} r={3} fill="#1f1b40" stroke={GOLD} strokeWidth={1.2} />
+        </g>
+      ))}
+      <g transform={`translate(${fx} ${fy})`}>
         <path d="M-14 -11 H14 V8 L0 14 L-14 8 Z" fill="#1f1b40" stroke={GOLD} strokeWidth={1.3} />
         <text y={-1} textAnchor="middle" fontSize={9} fontWeight={600} fill="var(--parchment)">{kind === 'any' ? '3:1' : '2:1'}</text>
         {kind !== 'any' && <g transform="translate(0 7) scale(.8)" fill={GOLD} stroke={GOLD} strokeWidth={1}>{RESOURCE_GLYPH[kind]}</g>}
