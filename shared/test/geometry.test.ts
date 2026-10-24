@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest';
 import {
   ALL_EDGES, ALL_VERTICES, COAST_EDGES, LAND_HEXES, edgeVertices, hexId, hexPixel,
-  hexVertices, vertexEdges, vertexHexes, vertexId, vertexNeighbors, vertexPixel,
+  geometry, hexVertices, vertexEdges, vertexHexes, vertexId, vertexNeighbors, vertexPixel,
 } from '../src/board/geometry';
 
 test('counts', () => {
@@ -47,5 +47,18 @@ test('pixel layout: adjacent hexes one apart, vertices on the hex ring', () => {
   for (const v of hexVertices('0,0')) {
     const p = vertexPixel(v, size);
     expect(Math.hypot(p.x - c.x, p.y - c.y)).toBeCloseTo(size);
+  }
+});
+
+test('large board counts and id universe', () => {
+  const g = geometry(true);
+  expect(g.land).toHaveLength(37);
+  expect(g.vertices).toHaveLength(96);
+  expect(g.edges).toHaveLength(132);
+  expect(g.coast).toHaveLength(42);
+  for (const v of g.vertices) expect(vertexNeighbors(v)).toHaveLength(vertexEdges(v).length);
+  for (const e of g.edges) {
+    const [a, b] = edgeVertices(e);
+    expect(vertexNeighbors(a)).toContain(b);
   }
 });

@@ -51,6 +51,7 @@ export interface Board {
 
 export interface Settings {
   boardMode: 'random' | 'starter';
+  boardSize: 'standard' | 'large';
   renownTarget: number;
   discardLimit: number;
   turnTimerSec: 15 | 30 | 45;
@@ -59,6 +60,7 @@ export interface Settings {
 
 export const DEFAULT_SETTINGS: Settings = {
   boardMode: 'random',
+  boardSize: 'standard',
   renownTarget: 10,
   discardLimit: 7,
   turnTimerSec: 30,

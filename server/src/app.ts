@@ -28,8 +28,24 @@ export function startServer(port: number, rooms = new Rooms()): Server {
   });
 
   const wss = new WebSocketServer({ server: http, path: '/ws', maxPayload: 16 * 1024 });
-  wss.on('connection', (ws: WebSocket) => {
+  // Standard ws liveness check: ping our own clients, drop any that missed the last round, so half-open sockets (sleeping phones) free their seat.
+  const alive = new WeakSet<WebSocket>();
+  const beat = setInterval(() => {
+    for (const ws of wss.clients) {
+      if (!alive.has(ws)) { ws.terminate(); continue; }
+      alive.delete(ws);
+      ws.ping();
+    }
+  }, 30_000);
+  beat.unref();
+  wss.on('close', () => clearInterval(beat));
+
+  wss.on('connection', (ws: WebSocket, req) => {
     let room: Room | null = null;
+    alive.add(ws);
+    ws.on('pong', () => alive.add(ws));
+    // Behind a proxy the first X-Forwarded-For entry is the client; a client can forge it, so this is a speed bump, not a wall.
+    const ip = String(req.headers['x-forwarded-for'] ?? '').split(',')[0].trim() || req.socket.remoteAddress || '';
     const err = (code: string, message: string) => ws.send(JSON.stringify({ t: 'error', code, message }));
     ws.on('message', (raw) => {
       let msg: ClientMsg;
@@ -40,7 +56,7 @@ export function startServer(port: number, rooms = new Rooms()): Server {
       }
       if (msg?.t === 'create' || msg?.t === 'join') {
         if (room) return err('already_joined', 'Already in a room.');
-        const r = msg.t === 'create' ? rooms.create() : rooms.get(String(msg.roomId));
+        const r = msg.t === 'create' ? rooms.create(ip) : rooms.get(String(msg.roomId));
         if (!r) return msg.t === 'create' ? err('busy', 'Too many rooms right now. Try again later.') : err('no_room', 'That room does not exist.');
         if (r.join(ws, msg.name, msg.t === 'join' ? msg.seatToken : undefined)) room = r;
         else if (msg.t === 'create') rooms.drop(r); // failed create (bad name): do not leak an empty room

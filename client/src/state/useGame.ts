@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { ClientMsg, ServerMsg } from '@runeshore/shared';
+import type { ClientMsg, GameEvent, PlayerView, ServerMsg } from '@runeshore/shared';
 import { connect, type Status } from '../net/socket';
 
 type Joined = Extract<ServerMsg, { t: 'joined' }>;
 type Lobby = Extract<ServerMsg, { t: 'lobby' }>;
-type Game = Extract<ServerMsg, { t: 'game' }>;
+type Game = Omit<Extract<ServerMsg, { t: 'game' }>, 'view'> & { view: PlayerView };
 
 // sessionStorage, not localStorage: tabs of one browser must be able to hold different seats (still survives reload).
 const key = (id: string) => `runeshore:seat:${id}`;
@@ -54,6 +54,7 @@ export function useGame(roomId: string | null) {
   const [game, setGame] = useState<Game | null>(null);
   const [error, setError] = useState<string | null>(null);
   const conn = useRef<ReturnType<typeof connect> | null>(null);
+  const log = useRef<GameEvent[]>([]);
   const name = useRef(savedName());
   const room = useRef(roomId);
   room.current = roomId;
@@ -72,7 +73,11 @@ export function useGame(roomId: string | null) {
           setJoined(m);
           setError(null);
         } else if (m.t === 'lobby') setLobby(m);
-        else if (m.t === 'game') setGame(m);
+        else if (m.t === 'game') {
+          // Full log arrives once per connection; later messages only add this move's events.
+          log.current = m.log ?? [...log.current, ...m.events];
+          setGame({ ...m, view: { ...m.view, log: log.current } });
+        }
         else {
           setError(ERRORS[m.code] ?? m.message);
           if (m.code === 'replaced') {

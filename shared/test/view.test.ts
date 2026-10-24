@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { viewFor } from '../src/view';
+import { logFor, viewFor } from '../src/view';
 import { emptyCounts } from '../src/constants';
 import { newGame } from './drive';
 
@@ -30,7 +30,7 @@ describe('viewFor', () => {
   });
 
   it('hides the stolen card from a third player only', () => {
-    const steal = (id: string) => viewFor(s, id).log.find((e) => e.type === 'stole') as { resource: string | null };
+    const steal = (id: string) => logFor(s, id).find((e) => e.type === 'stole') as { resource: string | null };
     expect(steal('a').resource).toBe('clay');
     expect(steal('b').resource).toBe('clay');
     expect(steal('c').resource).toBeNull();

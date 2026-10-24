@@ -1,6 +1,6 @@
 import type { Action, GameState, PlayerId, VertexId } from '../../types';
 import { COSTS, SENTINELS_PER_RANK } from '../../constants';
-import { ALL_VERTICES, edgeVertices, hexVertices, vertexEdges } from '../../board/geometry';
+import { boardGeometry, edgeVertices, hexVertices, vertexEdges } from '../../board/geometry';
 import { canPay, pay } from '../build';
 import type { Result } from '../setup';
 import { hfPlayer } from './state';
@@ -50,7 +50,7 @@ export const count = (s: GameState, id: PlayerId, rank: Rank) =>
 
 export function buildSentinel(s: GameState, id: PlayerId, a: Extract<Action, { type: 'buildSentinel' }>): Result {
   if (!s.hf || s.phase.k !== 'main') return 'cannot build now';
-  if (!ALL_VERTICES.includes(a.vertex) || !empty(s, a.vertex)) return 'vertex is taken';
+  if (!boardGeometry(s.board).vertexSet.has(a.vertex) || !empty(s, a.vertex)) return 'vertex is taken';
   if (!vertexEdges(a.vertex).some((e) => s.paths[e] === id)) return 'Sentinel must touch your path';
   if (count(s, id, 1) >= SENTINELS_PER_RANK) return 'no Basic Sentinels left';
   if (!canPay(s, id, COSTS.sentinel)) return 'cannot afford';

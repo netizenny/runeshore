@@ -1,6 +1,6 @@
 import type { Action, GameEvent, GameState, PlayerId, VertexId } from '../../types';
 import { ARCANA_HAND_MAX, COMMODITIES, RESOURCES, SENTINELS_PER_RANK, isCommodity } from '../../constants';
-import { ALL_VERTICES, edgeVertices, hexVertices, vertexEdges } from '../../board/geometry';
+import { boardGeometry, edgeVertices, hexVertices, vertexEdges } from '../../board/geometry';
 import { renown } from '../awards';
 import { pathSpotOk } from '../build';
 import { player, type Result } from '../setup';
@@ -13,7 +13,7 @@ import type { Play } from './arcana';
 const rival = (s: GameState, id: PlayerId, t?: PlayerId) => !!t && t !== id && s.players.some((p) => p.id === t);
 const sentinelsOf = (s: GameState, id: PlayerId) => Object.keys(s.hf!.sentinels).filter((v) => s.hf!.sentinels[v].owner === id);
 const touchesMyPath = (s: GameState, id: PlayerId, v: VertexId) => vertexEdges(v).some((e) => s.paths[e] === id);
-const free = (s: GameState, id: PlayerId, v?: VertexId) => !!v && ALL_VERTICES.includes(v) && empty(s, v) && touchesMyPath(s, id, v);
+const free = (s: GameState, id: PlayerId, v?: VertexId) => !!v && boardGeometry(s.board).vertexSet.has(v) && empty(s, v) && touchesMyPath(s, id, v);
 const addSentinel = (s: GameState, id: PlayerId, v: VertexId, rank: 1 | 2 | 3) => {
   s.hf!.sentinels[v] = { owner: id, rank, active: false, actedTurn: s.turn };
 };

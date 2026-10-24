@@ -1,6 +1,6 @@
 import type { Action, EdgeId, GameState, PlayerId, ResourceCounts } from '../types';
 import { COSTS, RESOURCES } from '../constants';
-import { ALL_EDGES, ALL_VERTICES, edgeVertices, vertexEdges, vertexNeighbors } from '../board/geometry';
+import { boardGeometry, edgeVertices, vertexEdges, vertexNeighbors } from '../board/geometry';
 import { player, type Result } from './setup';
 
 export const canPay = (s: GameState, id: PlayerId, c: ResourceCounts) => RESOURCES.every((r) => player(s, id).hand[r] >= c[r]);
@@ -14,7 +14,7 @@ export function pay(s: GameState, id: PlayerId, c: ResourceCounts) {
 
 // A path joins at a vertex where you own a building, or own another path and no opponent building blocks it.
 export function pathSpotOk(s: GameState, id: PlayerId, edge: EdgeId): boolean {
-  if (!ALL_EDGES.includes(edge) || s.paths[edge]) return false;
+  if (!boardGeometry(s.board).edgeSet.has(edge) || s.paths[edge]) return false;
   return edgeVertices(edge).some((v) => {
     const b = s.buildings[v];
     if (b) return b.owner === id;
@@ -22,7 +22,7 @@ export function pathSpotOk(s: GameState, id: PlayerId, edge: EdgeId): boolean {
   });
 }
 
-export const hasLegalPath = (s: GameState, id: PlayerId) => ALL_EDGES.some((e) => pathSpotOk(s, id, e));
+export const hasLegalPath = (s: GameState, id: PlayerId) => boardGeometry(s.board).edges.some((e) => pathSpotOk(s, id, e));
 
 export function buildPath(s: GameState, id: PlayerId, a: Extract<Action, { type: 'buildPath' }>): Result {
   const ph = s.phase;
@@ -46,7 +46,7 @@ export function buildOutpost(s: GameState, id: PlayerId, a: Extract<Action, { ty
   if (s.phase.k !== 'main') return 'cannot build now';
   const v = a.vertex;
   const p = player(s, id);
-  if (!ALL_VERTICES.includes(v)) return 'no such vertex';
+  if (!boardGeometry(s.board).vertexSet.has(v)) return 'no such vertex';
   if (p.piecesLeft.outpost < 1) return 'no outposts left';
   if (s.buildings[v] || vertexNeighbors(v).some((n) => s.buildings[n])) return 'too close to another building';
   if (s.hf?.sentinels[v]) return 'a Sentinel stands there';

@@ -50,6 +50,11 @@ export function Lobby(p: {
               <option value="random">Random</option>
               <option value="starter">Starter</option>
             </select>
+            <label>Map size</label>
+            <select value={lobby.settings.boardSize} onChange={(e) => set({ boardSize: e.target.value as Settings['boardSize'] })}>
+              <option value="standard">Standard</option>
+              <option value="large">Large</option>
+            </select>
             <label>Glory target</label>
             <select value={lobby.settings.renownTarget} onChange={(e) => set({ renownTarget: +e.target.value })}>
               {range(7, 15).map((n) => <option key={n}>{n}</option>)}

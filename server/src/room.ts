@@ -5,6 +5,7 @@ import {
   autoAct,
   createGame,
   eventFor,
+  logFor,
   legalActions,
   pendingPlayers,
   viewFor,
@@ -26,6 +27,7 @@ type Seat = { id: PlayerId; name: string; color: PlayerColor; seatToken: string;
 const COLORS: PlayerColor[] = ['ember', 'tide', 'moss', 'bone'];
 const IDLE_MS = 10 * 60_000;
 const HOST_WAIT_MS = 120_000;
+const LOBBY_MS = 30 * 60_000; // a room that never starts a game is dropped, even with sockets attached
 const MAX_SEATS = 4;
 
 const bad = (code: string, message: string): ServerMsg => ({ t: 'error', code, message });
@@ -35,12 +37,16 @@ export class Room {
   settings: Settings = { ...DEFAULT_SETTINGS };
   game: GameState | null = null;
   private bySocket = new Map<Conn, Seat>();
+  private logSent = new WeakSet<Conn>(); // conns that already hold the full log
   private pendingSince = new Map<PlayerId, number>();
   private timers = new Map<PlayerId, ReturnType<typeof setTimeout>>();
   private idle: ReturnType<typeof setTimeout> | null = null;
+  private lobbyTtl: ReturnType<typeof setTimeout>;
 
   constructor(readonly id: string, private opts: RoomOpts = {}) {
     this.armIdle();
+    this.lobbyTtl = setTimeout(() => !this.game && this.opts.onExpire?.(this), LOBBY_MS);
+    this.lobbyTtl.unref?.();
   }
 
   static restore(snap: RoomSnapshot, opts: RoomOpts = {}): Room {
@@ -154,11 +160,12 @@ export class Room {
     const ok =
       typeof next.hollowFleet === 'boolean' &&
       ['random', 'starter'].includes(next.boardMode) &&
+      ['standard', 'large'].includes(next.boardSize) &&
       Number.isInteger(next.renownTarget) && next.renownTarget >= 7 && next.renownTarget <= 15 &&
       Number.isInteger(next.discardLimit) && next.discardLimit >= 7 && next.discardLimit <= 10 &&
       [15, 30, 45].includes(next.turnTimerSec);
     if (!ok) return this.put(conn, bad('bad_settings', 'Those settings are out of range.'));
-    this.settings = { boardMode: next.boardMode, renownTarget: next.renownTarget, discardLimit: next.discardLimit, turnTimerSec: next.turnTimerSec, hollowFleet: next.hollowFleet };
+    this.settings = { boardMode: next.boardMode, boardSize: next.boardSize, renownTarget: next.renownTarget, discardLimit: next.discardLimit, turnTimerSec: next.turnTimerSec, hollowFleet: next.hollowFleet };
     this.changed();
   }
 
@@ -267,6 +274,10 @@ export class Room {
   // Stops all timers; used when the room is deleted.
   dispose() {
     this.clearIdle();
+    clearTimeout(this.lobbyTtl);
+    const conns = [...this.bySocket.keys()];
+    this.bySocket.clear(); // so the close events below do not re-save a deleted room
+    conns.forEach((c) => c.close());
     for (const id of [...this.pendingSince.keys()]) this.drop(id);
   }
 
@@ -311,7 +322,10 @@ export class Room {
     const deadline = waitingOn.length ? Math.min(...waitingOn.map((w) => w.since)) + this.settings.turnTimerSec * 1000 : null;
     for (const s of this.seats) {
       if (!s.conn) continue;
-      this.put(s.conn, { t: 'game', view: viewFor(g, s.id), events: events.map((e) => eventFor(e, s.id)), legal: legalActions(g, s.id), deadline, waitingOn });
+      // The log only grows, so after the first full copy the client appends `events`.
+      const log = this.logSent.has(s.conn) ? undefined : logFor(g, s.id);
+      this.logSent.add(s.conn);
+      this.put(s.conn, { t: 'game', view: viewFor(g, s.id), ...(log && { log }), events: events.map((e) => eventFor(e, s.id)), legal: legalActions(g, s.id), deadline, waitingOn });
     }
   }
 }

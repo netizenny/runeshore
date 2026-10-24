@@ -1,5 +1,5 @@
 import type { Action, GameEvent, PlayerColor, PlayerId, Settings } from './types';
-import type { PlayerView } from './view';
+import type { GameView } from './view';
 
 export type SeatInfo = { id: PlayerId; name: string; color: PlayerColor; connected: boolean };
 
@@ -15,5 +15,5 @@ export type ClientMsg =
 export type ServerMsg =
   | { t: 'joined'; roomId: string; you: PlayerId; seatToken: string; host: boolean }
   | { t: 'lobby'; seats: SeatInfo[]; host: PlayerId; settings: Settings }
-  | { t: 'game'; view: PlayerView; events: GameEvent[]; legal: Action[]; deadline: number | null; waitingOn: { player: PlayerId; since: number }[] }
+  | { t: 'game'; view: GameView; log?: GameEvent[]; events: GameEvent[]; legal: Action[]; deadline: number | null; waitingOn: { player: PlayerId; since: number }[] }
   | { t: 'error'; code: string; message: string };

@@ -8,7 +8,7 @@ export function createGame(players: { id: PlayerId; name: string; color: PlayerC
   let rng = seed >>> 0;
   let order: PlayerId[];
   [order, rng] = shuffle(players.map((p) => p.id), rng);
-  const [board, afterBoard] = generateBoard(settings.boardMode, rng);
+  const [board, afterBoard] = generateBoard(settings.boardMode, rng, settings.boardSize === 'large');
   // No Omen deck in the expansion; skipping the shuffle keeps mode-off rng use unchanged.
   const [omenDeck, afterDeck] = settings.hollowFleet ? [[], afterBoard] : shuffle(OMEN_DECK, afterBoard);
   const [hf, afterHF] = settings.hollowFleet ? initHF(players.map((p) => p.id), afterDeck) : [undefined, afterDeck];

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import type { Action, Hex } from '@runeshore/shared';
-import { ALL_EDGES, ALL_VERTICES, edgeVertices, hexPixel, hexVertices, vertexPixel, type PlayerView } from '@runeshore/shared';
+import { boardGeometry, edgeVertices, hexPixel, hexVertices, vertexPixel, type PlayerView } from '@runeshore/shared';
 import { BulwarkRim, Citadel, Outpost, PathLine, PeddlerToken, Port, S, SentinelPiece, Shade, SpireCrest, TERRAIN_FILL, TerrainArt, Token } from './art';
 
 export type Mode = 'outpost' | 'path' | 'citadel' | 'shade' | 'sentinel' | 'arcana' | null;
@@ -14,9 +14,10 @@ const PATH: Action['type'][] = ['placePath', 'buildPath'];
 export function Board({ view, legal, mode, onAction, pick = [] }: { view: PlayerView; legal: Action[]; mode: Mode; onAction(a: Action): void; pick?: Pick[] }) {
   const colorOf = (id: string) => `var(--${view.players.find((p) => p.id === id)!.color})`;
   const hexes = Object.values(view.board.hexes);
+  const k = hexes.length > 19 ? 1.4 : 1;
   const edgePts = useMemo(
-    () => Object.fromEntries(ALL_EDGES.map((e) => [e, edgeVertices(e).map((v) => vertexPixel(v, S))])),
-    [],
+    () => Object.fromEntries(boardGeometry(view.board).edges.map((e) => [e, edgeVertices(e).map((v) => vertexPixel(v, S))])),
+    [view.board],
   );
   const poly = (h: Hex) => hexVertices(h.id).map((v) => { const p = vertexPixel(v, S); return `${p.x},${p.y}`; }).join(' ');
 
@@ -25,8 +26,8 @@ export function Board({ view, legal, mode, onAction, pick = [] }: { view: Player
   const hexActs = legal.filter((a) => mode === 'shade' && a.type === 'moveShade') as Extract<Action, { hex: string }>[];
 
   return (
-    <svg viewBox="-290 -270 580 540" style={{ width: '100%', height: '100%' }} role="img" aria-label="Runeshore board">
-      <rect x={-290} y={-270} width={580} height={540} fill="var(--night)" />
+    <svg viewBox={`${-290 * k} ${-270 * k} ${580 * k} ${540 * k}`} style={{ width: '100%', height: '100%' }} role="img" aria-label="Runeshore board">
+      <rect x={-290 * k} y={-270 * k} width={580 * k} height={540 * k} fill="var(--night)" />
       <g fill="none" stroke="var(--ink-gold-dim)" strokeWidth={0.8} opacity={0.35}>
         {Array.from({ length: 9 }, (_, i) => <path key={i} d={`M-280 ${-250 + i * 62} q35 -9 70 0 t70 0 t70 0 t70 0 t70 0 t70 0 t70 0 t70 0`} />)}
       </g>
@@ -56,7 +57,7 @@ export function Board({ view, legal, mode, onAction, pick = [] }: { view: Player
       })}
 
       {Object.entries(view.paths).map(([e, owner]) => <PathLine key={e} a={edgePts[e][0]} b={edgePts[e][1]} color={colorOf(owner)} />)}
-      {ALL_VERTICES.map((v) => {
+      {Object.keys(view.buildings).map((v) => {
         const b = view.buildings[v];
         if (!b) return null;
         const { x, y } = vertexPixel(v, S);

@@ -168,7 +168,8 @@ Detailed plan: `docs/superpowers/plans/2026-10-23-runeshore-hollow-fleet.md` (Ta
 
 Each one starts with a design-and-plan session, as the spec requires.
 
-- [ ] 5–6 player extension: ~3 sessions (plan, engine + bigger board + special build
+- [x] Large random map (replaces the 5–6 player extension; 3–4 players, lobby "Map size" setting). Done 2026-10-24: 37-hex board (ids prefixed `L`), `geometry(big)`, `TILES_LARGE`/`TOKENS_LARGE`/`PORTS_LARGE`, fuzz green. Not hand-clicked in the browser.
+- [ ] (dropped) 5–6 player extension: ~3 sessions (plan, engine + bigger board + special build
   phase, UI + playtest).
 - [ ] Seafarers ("Drowned Isles"): ~6 sessions (plan, sea hexes and Skiffs, Corsair and
   Glimmer fields, scenarios, UI, playtest).

@@ -99,4 +99,9 @@ export const TOKENS = [2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12
 
 export const PORTS: (Resource | 'any')[] = [...rep<Resource | 'any'>('any', 4), ...RESOURCES];
 
+// Large board: 37 hexes (7 of each terrain, 2 ashen), 35 tokens, 11 ports.
+export const TILES_LARGE: Terrain[] = [...RESOURCES.flatMap((r) => rep<Terrain>(r, 7)), 'ashen', 'ashen'];
+export const TOKENS_LARGE = [2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 11, 11, 11, 11, 12, 12];
+export const PORTS_LARGE: (Resource | 'any')[] = [...rep<Resource | 'any'>('any', 6), ...RESOURCES];
+
 export const OMEN_NAME: Record<OmenKind, string> = { warden: 'Warriors', relic: 'Relic', waymaking: 'Twin Paths', bounty: 'Bounty', hoard: 'Hoard' };

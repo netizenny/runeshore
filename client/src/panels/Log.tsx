@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { ARCANA_BY_KEY, OMEN_NAME, type GameEvent, type PlayerView } from '@runeshore/shared';
 import { Cards } from './util';
+import { Citadel, Outpost, PathLine } from '../board/art';
 
 export function Log({ view }: { view: PlayerView }) {
   const end = useRef<HTMLDivElement>(null);
@@ -18,7 +19,11 @@ export function Log({ view }: { view: PlayerView }) {
       case 'discarded': return `${n(e.player)} cast off ${e.count} cards`;
       case 'shadeMoved': return `${n(e.player)} moved the Shade`;
       case 'stole': return <>{n(e.thief)} stole {e.resource ? <Cards c={{ [e.resource]: 1 }} /> : 'a card'} from {n(e.victim)}</>;
-      case 'built': return `${n(e.player)} raised ${e.piece === 'outpost' ? 'an' : 'a'} ${e.piece}`;
+      case 'built': {
+        const color = `var(--${view.players.find((p) => p.id === e.player)?.color})`;
+        const icon = e.piece === 'outpost' ? <Outpost color={color} /> : e.piece === 'citadel' ? <Citadel color={color} /> : e.piece === 'path' ? <PathLine a={{ x: -8, y: 5 }} b={{ x: 8, y: -5 }} color={color} /> : null;
+        return <>{n(e.player)} raised {e.piece === 'outpost' ? 'an' : 'a'} {e.piece} {icon && <svg width={26} height={26} viewBox="-13 -13 26 26" style={{ verticalAlign: 'middle' }}>{icon}</svg>}</>;
+      }
       case 'omenBought': return `${n(e.player)} drew a Rune`;
       case 'omenPlayed': return `${n(e.player)} played ${OMEN_NAME[e.kind]}`;
       case 'traded': return <>{n(e.a)} traded <Cards c={e.aGave} /> with {e.b === 'bank' ? 'the vault' : n(e.b)} for <Cards c={e.bGave} /></>;

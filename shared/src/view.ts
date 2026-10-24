@@ -17,6 +17,8 @@ export type PlayerView = Omit<GameState, 'seed' | 'rngState' | 'omenDeck' | 'pla
   players: PlayerViewPlayer[];
   you: PlayerId;
 };
+// What the server sends each move: the log travels separately (full once per connection, then as `events`).
+export type GameView = Omit<PlayerView, 'log'>;
 
 const sum = (c: ResourceCounts) => c.clay + c.timber + c.fleece + c.harvest + c.starmetal;
 
@@ -24,13 +26,14 @@ const sum = (c: ResourceCounts) => c.clay + c.timber + c.fleece + c.harvest + c.
 export const eventFor = (e: GameEvent, viewer: PlayerId): GameEvent =>
   e.type === 'stole' && viewer !== e.thief && viewer !== e.victim ? { ...e, resource: null } : e;
 
-export function viewFor(s: GameState, viewer: PlayerId): PlayerView {
-  const { seed: _seed, rngState: _rng, omenDeck, players, log, hf, ...rest } = s;
+export const logFor = (s: GameState, viewer: PlayerId): GameEvent[] => s.log.map((e) => eventFor(e, viewer));
+
+export function viewFor(s: GameState, viewer: PlayerId): GameView {
+  const { seed: _seed, rngState: _rng, omenDeck, players, log: _log, hf, ...rest } = s;
   return {
     ...structuredClone(rest),
     omenDeckCount: omenDeck.length,
     ...(hf && { hf: hfViewFor(s, hf, viewer) }),
-    log: log.map((e) => eventFor(e, viewer)),
     players: players.map(({ hand, omens, ...p }) => ({
       ...structuredClone(p),
       handCount: sum(hand),

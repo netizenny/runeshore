@@ -1,6 +1,6 @@
 import type { Action, ArcanaArg, GameState, PlayerId } from '../../types';
 import { COMMODITIES, INVENTOR_FIXED, RESOURCES } from '../../constants';
-import { ALL_EDGES, ALL_VERTICES, vertexEdges } from '../../board/geometry';
+import { boardGeometry, vertexEdges } from '../../board/geometry';
 import { pathSpotOk } from '../build';
 import { hfPlayer } from './state';
 import { KINDS, cardTotal, others } from './arcana-trade';
@@ -14,7 +14,7 @@ export function arcanaCandidates(s: GameState, id: PlayerId): Action[] {
   const hexes = Object.keys(s.board.hexes);
   const mine = Object.keys(s.buildings).filter((v) => s.buildings[v].owner === id);
   const knights = Object.keys(hf.sentinels).filter((v) => hf.sentinels[v].owner === id);
-  const touching = ALL_VERTICES.filter((v) => vertexEdges(v).some((e) => s.paths[e] === id));
+  const touching = boardGeometry(s.board).vertices.filter((v) => vertexEdges(v).some((e) => s.paths[e] === id));
 
   const argsFor = (card: string): ArcanaArg[] => {
     switch (card) {
@@ -26,7 +26,7 @@ export function arcanaCandidates(s: GameState, id: PlayerId): Action[] {
       case 'inventor':
         return pairs(hexes.filter((h) => s.board.hexes[h].token !== null && !INVENTOR_FIXED.includes(s.board.hexes[h].token!))).map((hexes) => ({ hexes }));
       case 'roadbuilding':
-        return ALL_EDGES.filter((e) => pathSpotOk(s, id, e)).map((e) => ({ edges: [e] }));
+        return boardGeometry(s.board).edges.filter((e) => pathSpotOk(s, id, e)).map((e) => ({ edges: [e] }));
       case 'smith':
         return [...knights.map((v) => ({ vertices: [v] })), ...pairs(knights).map((vertices) => ({ vertices }))];
       case 'harbor': {

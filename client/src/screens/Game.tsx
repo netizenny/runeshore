@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { Action, ClientMsg, ServerMsg } from '@runeshore/shared';
+import type { Action, ClientMsg, PlayerView, ServerMsg } from '@runeshore/shared';
 import { Board, type Mode, type Pick } from '../board/Board';
 import { ComicPanel } from '../fx/ComicPanel';
 import { ArcanaHand, arcanaPicks, playsOf } from '../panels/Arcana';
@@ -18,7 +18,7 @@ import { Players } from '../panels/Players';
 import { ShadeSteal } from '../panels/ShadeSteal';
 import { Trade } from '../panels/Trade';
 
-type GameMsg = Extract<ServerMsg, { t: 'game' }>;
+type GameMsg = Omit<Extract<ServerMsg, { t: 'game' }>, 'view'> & { view: PlayerView };
 
 const has = (legal: Action[], ...types: Action['type'][]) => legal.some((a) => types.includes(a.type));
 

@@ -62,3 +62,14 @@ describe('fuzz with Hollow Fleet', () => {
     }, 600_000);
   }
 });
+
+describe('fuzz, large board', () => {
+  for (const n of [3, 4]) {
+    it(`20 seeds with ${n} players end with a winner`, () => {
+      for (let seed = 1; seed <= 20; seed++) {
+        const { state, steps } = drive(newGame(seed, n, { boardSize: 'large' }), seed, 4000, invariants);
+        expect(state.phase.k, `seed ${seed} after ${steps} steps`).toBe('ended');
+      }
+    }, 120_000);
+  }
+});

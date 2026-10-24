@@ -3,10 +3,12 @@ import { deleteRoom, loadRooms, saveRoom, DATA_DIR } from './persist';
 import { Room } from './room';
 
 const MAX_ROOMS = 200;
+const MAX_PER_IP = 5;
 const ALPHABET = 'ABCDEFGHJKMNPQRSTVWXYZ23456789';
 
 export class Rooms {
   private rooms = new Map<string, Room>();
+  private creator = new Map<string, string>(); // room id -> creator ip, for the per-ip cap
 
   constructor(private dir = DATA_DIR) {}
 
@@ -20,6 +22,7 @@ export class Rooms {
   drop(room: Room): void {
     room.dispose();
     this.rooms.delete(room.id);
+    this.creator.delete(room.id);
     deleteRoom(room.id, this.dir);
   }
 
@@ -27,13 +30,15 @@ export class Rooms {
     return this.rooms.get(id);
   }
 
-  create(): Room | null {
+  create(ip = ''): Room | null {
     if (this.rooms.size >= MAX_ROOMS) return null;
+    if (ip && [...this.creator.values()].filter((x) => x === ip).length >= MAX_PER_IP) return null;
     let id: string;
     do id = Array.from({ length: 6 }, () => ALPHABET[randomInt(ALPHABET.length)]).join('');
     while (this.rooms.has(id));
     const room = new Room(id, this.opts());
     this.rooms.set(id, room);
+    if (ip) this.creator.set(id, ip);
     return room;
   }
 

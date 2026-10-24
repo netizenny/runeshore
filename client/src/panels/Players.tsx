@@ -39,9 +39,9 @@ export function Players({ view, waiting, deadline }: { view: PlayerView; waiting
             <span title="Cards">🂠 {p.handCount}</span>
             {view.hf ? <span title="Arcana">✦ {view.hf.players[id].arcanaCount}</span> : <span title="Runes">✦ {p.omenCount}</span>}
             {view.hf && <span title="Commodities">📜 {Object.values(view.hf.players[id].commodities).reduce((a, b) => a + b, 0)}</span>}
-            {view.longestPath === id && <em>Longest Trail</em>}
-            {view.grandHost === id && <em>Warlord</em>}
-            {p.wardensPlayed > 0 && <small>Warriors {p.wardensPlayed}</small>}
+            {view.longestPath === id && <em title="Longest Trail">🛤</em>}
+            {view.grandHost === id && <em title="Warlord">Warlord</em>}
+            {p.wardensPlayed > 0 && <small title="Warriors played">⚔ {p.wardensPlayed}</small>}
             {waiting.includes(id) && <span className="ring">{left === null ? '…' : `${left}s`}</span>}
           </div>
         );

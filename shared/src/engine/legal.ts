@@ -1,6 +1,6 @@
 import type { Action, ApplyResult, Commodity, GameEvent, GameState, PlayerId, Resource, ResourceCounts } from '../types';
 import { COMMODITIES, COSTS, IMPROVE_MAX, TRACK_COMMODITY, RESOURCES, emptyCounts, isCommodity } from '../constants';
-import { ALL_EDGES, ALL_VERTICES, vertexEdges, vertexNeighbors } from '../board/geometry';
+import { boardGeometry, vertexEdges, vertexNeighbors } from '../board/geometry';
 import { randInt, shuffle } from '../rng';
 import { applyAction, currentPlayer } from './apply';
 import { canPay, pathSpotOk } from './build';
@@ -88,7 +88,7 @@ export function legalActions(s: GameState, id: PlayerId): Action[] {
   switch (ph.k) {
     case 'setup':
       if (ph.step === 'outpost') {
-        for (const v of ALL_VERTICES) {
+        for (const v of boardGeometry(s.board).vertices) {
           if (!s.buildings[v] && !vertexNeighbors(v).some((n) => s.buildings[n])) out.push({ type: 'placeOutpost', vertex: v });
         }
       } else {
@@ -102,16 +102,16 @@ export function legalActions(s: GameState, id: PlayerId): Action[] {
       for (const victim of ph.victims) out.push({ type: 'steal', victim });
       return out;
     case 'waymaking':
-      for (const e of ALL_EDGES) if (pathSpotOk(s, id, e)) out.push({ type: 'buildPath', edge: e });
+      for (const e of boardGeometry(s.board).edges) if (pathSpotOk(s, id, e)) out.push({ type: 'buildPath', edge: e });
       return out;
     case 'roll':
       out.push({ type: 'roll' });
       break;
     case 'main':
       out.push({ type: 'endTurn' });
-      if (canPay(s, id, COSTS.path)) for (const e of ALL_EDGES) if (pathSpotOk(s, id, e)) add({ type: 'buildPath', edge: e });
+      if (canPay(s, id, COSTS.path)) for (const e of boardGeometry(s.board).edges) if (pathSpotOk(s, id, e)) add({ type: 'buildPath', edge: e });
       const [outpost, citadel] = [canPay(s, id, COSTS.outpost), canPay(s, id, COSTS.citadel)];
-      for (const v of ALL_VERTICES) {
+      for (const v of boardGeometry(s.board).vertices) {
         const b = s.buildings[v];
         if (citadel && b?.owner === id && b.kind === 'outpost') add({ type: 'buildCitadel', vertex: v });
         else if (outpost && !b && vertexEdges(v).some((e) => s.paths[e] === id)) add({ type: 'buildOutpost', vertex: v });
@@ -125,7 +125,7 @@ export function legalActions(s: GameState, id: PlayerId): Action[] {
       if (s.hf) {
         const mine = Object.entries(s.hf.sentinels).filter(([, k]) => k.owner === id);
         if (canPay(s, id, COSTS.sentinel)) {
-          for (const v of ALL_VERTICES) if (vertexEdges(v).some((e) => s.paths[e] === id)) add({ type: 'buildSentinel', vertex: v });
+          for (const v of boardGeometry(s.board).vertices) if (vertexEdges(v).some((e) => s.paths[e] === id)) add({ type: 'buildSentinel', vertex: v });
           for (const [v] of mine) add({ type: 'promoteSentinel', vertex: v });
         }
         const lv = hfPlayer(s, id);

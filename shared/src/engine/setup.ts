@@ -1,5 +1,5 @@
 import type { Action, GameEvent, GameState, PlayerId } from '../types';
-import { edgeVertices, vertexHexes, vertexNeighbors, ALL_EDGES, ALL_VERTICES } from '../board/geometry';
+import { edgeVertices, vertexHexes, vertexNeighbors, boardGeometry } from '../board/geometry';
 
 // Handlers mutate the (already cloned) state and return events, or an error string.
 export type Result = GameEvent[] | string;
@@ -10,7 +10,7 @@ export function placeOutpost(s: GameState, id: PlayerId, a: Extract<Action, { ty
   const ph = s.phase;
   if (ph.k !== 'setup' || ph.step !== 'outpost') return 'not placing an outpost';
   const v = a.vertex;
-  if (!ALL_VERTICES.includes(v)) return 'no such vertex';
+  if (!boardGeometry(s.board).vertexSet.has(v)) return 'no such vertex';
   if (s.buildings[v] || vertexNeighbors(v).some((n) => s.buildings[n])) return 'too close to another building';
   const p = player(s, id);
   // In the expansion the second outpost is a Citadel.
@@ -33,7 +33,7 @@ export function placeOutpost(s: GameState, id: PlayerId, a: Extract<Action, { ty
 export function placePath(s: GameState, id: PlayerId, a: Extract<Action, { type: 'placePath' }>): Result {
   const ph = s.phase;
   if (ph.k !== 'setup' || ph.step !== 'path') return 'not placing a path';
-  if (!ALL_EDGES.includes(a.edge)) return 'no such edge';
+  if (!boardGeometry(s.board).edgeSet.has(a.edge)) return 'no such edge';
   if (s.paths[a.edge]) return 'path already there';
   if (!edgeVertices(a.edge).includes(ph.lastOutpost!)) return 'path must touch the new outpost';
   s.paths[a.edge] = id;

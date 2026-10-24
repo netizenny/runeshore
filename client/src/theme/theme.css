@@ -86,6 +86,7 @@ button[data-on='true'] { background: var(--ink-gold-dim); color: var(--night); }
 .fleet .step-cell[data-end='true'] { color: var(--blood); }
 .improve, .arcana { position: relative; display: flex; gap: .4rem; flex-wrap: wrap; align-items: center; }
 .arc[data-on='true'] { outline: 2px solid var(--ink-gold); }
+.omen:disabled, .arc:disabled { opacity: .85; } /* held but not playable now: still readable */
 .arcana-args { max-width: 70vw; white-space: normal; flex-direction: column; align-items: flex-start; }
 .arg-list { display: flex; flex-wrap: wrap; gap: .25rem; max-height: 40vh; overflow: auto; }
 .game[data-hf='true'] .dock { gap: .35rem .6rem; padding: .3rem .6rem; }
