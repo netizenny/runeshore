@@ -26,6 +26,10 @@ If it fails with `EADDRINUSE`, another server is still using port 3001. Close it
 3. In a second terminal run `cloudflared tunnel --url http://localhost:3001`
 4. It prints a `https://….trycloudflare.com` link. Send it to your friends. The link stops working when you close the tunnel.
 
+## Siege of the Hollow Fleet
+
+The host ticks "Siege of the Hollow Fleet" in the lobby (Glory target becomes 13). Differences from the base game: a third event die moves the Hollow Fleet along a 7-step track; Citadels also pay Vellum, Silk and Sigil; you improve Lore, Guild and Crown with them; Sentinels replace Warriors and defend against the Fleet's attack; Bulwarks, Spires, the Peddler and 54 Arcana cards join in. There are no Runes in this mode. The in-game Rulebook has a tab for each rule.
+
 ## Notes
 
 - A restarted server resumes unfinished games from `server/data/rooms`. Players just reload their tab.
