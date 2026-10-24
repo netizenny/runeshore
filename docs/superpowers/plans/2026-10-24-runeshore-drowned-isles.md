@@ -154,7 +154,8 @@ Sources: official 5th-ed rules text (ultraboardgames summary) + catan.com FAQ. C
 - Tests + fuzz with 5 and 6 players; art fit (viewBox) on the larger maps; rulebook line.
 - Done when: a 6-player Drowned Isles game plays start to finish in the lobby and fuzz is clean.
 
-### [ ] Phase 8: Ship it
+### [x] Phase 8: Ship it (done 2026-10-24)
+- Done: Phase 7 fuzz (17 setups, 44 min) clean; graph rebuilt after Phase 7; `feat/base-game` pushed. Render redeploy depends on which branch the Render service tracks.
 - Update memory/docs, `/graphify . --update`. (No separate full fuzz: the Phase 7 fuzz run already covers every mode alone at 3-6 players; user decided 2026-10-24.)
 - Single commit set already per phase; then `git push` and Render redeploy (explicitly requested by user for this DLC).
 
