@@ -21,9 +21,9 @@ export function Lobby(p: {
   const set = (s: Partial<Settings>) => send({ t: 'settings', settings: s });
   const copy = () => navigator.clipboard?.writeText(location.href).then(() => setCopied(true));
   const many = (lobby?.seats.length ?? 0) > 4;
-  // 5-6 players need a big map; Drowned Isles big maps are 5-6 only. The server checks the same.
+  // 5-6 players need a big map; big maps seat 2-6. The server checks the same.
   const big = !!lobby && (lobby.settings.drownedIsles ? !!SCENARIOS[lobby.settings.scenario].big : lobby.settings.boardSize === 'large');
-  const mapFits = many ? big : !(lobby?.settings.drownedIsles && big);
+  const mapFits = !many || big;
 
   return (
     <div className="screen">
@@ -82,7 +82,7 @@ export function Lobby(p: {
                 <label>Scenario</label>
                 <select value={lobby.settings.scenario} onChange={(e) => set({ scenario: e.target.value as Settings['scenario'] })}>
                   {Object.values(SCENARIOS).map((sc) => (
-                    <option key={sc.id} value={sc.id}>{sc.name} ({sc.big ? '5-6' : '2-4'})</option>
+                    <option key={sc.id} value={sc.id}>{sc.name} ({sc.big ? '2-6' : '2-4'})</option>
                   ))}
                 </select>
               </>
@@ -92,7 +92,7 @@ export function Lobby(p: {
               {[15, 30, 45].map((n) => <option key={n} value={n}>{n} s</option>)}
             </select>
           </div>
-          {!mapFits && <div className="err">{many ? 'Five or six players need a 5-6 map.' : 'That map is for five or six players.'}</div>}
+          {!mapFits && <div className="err">Five or six players need a large map.</div>}
           <button disabled={lobby.seats.length < 2 || !mapFits} onClick={() => send({ t: 'start' })}>Begin</button>
         </>
       )}

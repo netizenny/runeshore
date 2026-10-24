@@ -9,7 +9,7 @@ export interface Scenario {
   name: string;
   radius: number; // every hex of this disc not listed in `land` is Deep
   anywhere?: true; // no home isle: setup may start on any isle
-  big?: true; // a 5-6 player map; the others seat 2-4
+  big?: true; // a large map seating 2-6; the others seat 2-4
   land: [q: number, r: number, terrain: Terrain, token: number | null, home?: true][];
   fog?: [terrain: Terrain, token: number | null][]; // hidden contents dealt onto the `mist` hexes
   ports: [q1: number, r1: number, q2: number, r2: number, kind: Resource | 'any'][];

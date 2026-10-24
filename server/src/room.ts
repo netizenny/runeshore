@@ -185,7 +185,6 @@ export class Room {
     if (this.seats.length < 2) return this.put(conn, bad('too_few', 'Need at least 2 players.'));
     const big = this.settings.drownedIsles ? !!SCENARIOS[this.settings.scenario].big : this.settings.boardSize === 'large';
     if (this.seats.length > 4 && !big) return this.put(conn, bad('map_seats', 'Five or six players need the Large map (Sextet Reach in Drowned Isles).'));
-    if (this.seats.length <= 4 && this.settings.drownedIsles && big) return this.put(conn, bad('map_seats', 'Sextet Reach is for five or six players.'));
     const players = this.seats.map(({ id, name, color }) => ({ id, name, color }));
     this.game = createGame(players, this.settings, randomInt(1, 2 ** 31));
     this.settle([]);

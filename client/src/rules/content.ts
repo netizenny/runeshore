@@ -76,7 +76,7 @@ export const BOOKS: Book[] = [
       t('Boats', 'Longest trail', 'Paths and Boats count together as one route (minimum 5 for 2 Glory). An opposing Outpost or Citadel still breaks the chain.'),
       t('Setup', 'Veiled Reach', 'Mist hexes hide their land. Build a Path or Boat beside one to lift it: you take one card of its kind (or a Glimmer pick), and it then plays like any hex.'),
       t('Setup', 'Quartet Reach', 'Four equal isles in a ring. Start anywhere: your two Outposts may sit on different isles. Landfall pays for every isle you did not start on.'),
-      t('Setup', 'Sextet Reach', 'Quartet Reach for five or six players: six isles in a ring, each with all five resources. Start anywhere.'),
+      t('Setup', 'Sextet Reach', 'Quartet Reach for two to six players: six isles in a ring, each with all five resources. Start anywhere.'),
       t('Setup', 'Home isle', 'In First Landfall you place your starting Outposts on the home isle only; the other isles are reached by Boat.'),
     ],
   },

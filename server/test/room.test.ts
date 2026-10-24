@@ -70,7 +70,7 @@ describe('join rules', () => {
     expect(room.settings).toMatchObject({ gloryTarget: 12, turnTimerSec: 30 });
   });
 
-  it('5-6 players need a 5-6 map; Sextet Reach needs 5-6 players', () => {
+  it('5-6 players need a 5-6 map; Sextet Reach seats 2-6', () => {
     const { room, socks } = lobby(5);
     room.handle(socks[0], { t: 'start' });
     expect(errCode(socks[0])).toBe('map_seats');
@@ -80,10 +80,7 @@ describe('join rules', () => {
     const small = lobby(4);
     small.room.handle(small.socks[0], { t: 'settings', settings: { drownedIsles: true, scenario: 'sextet' } });
     small.room.handle(small.socks[0], { t: 'start' });
-    expect(errCode(small.socks[0])).toBe('map_seats');
-    small.room.handle(small.socks[0], { t: 'settings', settings: { drownedIsles: false, boardSize: 'large' } });
-    small.room.handle(small.socks[0], { t: 'start' });
-    expect(small.room.game).not.toBeNull();
+    expect(small.room.game?.board.ports).toHaveLength(12);
   });
 
   it('drownedIsles and hollowFleet exclude each other', () => {
