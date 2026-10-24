@@ -77,3 +77,13 @@ button[data-on='true'] { background: var(--ink-gold-dim); color: var(--night); }
 .rb-head { display: flex; gap: .6rem; align-items: center; }
 .rb-head h2 { margin: 0 auto 0 0; }
 .rb-body { overflow-y: auto; margin-top: .8rem; }
+
+/* Siege of the Hollow Fleet */
+.fleet { display: flex; gap: .25rem; align-items: center; flex-wrap: wrap; padding: .3rem .5rem; border: 1px solid var(--ink-gold-dim); border-radius: 6px; }
+.fleet .step-cell { width: 1.4rem; text-align: center; border-bottom: 1px solid var(--ink-gold-dim); }
+.fleet .step-cell[data-here='true'] { color: var(--ink-gold); font-weight: bold; }
+.fleet .step-cell[data-end='true'] { color: var(--blood); }
+.improve, .arcana { position: relative; display: flex; gap: .4rem; flex-wrap: wrap; align-items: center; }
+.arc[data-on='true'] { outline: 2px solid var(--ink-gold); }
+.arcana-args { max-width: 70vw; white-space: normal; flex-direction: column; align-items: flex-start; }
+.arg-list { display: flex; flex-wrap: wrap; gap: .25rem; max-height: 40vh; overflow: auto; }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { RESOURCES, emptyCounts, tradeRatio, type Action, type GameState, type PlayerView, type Resource, type ResourceCounts } from '@runeshore/shared';
+import { COMMODITIES, RESOURCES, emptyCounts, isCommodity, tradeRatio, type Action, type Commodity, type GameState, type PlayerView, type Resource, type ResourceCounts } from '@runeshore/shared';
 import { ResIcon } from '../board/art';
 
 // Click a resource to add one; click a chip in the tray to take one back.
@@ -22,7 +22,8 @@ export function Trade({ view, legal, act }: { view: PlayerView; legal: Action[];
   const [give, setGive] = useState(emptyCounts);
   const [get, setGet] = useState(emptyCounts);
   const bank = legal.filter((a): a is Extract<Action, { type: 'bankTrade' }> => a.type === 'bankTrade');
-  const ratio = (r: Resource) => tradeRatio(view as unknown as GameState, view.you, r); // reads only board and buildings
+  const ratio = (r: Resource | Commodity) => tradeRatio(view as unknown as GameState, view.you, r); // reads only board and buildings
+  const kinds: (Resource | Commodity)[] = view.hf ? [...RESOURCES, ...COMMODITIES] : RESOURCES;
   const ok = RESOURCES.some((r) => give[r]) && RESOURCES.some((r) => get[r]) && RESOURCES.every((r) => !(give[r] && get[r]));
   const send = () => {
     act({ type: 'offerTrade', give, get, to: 'all' });
@@ -38,10 +39,10 @@ export function Trade({ view, legal, act }: { view: PlayerView; legal: Action[];
       <Pick label="GET" hand={false} value={get} max={() => 9} onChange={setGet} />
       <button className="go" disabled={!ok} onClick={send}>Offer to everyone</button>
       <h4>Vault and ports</h4>
-      {RESOURCES.map((g) => (
-        <div key={g} className="row"><ResIcon r={g} /> {ratio(g)}:1 →
-          {RESOURCES.filter((r) => r !== g).map((r) => (
-            <button key={r} disabled={!bank.some((a) => a.give === g && a.get === r)} onClick={() => act({ type: 'bankTrade', give: g, get: r })}><ResIcon r={r} size={14} /></button>
+      {kinds.map((g) => (
+        <div key={g} className="row">{isCommodity(g) ? g : <ResIcon r={g} />} {ratio(g)}:1 →
+          {kinds.filter((r) => r !== g).map((r) => (
+            <button key={r} disabled={!bank.some((a) => a.give === g && a.get === r)} onClick={() => act({ type: 'bankTrade', give: g, get: r })}>{isCommodity(r) ? r : <ResIcon r={r} size={14} />}</button>
           ))}
         </div>
       ))}

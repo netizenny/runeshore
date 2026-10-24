@@ -151,3 +151,27 @@ export const Shade = () => (
 export const ResIcon = ({ r, size = 18 }: { r: Resource; size?: number }) => (
   <svg viewBox="-7 -7 14 14" width={size} height={size} fill={TERRAIN_FILL[r]} stroke={GOLD} strokeWidth={1} strokeLinejoin="round" strokeLinecap="round" aria-label={r}>{RESOURCE_GLYPH[r]}</svg>
 );
+
+// Expansion pieces. A Sentinel is a pennant on a post: rank = pips, hollow when inactive.
+export const SentinelPiece = ({ color, rank, active }: { color: string; rank: 1 | 2 | 3; active: boolean }) => (
+  <g stroke={GOLD} strokeWidth={1.1} strokeLinejoin="round">
+    <path d="M0 8 V-10" fill="none" />
+    <path d="M0 -10 L9 -6 L0 -2 Z" fill={active ? color : 'none'} stroke={active ? GOLD : color} strokeDasharray={active ? undefined : '2 2'} />
+    {Array.from({ length: rank }, (_, i) => <circle key={i} cx={-4 + i * 4} cy={11} r={1.6} fill={GOLD} stroke="none" />)}
+  </g>
+);
+
+export const BulwarkRim = () => <circle r={13} fill="none" stroke={GOLD} strokeWidth={2.2} strokeDasharray="4 2" />;
+
+export const SpireCrest = ({ color }: { color: string }) => (
+  <g stroke={GOLD} strokeWidth={1} strokeLinejoin="round" transform="translate(0 -17)">
+    <path d="M0 -8 L4 0 H-4 Z" fill={color} />
+  </g>
+);
+
+export const PeddlerToken = ({ color }: { color: string }) => (
+  <g stroke={GOLD} strokeWidth={1.2} strokeLinejoin="round" transform="translate(-20 20)">
+    <circle r={8} fill={color} />
+    <path d="M-4 1 H4 M0 -4 V5" fill="none" />
+  </g>
+);

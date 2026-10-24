@@ -1,14 +1,17 @@
 import { useMemo } from 'react';
 import type { Action, Hex } from '@runeshore/shared';
 import { ALL_EDGES, ALL_VERTICES, edgeVertices, hexPixel, hexVertices, vertexPixel, type PlayerView } from '@runeshore/shared';
-import { Citadel, Outpost, PathLine, Port, S, Shade, TERRAIN_FILL, TerrainArt, Token } from './art';
+import { BulwarkRim, Citadel, Outpost, PathLine, PeddlerToken, Port, S, SentinelPiece, Shade, SpireCrest, TERRAIN_FILL, TerrainArt, Token } from './art';
 
-export type Mode = 'outpost' | 'path' | 'citadel' | 'shade' | null;
+export type Mode = 'outpost' | 'path' | 'citadel' | 'shade' | 'sentinel' | 'arcana' | null;
+
+// A clickable spot chosen by the Game screen for the expansion modes.
+export type Pick = { kind: 'vertex' | 'hex' | 'edge'; id: string; go(): void };
 
 const OUTPOST: Action['type'][] = ['placeOutpost', 'buildOutpost'];
 const PATH: Action['type'][] = ['placePath', 'buildPath'];
 
-export function Board({ view, legal, mode, onAction }: { view: PlayerView; legal: Action[]; mode: Mode; onAction(a: Action): void }) {
+export function Board({ view, legal, mode, onAction, pick = [] }: { view: PlayerView; legal: Action[]; mode: Mode; onAction(a: Action): void; pick?: Pick[] }) {
   const colorOf = (id: string) => `var(--${view.players.find((p) => p.id === id)!.color})`;
   const hexes = Object.values(view.board.hexes);
   const edgePts = useMemo(
@@ -59,6 +62,13 @@ export function Board({ view, legal, mode, onAction }: { view: PlayerView; legal
         const { x, y } = vertexPixel(v, S);
         return <g key={v} transform={`translate(${x} ${y})`}>{b.kind === 'outpost' ? <Outpost color={colorOf(b.owner)} /> : <Citadel color={colorOf(b.owner)} />}</g>;
       })}
+      {Object.entries(view.hf?.sentinels ?? {}).map(([v, k]) => {
+        const { x, y } = vertexPixel(v, S);
+        return <g key={'s' + v} transform={`translate(${x + 11} ${y + 2})`}><SentinelPiece color={colorOf(k.owner)} rank={k.rank} active={k.active} /></g>;
+      })}
+      {(view.hf?.bulwarks ?? []).map((v) => { const { x, y } = vertexPixel(v, S); return <g key={'b' + v} transform={`translate(${x} ${y})`}><BulwarkRim /></g>; })}
+      {Object.values(view.hf?.spires ?? {}).map((sp) => { if (!sp) return null; const { x, y } = vertexPixel(sp.vertex, S); return <g key={'p' + sp.vertex} transform={`translate(${x} ${y})`}><SpireCrest color={colorOf(sp.owner)} /></g>; })}
+      {view.hf?.peddler && (() => { const { x, y } = hexPixel(view.hf!.peddler!.hex, S); return <g transform={`translate(${x} ${y})`}><PeddlerToken color={colorOf(view.hf!.peddler!.owner)} /></g>; })()}
 
       {edgeActs.map((a) => {
         const [p, q] = edgePts[a.edge];
@@ -67,6 +77,11 @@ export function Board({ view, legal, mode, onAction }: { view: PlayerView; legal
       {vertexActs.map((a) => {
         const { x, y } = vertexPixel(a.vertex, S);
         return <circle key={a.vertex} className="hit" cx={x} cy={y} r={9} onClick={() => onAction(a)} />;
+      })}
+      {pick.map((p) => {
+        if (p.kind === 'edge') { const [a, b] = edgePts[p.id]; return <line key={p.id} className="hit" x1={a.x} y1={a.y} x2={b.x} y2={b.y} strokeWidth={12} strokeLinecap="round" onClick={p.go} />; }
+        const { x, y } = p.kind === 'vertex' ? vertexPixel(p.id, S) : hexPixel(p.id, S);
+        return <circle key={p.kind + p.id} className="hit" cx={x} cy={y} r={p.kind === 'vertex' ? 9 : S * 0.7} onClick={p.go} />;
       })}
       {hexActs.map((a) => {
         const { x, y } = hexPixel(a.hex, S);

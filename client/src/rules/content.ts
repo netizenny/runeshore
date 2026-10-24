@@ -1,4 +1,4 @@
-import { COSTS, OMEN_DECK, OMEN_NAME, OMEN_TEXT, PIECES, RESOURCES, type OmenKind, type ResourceCounts } from '@runeshore/shared';
+import { ARCANA, ARCANA_HAND_MAX, COSTS, FLEET_TRACK, IMPROVE_MAX, OMEN_DECK, OMEN_NAME, OMEN_TEXT, PIECES, RESOURCES, type OmenKind, type ResourceCounts } from '@runeshore/shared';
 
 export type Topic = { id: string; section: string; title: string; text: string; icon?: string };
 export type Book = { tab: string; topics: Topic[] };
@@ -43,6 +43,23 @@ export const BOOKS: Book[] = [
       t('Ports and trading', 'Player trades', 'On your turn, offer cards to everyone or chosen players. Others accept or decline; you confirm one accepter.'),
       t('Ports and trading', 'Vault and ports', 'Vault trades are 4 for 1. An outpost or citadel on an any-port makes it 3 for 1. A matching resource port makes that resource 2 for 1.'),
       t('Winning', 'Reaching the target', 'Reach the Glory target (default 10) on your own turn. Hidden Relics count. Longest trail and Warlord can change hands at any time.'),
+    ],
+  },
+  {
+    tab: 'Siege of the Hollow Fleet',
+    topics: [
+      t('Terms', 'Vellum / Silk / Sigil', 'Commodities. Timber pays Vellum, Fleece pays Silk, Starmetal pays Sigil, on top of the usual card, from Citadels only. They trade 4:1 for anything (ports do not help) and count as cards when you discard.'),
+      t('Terms', 'Lore / Guild / Crown', `The three improvement tracks, fed by Vellum, Silk and Sigil. Level n costs n of the track's commodity, max level ${IMPROVE_MAX}. You need a Citadel to improve. Level 3 abilities: Lore takes a free base resource when production gives you nothing; Guild trades commodities 2:1; Crown unlocks Mighty (rank 3) Sentinels.`),
+      t('Terms', 'Spire', 'First to reach level 4 on a track claims its Spire on one of their Citadels: +2 Glory. Reaching level 5 first-past the holder takes it. A Spire Citadel is safe from the Fleet unless you have no other.'),
+      t('Terms', 'Sentinel', `A guard on a vertex of your paths, replacing Wardens. Ranks 1 to 3. Build or promote for ${price(COSTS.sentinel)}; activate for ${price(COSTS.activate)}. Max 2 per rank. Only active Sentinels defend. An active Sentinel can move along your paths, displace a weaker one, or chase the Shade. One action per Sentinel per turn.`),
+      t('Terms', 'Bulwark', `Costs ${price(COSTS.bulwark)} on a building of yours; raises your discard limit by 2. One per Citadel, up to 3. It does not protect against the Fleet.`),
+      t('Terms', 'Shield of the shore', '1 Glory each, won by defending the shore best when the Fleet is held.'),
+      t('Terms', 'Peddler', 'A token you place beside your building: 1 Glory while you hold it, and 2:1 trades in the resource of that hex.'),
+      t('Terms', 'Arcana', `Cards drawn from the Lore, Guild or Crown stack. Hand limit ${ARCANA_HAND_MAX}. Chronicle and Charter score at once.`),
+      t('The Hollow Fleet', 'The track', `The event die shows a ship or a track color. On a ship the Fleet advances one step along a ${FLEET_TRACK}-step track. On a color, each player whose level +1 is at least the red die draws an Arcana from that stack (skipped at a full hand).`),
+      t('The Hollow Fleet', 'The attack', 'At the end of the track the Fleet attacks with strength equal to all Citadels on the board. Your defence is the total rank of your active Sentinels. If defence is at least strength the Fleet is held: top defender wins a Shield (ties choose an Arcana instead). Otherwise the weakest defender with a Citadel loses one back to an Outpost. After any attack all Sentinels go inactive, the track resets and the Shade wakes.'),
+      t('The Hollow Fleet', 'Winning', 'First to the Glory target (13 in this mode) on your own turn.'),
+      ...ARCANA.map((c) => t(`Arcana: ${c.track}`, c.name, c.text, '✦')),
     ],
   },
 ];

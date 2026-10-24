@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { GameEvent, PlayerView } from '@runeshore/shared';
+import { ARCANA_BY_KEY } from '@runeshore/shared';
 import { renown } from '../panels/Players';
 
 type Cap = { big: string; small: string };
@@ -11,6 +12,11 @@ function caption(e: GameEvent, v: PlayerView): Cap | null {
     case 'shadeMoved': return { big: 'THE SHADE', small: `${n(v, e.player)} calls it to a new hex` };
     case 'stole': return { big: 'STOLEN!', small: `${n(v, e.thief)} takes ${e.resource ?? 'a card'} from ${n(v, e.victim)}` };
     case 'awardChanged': return e.player ? { big: e.award === 'longestPath' ? 'LONGEST TRAIL' : 'WARLORD', small: `${n(v, e.player)} claims it` } : null;
+    case 'fleetAdvanced': return { big: 'THE FLEET', small: `The Hollow Fleet creeps to ${e.pos}` };
+    case 'fleetAttack': return e.held ? { big: 'FLEET HELD!', small: `Defence ${e.defence} against ${e.strength}` } : { big: 'FLEET STRIKES!', small: `Strength ${e.strength} breaks defence ${e.defence}` };
+    case 'shieldAwarded': return { big: 'SHIELD', small: `${n(v, e.player)} wins a Shield of the shore` };
+    case 'spire': return { big: 'SPIRE', small: `${n(v, e.player)} raises the ${e.track} Spire` };
+    case 'arcanaPlayed': return { big: ARCANA_BY_KEY[e.card]?.name.toUpperCase() ?? 'ARCANA', small: `${n(v, e.player)} plays an Arcana` };
     default: return null;
   }
 }

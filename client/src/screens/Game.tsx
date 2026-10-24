@@ -1,9 +1,14 @@
 import { useState } from 'react';
 import type { Action, ClientMsg, ServerMsg } from '@runeshore/shared';
-import { Board, type Mode } from '../board/Board';
+import { Board, type Mode, type Pick } from '../board/Board';
 import { ComicPanel } from '../fx/ComicPanel';
+import { ArcanaHand, arcanaPicks, playsOf } from '../panels/Arcana';
 import { Build } from '../panels/Build';
-import { Discard } from '../panels/Discard';
+import { Commodities } from '../panels/Commodities';
+import { Fleet } from '../panels/Fleet';
+import { Give } from '../panels/Give';
+import { Improve, Reward } from '../panels/Improve';
+import { Sentinels, sentinelPicks, type Sub } from '../panels/Sentinels';
 import { Hand } from '../panels/Hand';
 import { Log } from '../panels/Log';
 import { Offers } from '../panels/Offers';
@@ -23,18 +28,36 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
   const [picked, setPicked] = useState<Mode>(null);
   const [trading, setTrading] = useState(false);
   const [book, setBook] = useState(false);
+  const [sub, setSub] = useState<Sub | null>(null);
+  const [from, setFrom] = useState<string | null>(null);
+  const [card, setCard] = useState<string | null>(null);
+  const hf = view.hf;
   const ph = view.phase;
   const forced: Mode = has(legal, 'placeOutpost') ? 'outpost' : has(legal, 'placePath') || ph.k === 'waymaking' ? 'path' : has(legal, 'moveShade') ? 'shade' : null;
   const mode = forced ?? picked;
   const act = (action: Action) => {
     setPicked(null);
+    setSub(null);
+    setFrom(null);
+    setCard(null);
     send({ t: 'action', action });
   };
+  const forcedPick = (type: Action['type'], key: 'vertex' | 'to'): Pick[] =>
+    legal.filter((a) => a.type === type).map((a) => ({ kind: 'vertex', id: (a as unknown as Record<string, string>)[key], go: () => act(a) }));
+  const pick: Pick[] = ph.k === 'displaced' ? forcedPick('moveDisplaced', 'to')
+    : ph.k === 'fleetLoss' ? forcedPick('chooseLoss', 'vertex')
+    : ph.k === 'deserter' ? forcedPick('arcanaPickSentinel', 'vertex')
+    : (card && arcanaPicks(playsOf(legal, card), act)) || sentinelPicks(legal, sub, from, setFrom, act);
   const name = view.players.find((p) => p.id === view.order[view.current])?.name;
   const prompt = ph.k === 'waymaking' ? `Twin Paths: lay ${ph.left} more path${ph.left > 1 ? 's' : ''}`
     : ph.k === 'setup' ? `Setup: place your ${ph.step}`
     : has(legal, 'moveShade') ? 'Move the Shade to a hex'
     : ph.k === 'discard' ? 'Waiting for discards'
+    : ph.k === 'displaced' ? 'A Sentinel was displaced: move it' + (ph.owner === view.you ? '' : ` (${view.players.find((p) => p.id === ph.owner)?.name})`)
+    : ph.k === 'fleetLoss' ? 'The Hollow Fleet wins: lose a Citadel'
+    : ph.k === 'fleetReward' ? 'The Fleet is held: choose a reward'
+    : ph.k === 'arcanaGive' ? 'Arcana: cards are owed'
+    : ph.k === 'deserter' ? 'Turncoat: choose a Sentinel to give up'
     : `${name}: ${ph.k}`;
   const roll = legal.find((a) => a.type === 'roll');
   const end = legal.find((a) => a.type === 'endTurn');
@@ -43,22 +66,28 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
   return (
     <div className="game">
       <div className="bar"><b>{prompt}</b>{view.dice && ph.k !== 'roll' && <span>🎲 {view.dice[0]} + {view.dice[1]}</span>}</div>
-      <div className="board"><button className="book" title="Rulebook" onClick={() => setBook(true)}>📖</button><Board view={view} legal={legal} mode={mode} onAction={act} /></div>
+      <div className="board"><button className="book" title="Rulebook" onClick={() => setBook(true)}>📖</button><Board view={view} legal={legal} mode={mode} onAction={act} pick={pick} /></div>
       <aside className="side">
+        {hf && <Fleet hf={hf} />}
         <Players view={view} waiting={game.waitingOn.map((w) => w.player)} deadline={game.deadline} />
         <Log view={view} />
       </aside>
       <div className="dock">
         <Hand hand={me.hand!} />
+        {hf && <Commodities hf={hf} me={view.you} />}
         <Build legal={legal} picked={forced ? null : picked} setPicked={setPicked} act={act} />
-        <Omens me={me} turn={view.turn} legal={legal} act={act} />
+        {hf ? <Improve hf={hf} me={view.you} legal={legal} act={act} /> : <Omens me={me} turn={view.turn} legal={legal} act={act} />}
+        {hf && <Sentinels legal={legal} sub={sub} setSub={(v) => { setSub(v); setFrom(null); setPicked(null); setCard(null); }} />}
+        {hf && <ArcanaHand cards={hf.players[view.you].arcana ?? []} legal={legal} view={view} sel={card} setSel={(c) => { setCard(c); setSub(null); setPicked(null); }} act={act} />}
         <button data-on={trading} onClick={() => setTrading(!trading)}>Trade</button>
         {roll && <button className="go" onClick={() => act(roll)}>Roll</button>}
         {end && <button className="go" onClick={() => act(end)}>End turn</button>}
       </div>
       <Offers view={view} legal={legal} act={act} />
       {trading &&<div className="drawer"><Trade view={view} legal={legal} act={act} /></div>}
-      {owed > 0 && has(legal, 'discard') && <Discard hand={me.hand!} need={owed} act={act} />}
+      {owed > 0 && has(legal, 'discard') && <Give title="The Shade stirs: cast off" type="discard" hand={me.hand!} commodities={hf?.players[view.you].commodities} need={owed} legal={legal} act={act} />}
+      {ph.k === 'arcanaGive' && ph.pending[view.you] > 0 && <Give title={ph.mode === 'discard' ? 'Arcana: discard' : 'Arcana: give'} type="arcanaGive" hand={me.hand!} commodities={hf?.players[view.you].commodities} need={ph.pending[view.you]} onlyCommodities={ph.mode === 'harbor'} legal={legal} act={act} />}
+      {ph.k === 'fleetReward' && has(legal, 'chooseReward') && <Reward legal={legal} act={act} />}
       {ph.k === 'steal' && has(legal, 'steal') && <ShadeSteal view={view} legal={legal} act={act} />}
       {book && <Rulebook close={() => setBook(false)} />}
       <ComicPanel events={game.events} view={view} />
