@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { Action, ClientMsg, ServerMsg } from '@runeshore/shared';
 import { Board, type Mode, type Pick } from '../board/Board';
 import { ComicPanel } from '../fx/ComicPanel';
@@ -61,6 +61,7 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
     : `${name}: ${ph.k}`;
   const roll = legal.find((a) => a.type === 'roll');
   const end = legal.find((a) => a.type === 'endTurn');
+  useEffect(() => { if (roll) act(roll); }, [!!roll, view.turn]); // auto-roll on my turn
   const owed = ph.k === 'discard' ? ph.pending[view.you] : 0;
 
   return (
@@ -80,7 +81,6 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
         {hf && <Sentinels legal={legal} sub={sub} setSub={(v) => { setSub(v); setFrom(null); setPicked(null); setCard(null); }} />}
         {hf && <ArcanaHand cards={hf.players[view.you].arcana ?? []} legal={legal} view={view} sel={card} setSel={(c) => { setCard(c); setSub(null); setPicked(null); }} act={act} />}
         <button data-on={trading} onClick={() => setTrading(!trading)}>Trade</button>
-        {roll && <button className="go" onClick={() => act(roll)}>Roll</button>}
         {end && <button className="go" onClick={() => act(end)}>End turn</button>}
       </div>
       <Offers view={view} legal={legal} act={act} />
