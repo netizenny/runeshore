@@ -149,13 +149,16 @@ export class Room {
   private setSettings(conn: Conn, seat: Seat, p: Partial<Settings>) {
     if (this.game || seat !== this.seats[0]) return this.put(conn, bad('not_host', 'Only the host can change settings in the lobby.'));
     const next = { ...this.settings, ...p };
+    // Toggling the mode moves the default target unless the host sent one too.
+    if (typeof p.hollowFleet === 'boolean' && p.hollowFleet !== this.settings.hollowFleet && p.renownTarget === undefined) next.renownTarget = p.hollowFleet ? 13 : 10;
     const ok =
+      typeof next.hollowFleet === 'boolean' &&
       ['random', 'starter'].includes(next.boardMode) &&
       Number.isInteger(next.renownTarget) && next.renownTarget >= 7 && next.renownTarget <= 15 &&
       Number.isInteger(next.discardLimit) && next.discardLimit >= 7 && next.discardLimit <= 10 &&
       [15, 30, 45].includes(next.turnTimerSec);
     if (!ok) return this.put(conn, bad('bad_settings', 'Those settings are out of range.'));
-    this.settings = { boardMode: next.boardMode, renownTarget: next.renownTarget, discardLimit: next.discardLimit, turnTimerSec: next.turnTimerSec, hollowFleet: this.settings.hollowFleet };
+    this.settings = { boardMode: next.boardMode, renownTarget: next.renownTarget, discardLimit: next.discardLimit, turnTimerSec: next.turnTimerSec, hollowFleet: next.hollowFleet };
     this.changed();
   }
 

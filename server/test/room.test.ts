@@ -66,6 +66,22 @@ describe('join rules', () => {
     expect(room.settings).toMatchObject({ renownTarget: 12, turnTimerSec: 30 });
   });
 
+  it('hollowFleet toggle: host only, moves renown target 10 <-> 13, explicit target wins', () => {
+    const { room, socks } = lobby(3);
+    room.handle(socks[1], { t: 'settings', settings: { hollowFleet: true } });
+    expect(errCode(socks[1])).toBe('not_host');
+    room.handle(socks[0], { t: 'settings', settings: { hollowFleet: true } });
+    expect(room.settings).toMatchObject({ hollowFleet: true, renownTarget: 13 });
+    room.handle(socks[0], { t: 'settings', settings: { hollowFleet: false } });
+    expect(room.settings).toMatchObject({ hollowFleet: false, renownTarget: 10 });
+    room.handle(socks[0], { t: 'settings', settings: { hollowFleet: true, renownTarget: 11 } });
+    expect(room.settings).toMatchObject({ hollowFleet: true, renownTarget: 11 });
+    room.handle(socks[0], { t: 'start' });
+    expect(room.game!.hf).toBeDefined();
+    const back = Room.restore(JSON.parse(JSON.stringify(room.snapshot())));
+    expect(back.game!.hf).toEqual(room.game!.hf);
+  });
+
   it('after start: no new seats; token holders get in; the newest socket replaces the old', () => {
     const { room, socks } = lobby(3);
     room.handle(socks[0], { t: 'start' });

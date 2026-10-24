@@ -58,6 +58,8 @@ export function Lobby(p: {
             <select value={lobby.settings.discardLimit} onChange={(e) => set({ discardLimit: +e.target.value })}>
               {range(7, 10).map((n) => <option key={n}>{n}</option>)}
             </select>
+            <label>Siege of the Hollow Fleet</label>
+            <input type="checkbox" checked={lobby.settings.hollowFleet} onChange={(e) => set({ hollowFleet: e.target.checked })} />
             <label>Turn timer</label>
             <select value={lobby.settings.turnTimerSec} onChange={(e) => set({ turnTimerSec: +e.target.value as Settings['turnTimerSec'] })}>
               {[15, 30, 45].map((n) => <option key={n} value={n}>{n} s</option>)}
