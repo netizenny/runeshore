@@ -64,7 +64,7 @@ export function Board({ view, legal, mode, onAction, pick = [] }: { view: Player
       })}
       {Object.entries(view.hf?.sentinels ?? {}).map(([v, k]) => {
         const { x, y } = vertexPixel(v, S);
-        return <g key={'s' + v} transform={`translate(${x + 11} ${y + 2})`}><SentinelPiece color={colorOf(k.owner)} rank={k.rank} active={k.active} /></g>;
+        return <g key={'s' + v} transform={`translate(${x + 18} ${y - 4})`}><SentinelPiece color={colorOf(k.owner)} rank={k.rank} active={k.active} /></g>;
       })}
       {(view.hf?.bulwarks ?? []).map((v) => { const { x, y } = vertexPixel(v, S); return <g key={'b' + v} transform={`translate(${x} ${y})`}><BulwarkRim /></g>; })}
       {Object.values(view.hf?.spires ?? {}).map((sp) => { if (!sp) return null; const { x, y } = vertexPixel(sp.vertex, S); return <g key={'p' + sp.vertex} transform={`translate(${x} ${y})`}><SpireCrest color={colorOf(sp.owner)} /></g>; })}

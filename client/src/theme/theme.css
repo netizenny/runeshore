@@ -92,3 +92,10 @@ button[data-on='true'] { background: var(--ink-gold-dim); color: var(--night); }
 .game[data-hf='true'] .dock button { font-size: .72rem; padding: .15rem .4rem; }
 .game[data-hf='true'] .card { width: 44px; padding: .15rem; }
 .game[data-hf='true'] .card small { display: none; }
+
+/* bold everything, bigger symbols */
+* { font-weight: 700; }
+.card { width: 72px; }
+.card small { font-size: .8rem; }
+.book { font-size: 2rem; }
+.ring { font-size: 1.2em; }

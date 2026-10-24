@@ -161,10 +161,11 @@ export const ResIcon = ({ r, size = 18 }: { r: Resource; size?: number }) => (
 
 // Expansion pieces. A Sentinel is a pennant on a post: rank = pips, hollow when inactive.
 export const SentinelPiece = ({ color, rank, active }: { color: string; rank: 1 | 2 | 3; active: boolean }) => (
-  <g stroke={GOLD} strokeWidth={1.1} strokeLinejoin="round">
-    <path d="M0 8 V-10" fill="none" />
-    <path d="M0 -10 L9 -6 L0 -2 Z" fill={active ? color : 'none'} stroke={active ? GOLD : color} strokeDasharray={active ? undefined : '2 2'} />
-    {Array.from({ length: rank }, (_, i) => <circle key={i} cx={-4 + i * 4} cy={11} r={1.6} fill={GOLD} stroke="none" />)}
+  <g stroke={GOLD} strokeWidth={1.4} strokeLinejoin="round" transform="scale(1.9)">
+    <circle cy={-1} r={12} fill="#000" fillOpacity={0.55} stroke="none" />
+    <path d="M0 8 V-10" fill="none" strokeWidth={1.8} />
+    <path d="M0 -10 L10 -6 L0 -2 Z" fill={active ? color : '#000'} fillOpacity={active ? 1 : 0.5} stroke={active ? GOLD : color} strokeWidth={1.8} strokeDasharray={active ? undefined : '2 2'} />
+    {Array.from({ length: rank }, (_, i) => <circle key={i} cx={-4 + i * 4} cy={11} r={2} fill={GOLD} stroke="none" />)}
   </g>
 );
 

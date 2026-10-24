@@ -1,0 +1,18 @@
+{
+  "0": "Hex Geometry",
+  "1": "Board Generation",
+  "2": "Server and Rooms",
+  "3": "Board Art Rendering",
+  "4": "Design Docs and Plans",
+  "5": "Pages Deploy Workflow",
+  "6": "Client App and Socket",
+  "7": "Client Package Config",
+  "8": "Server Package Config",
+  "9": "Root Package Config",
+  "10": "Base TS Config",
+  "11": "Shared Package",
+  "12": "Client TS Config",
+  "13": "Server TS Config",
+  "14": "Shared TS Config",
+  "15": "Building and Trading Task"
+}
