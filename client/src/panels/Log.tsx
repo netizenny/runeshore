@@ -13,11 +13,11 @@ export function Log({ view }: { view: PlayerView }) {
       case 'rolled': return `${n(e.player)} rolled ${e.dice[0] + e.dice[1]}`;
       case 'produced': {
         const who = Object.entries(e.gains);
-        return who.length ? <>{who.map(([id, c]) => <span key={id}>{n(id)} yielded <Cards c={c} /> </span>)}</> : 'The land yields to no one';
+        return who.length ? <>{who.map(([id, c]) => <span key={id}>{n(id)} got <Cards c={c} /> </span>)}</> : 'The land yields to no one';
       }
       case 'discarded': return `${n(e.player)} cast off ${e.count} cards`;
       case 'shadeMoved': return `${n(e.player)} moved the Shade`;
-      case 'stole': return `${n(e.thief)} stole ${e.resource ?? 'a card'} from ${n(e.victim)}`;
+      case 'stole': return <>{n(e.thief)} stole {e.resource ? <Cards c={{ [e.resource]: 1 }} /> : 'a card'} from {n(e.victim)}</>;
       case 'built': return `${n(e.player)} raised ${e.piece === 'outpost' ? 'an' : 'a'} ${e.piece}`;
       case 'omenBought': return `${n(e.player)} drew a Rune`;
       case 'omenPlayed': return `${n(e.player)} played ${OMEN_NAME[e.kind]}`;
