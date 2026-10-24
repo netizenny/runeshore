@@ -84,8 +84,22 @@ const TERRAIN_ART: Record<Terrain, ReactNode> = {
       <path d="M-24 14 Q-9 4 6 14 T36 14" />
     </g>
   ),
-  glimmer: <g />,
-  mist: <g />,
+  glimmer: (
+    <g {...ink}>
+      <path d="M-26 20 L-16 -10 L-6 20 Z" fill="#8f6ad0" />
+      <path d="M-6 20 L6 -26 L18 20 Z" fill="#b48cf0" />
+      <path d="M18 20 L26 -4 L34 20 Z" fill="#8f6ad0" />
+      <path d="M6 -26 L2 2 M6 -26 L12 4" fill="none" strokeWidth={0.9} />
+      <path d="M-30 -20 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2 l5 -2 Z" fill={GOLD} stroke="none" />
+    </g>
+  ),
+  mist: (
+    <g {...ink} fill="none" opacity={0.8}>
+      <path d="M-36 -10 Q-24 -22 -12 -10 T12 -10 T36 -10" />
+      <path d="M-30 4 Q-18 -8 -6 4 T18 4 T40 4" />
+      <path d="M-36 18 Q-24 6 -12 18 T12 18 T36 18" />
+    </g>
+  ),
 };
 
 export const TerrainArt = ({ terrain }: { terrain: Terrain }) => <g opacity={0.9}>{TERRAIN_ART[terrain]}</g>;
@@ -199,5 +213,37 @@ export const PeddlerToken = ({ color }: { color: string }) => (
   <g stroke={GOLD} strokeWidth={1.2} strokeLinejoin="round" transform="translate(-20 20)">
     <circle r={8} fill={color} />
     <path d="M-4 1 H4 M0 -4 V5" fill="none" />
+  </g>
+);
+
+// Drowned Isles pieces. A Boat is a slim longboat with a shell sail, laid along its edge from a to b.
+export const BoatPiece = ({ a, b, color }: { a: { x: number; y: number }; b: { x: number; y: number }; color: string }) => {
+  const ang = (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI;
+  return (
+    <g transform={`translate(${(a.x + b.x) / 2} ${(a.y + b.y) / 2}) rotate(${ang})`} stroke={GOLD} strokeWidth={1.1} strokeLinejoin="round">
+      <path d="M-14 -3 H12 L17 -5 L12 4 H-12 Z" fill="#14122b" />
+      <path d="M-1 -3 V-11" fill="none" />
+      <path d="M-1 -11 Q8 -8 -1 -2 Z" fill={color} />
+      <circle cx={16} cy={-5} r={1.6} fill={GOLD} stroke="none" />
+    </g>
+  );
+};
+
+// The Raider: a ghost boat with a torn black sail and a green lantern.
+export const RaiderPiece = () => (
+  <g stroke={GOLD} strokeWidth={1.3} strokeLinejoin="round">
+    <path d="M-14 4 H14 L10 11 H-10 Z" fill="#0b0a1a" />
+    <path d="M0 4 V-14" fill="none" />
+    <path d="M0 -14 L12 -8 L8 -4 L12 0 L0 3 Z" fill="#0b0a1a" />
+    <circle cx={-2} cy={-5} r={1.3} fill="#6fe39a" stroke="none" />
+    <circle cx={-12} cy={2} r={2.2} fill="#6fe39a" stroke="none" />
+  </g>
+);
+
+// Landfall flag: a small gold-edged pennant in the player's color, one per player per isle.
+export const LandfallFlag = ({ color }: { color: string }) => (
+  <g stroke={GOLD} strokeWidth={1.1} strokeLinejoin="round">
+    <path d="M0 8 V-8" fill="none" />
+    <path d="M0 -8 L9 -5 L0 -2 Z" fill={color} />
   </g>
 );

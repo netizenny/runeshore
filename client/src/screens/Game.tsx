@@ -7,6 +7,7 @@ import { Build } from '../panels/Build';
 import { Commodities } from '../panels/Commodities';
 import { Fleet } from '../panels/Fleet';
 import { Give } from '../panels/Give';
+import { Glimmer } from '../panels/Glimmer';
 import { Improve, Reward } from '../panels/Improve';
 import { Sentinels, sentinelPicks, type Sub } from '../panels/Sentinels';
 import { Hand } from '../panels/Hand';
@@ -31,6 +32,8 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
   const [sub, setSub] = useState<Sub | null>(null);
   const [from, setFrom] = useState<string | null>(null);
   const [card, setCard] = useState<string | null>(null);
+  const [boatFrom, setBoatFrom] = useState<string | null>(null);
+  useEffect(() => setBoatFrom(null), [picked]);
   const hf = view.hf;
   const ph = view.phase;
   const forced: Mode = has(legal, 'placeOutpost') ? 'outpost' : has(legal, 'placePath') || ph.k === 'waymaking' ? 'path' : has(legal, 'moveShade') ? 'shade' : null;
@@ -40,11 +43,20 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
     setSub(null);
     setFrom(null);
     setCard(null);
+    setBoatFrom(null);
     send({ t: 'action', action });
   };
   const forcedPick = (type: Action['type'], key: 'vertex' | 'to'): Pick[] =>
     legal.filter((a) => a.type === type).map((a) => ({ kind: 'vertex', id: (a as unknown as Record<string, string>)[key], go: () => act(a) }));
-  const pick: Pick[] = ph.k === 'displaced' ? forcedPick('moveDisplaced', 'to')
+  // Boat mode: click a new boat spot, or one of your movable boats then its destination.
+  const edgePick = (id: string, go: () => void): Pick => ({ kind: 'edge', id, go });
+  const boatPicks: Pick[] = mode !== 'boat' ? [] : boatFrom
+    ? legal.flatMap((a) => a.type === 'moveBoat' && a.from === boatFrom ? [edgePick(a.to, () => act(a))] : [])
+    : [
+        ...legal.flatMap((a) => a.type === 'buildBoat' ? [edgePick(a.edge, () => act(a))] : []),
+        ...[...new Set(legal.flatMap((a) => a.type === 'moveBoat' ? [a.from] : []))].map((e) => edgePick(e, () => setBoatFrom(e))),
+      ];
+  const pick: Pick[] = boatPicks.length ? boatPicks : ph.k === 'displaced' ? forcedPick('moveDisplaced', 'to')
     : ph.k === 'fleetLoss' ? forcedPick('chooseLoss', 'vertex')
     : ph.k === 'deserter' ? forcedPick('arcanaPickSentinel', 'vertex')
     : (card && arcanaPicks(playsOf(legal, card), act)) || sentinelPicks(legal, sub, from, setFrom, act);
@@ -56,6 +68,7 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
     : ph.k === 'displaced' ? 'A Sentinel was displaced: move it' + (ph.owner === view.you ? '' : ` (${view.players.find((p) => p.id === ph.owner)?.name})`)
     : ph.k === 'fleetLoss' ? 'The Hollow Fleet wins: lose a Citadel'
     : ph.k === 'fleetReward' ? 'The Fleet is held: choose a reward'
+    : ph.k === 'glimmer' ? 'Glimmer fields pay: choose your cards'
     : ph.k === 'arcanaGive' ? 'Arcana: cards are owed'
     : ph.k === 'deserter' ? 'Turncoat: choose a Sentinel to give up'
     : `${name}: ${ph.k}`;
@@ -76,7 +89,7 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
       <div className="dock">
         <Hand hand={me.hand!} />
         {hf && <Commodities hf={hf} me={view.you} />}
-        <Build legal={legal} picked={forced ? null : picked} setPicked={setPicked} act={act} />
+        <Build boats={!!view.di} legal={legal} picked={forced ? null : picked} setPicked={setPicked} act={act} />
         {hf ? <Improve hf={hf} me={view.you} legal={legal} act={act} /> : <Omens me={me} turn={view.turn} legal={legal} act={act} />}
         {hf && <Sentinels legal={legal} sub={sub} setSub={(v) => { setSub(v); setFrom(null); setPicked(null); setCard(null); }} />}
         {hf && <ArcanaHand cards={hf.players[view.you].arcana ?? []} legal={legal} view={view} sel={card} setSel={(c) => { setCard(c); setSub(null); setPicked(null); }} act={act} />}
@@ -88,6 +101,7 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
       {owed > 0 && has(legal, 'discard') && <Give title="The Shade stirs: cast off" type="discard" hand={me.hand!} commodities={hf?.players[view.you].commodities} need={owed} legal={legal} act={act} />}
       {ph.k === 'arcanaGive' && ph.pending[view.you] > 0 && <Give title={ph.mode === 'discard' ? 'Arcana: discard' : 'Arcana: give'} type="arcanaGive" hand={me.hand!} commodities={hf?.players[view.you].commodities} need={ph.pending[view.you]} onlyCommodities={ph.mode === 'harbor'} legal={legal} act={act} />}
       {ph.k === 'fleetReward' && has(legal, 'chooseReward') && <Reward legal={legal} act={act} />}
+      {ph.k === 'glimmer' && has(legal, 'chooseGlimmer') && <Glimmer view={view} legal={legal} act={act} />}
       {ph.k === 'steal' && has(legal, 'steal') && <ShadeSteal view={view} legal={legal} act={act} />}
       {book && <Rulebook close={() => setBook(false)} />}
       <ComicPanel events={game.events} view={view} />

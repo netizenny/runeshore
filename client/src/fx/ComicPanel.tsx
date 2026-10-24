@@ -17,6 +17,8 @@ function caption(e: GameEvent, v: PlayerView): Cap | null {
     case 'shieldAwarded': return { big: 'SHIELD', small: `${n(v, e.player)} wins a Shield of the shore` };
     case 'spire': return { big: 'SPIRE', small: `${n(v, e.player)} raises the ${e.track} Spire` };
     case 'arcanaPlayed': return { big: ARCANA_BY_KEY[e.card]?.name.toUpperCase() ?? 'ARCANA', small: `${n(v, e.player)} plays an Arcana` };
+    case 'landfall': return { big: 'LANDFALL!', small: `${n(v, e.player)} plants a flag on a new isle` };
+    case 'raiderMoved': return { big: 'THE RAIDER', small: `${n(v, e.player)} sends the ghost boat raiding` };
     default: return null;
   }
 }

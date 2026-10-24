@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import type { Action, Hex } from '@runeshore/shared';
 import { boardGeometry, edgeVertices, hexPixel, hexVertices, vertexPixel, type PlayerView } from '@runeshore/shared';
-import { BulwarkRim, Citadel, Outpost, PathLine, PeddlerToken, Port, S, SentinelPiece, Shade, SpireCrest, TERRAIN_FILL, TerrainArt, Token } from './art';
+import { BoatPiece, BulwarkRim, Citadel, LandfallFlag, Outpost, PathLine, PeddlerToken, Port, RaiderPiece, S, SentinelPiece, Shade, SpireCrest, TERRAIN_FILL, TerrainArt, Token } from './art';
 
-export type Mode = 'outpost' | 'path' | 'citadel' | 'shade' | 'sentinel' | 'arcana' | null;
+export type Mode = 'outpost' | 'path' | 'boat' | 'citadel' | 'shade' | 'sentinel' | 'arcana' | null;
 
 // A clickable spot chosen by the Game screen for the expansion modes.
 export type Pick = { kind: 'vertex' | 'hex' | 'edge'; id: string; go(): void };
@@ -19,6 +19,12 @@ export function Board({ view, legal, mode, onAction, pick = [] }: { view: Player
     () => Object.fromEntries(boardGeometry(view.board).edges.map((e) => [e, edgeVertices(e).map((v) => vertexPixel(v, S))])),
     [view.board],
   );
+  // One flag per player per isle, stacked beside the isle's first hex.
+  const landfallFlags = Object.entries(view.di?.landfall ?? {}).flatMap(([owner, isles], pi) => isles.map((isle) => {
+    const hex = Object.keys(view.di!.isleOf).find((h) => view.di!.isleOf[h] === isle)!;
+    const { x, y } = hexPixel(hex, S);
+    return { key: owner + isle, owner, x: x - 26 + pi * 9, y: y - 30 };
+  }));
   const poly = (h: Hex) => hexVertices(h.id).map((v) => { const p = vertexPixel(v, S); return `${p.x},${p.y}`; }).join(' ');
 
   const vertexActs = legal.filter((a) => (mode === 'outpost' && OUTPOST.includes(a.type)) || (mode === 'citadel' && a.type === 'buildCitadel')) as Extract<Action, { vertex: string }>[];
@@ -41,6 +47,7 @@ export function Board({ view, legal, mode, onAction, pick = [] }: { view: Player
               <TerrainArt terrain={h.terrain} />
               {h.token && <Token n={h.token} />}
               {view.shadeHex === h.id && <g transform="translate(20 -20)"><Shade /></g>}
+              {view.di?.raiderHex === h.id && <g transform="translate(0 -4) scale(1.5)"><RaiderPiece /></g>}
             </g>
           </g>
         );
@@ -57,6 +64,8 @@ export function Board({ view, legal, mode, onAction, pick = [] }: { view: Player
       })}
 
       {Object.entries(view.paths).map(([e, owner]) => <PathLine key={e} a={edgePts[e][0]} b={edgePts[e][1]} color={colorOf(owner)} />)}
+      {Object.entries(view.di?.boats ?? {}).map(([e, owner]) => <BoatPiece key={'bt' + e} a={edgePts[e][0]} b={edgePts[e][1]} color={colorOf(owner)} />)}
+      {landfallFlags.map((f) => <g key={f.key} transform={`translate(${f.x} ${f.y})`}><LandfallFlag color={colorOf(f.owner)} /></g>)}
       {Object.keys(view.buildings).map((v) => {
         const b = view.buildings[v];
         if (!b) return null;

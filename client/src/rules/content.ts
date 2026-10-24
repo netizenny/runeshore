@@ -62,4 +62,18 @@ export const BOOKS: Book[] = [
       ...ARCANA.map((c) => t(`Arcana: ${c.track}`, c.name, c.text, '✦')),
     ],
   },
+  {
+    tab: 'Drowned Isles',
+    topics: [
+      t('Terms', 'Boat', `A longboat. Costs ${price(COSTS.boat)}; you have 15. It sits on an edge that touches the Deep and must start from your own coastal Outpost or Citadel, or extend your own Boat. A coast edge holds a Path or a Boat, never both.`, '⛵'),
+      t('Terms', 'Deep', 'Open water hexes. They never produce. Boats sail on their edges; Outposts and Paths go on land.'),
+      t('Terms', 'Glimmer field', 'A prism hex. When its number rolls, an Outpost picks 1 card and a Citadel picks 2, any resources you like from the vault. A short vault trims the picks. The Shade blocks it.'),
+      t('Terms', 'Landfall', 'Build your first Outpost on a new isle (not your home isle) to plant a flag: +2 Glory, once per isle.'),
+      t('Terms', 'The Raider', 'A ghost boat. Starts off the board. On a 7 you move the Shade OR the Raider. The Raider sits only on Deep hexes; steal 1 card from a player with a Boat beside it. It blocks building and moving Boats on its hex edges but not production.'),
+      t('Boats', 'Linking', 'Paths and Boats join only at your own Outpost or Citadel on the shared corner.'),
+      t('Boats', 'Moving a Boat', 'Once per turn, after the roll: lift one Boat you did not build this turn whose open end touches none of your other pieces, and set it down on any spot a new Boat could go. Not out of a closed route, and not away from the Raider.'),
+      t('Boats', 'Longest trail', 'Paths and Boats count together as one route (minimum 5 for 2 Glory). An opposing Outpost or Citadel still breaks the chain.'),
+      t('Setup', 'Home isle', 'In First Landfall you place your starting Outposts on the home isle only; the other isles are reached by Boat.'),
+    ],
+  },
 ];

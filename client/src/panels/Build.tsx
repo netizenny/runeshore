@@ -4,12 +4,13 @@ import { Cards } from './util';
 
 const has = (legal: Action[], t: Action['type']) => legal.some((a) => a.type === t);
 
-export function Build({ legal, picked, setPicked, act }: { legal: Action[]; picked: Mode; setPicked(m: Mode): void; act(a: Action): void }) {
+export function Build({ legal, picked, setPicked, act, boats }: { boats?: boolean; legal: Action[]; picked: Mode; setPicked(m: Mode): void; act(a: Action): void }) {
   const pieces = [['path', 'buildPath', 'Path'], ['outpost', 'buildOutpost', 'Outpost'], ['citadel', 'buildCitadel', 'Citadel']] as const;
+  const all = boats ? [...pieces, ['boat', 'buildBoat', 'Boat'] as const] : pieces;
   return (
     <div className="build">
-      {pieces.map(([m, t, label]) => (
-        <button key={m} disabled={!has(legal, t)} data-on={picked === m} onClick={() => setPicked(picked === m ? null : m)}>
+      {all.map(([m, t, label]) => (
+        <button key={m} disabled={!has(legal, t) && !(m === 'boat' && has(legal, 'moveBoat'))} data-on={picked === m} onClick={() => setPicked(picked === m ? null : m)}>
           {label} <Cards c={COSTS[m]} />
         </button>
       ))}

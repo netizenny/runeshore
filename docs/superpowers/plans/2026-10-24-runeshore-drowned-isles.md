@@ -137,9 +137,10 @@ Sources: official 5th-ed rules text (ultraboardgames summary) + catan.com FAQ. C
 - Done when: raider + glimmer tests green; fuzz green.
 - Done notes: `moveShade` gains `raider?: true` (deep hex only, victims = boat owners on its edges, `di.raiderHex` starts null); `boatSpotOk`/`boatMovable` refuse raided edges. Glimmer: new phase `glimmer {pending}` after a non-7 roll, `chooseGlimmer {cards}`, picks trimmed to vault total, Shade blocks it, any seated player may answer (ANYONE), autoAct via legalActions. Landfall map: east `[3,-2]` now glimmer 4, south `[0,3]` now glimmer 10. Assumed defaults for open questions 2-3 (off-board start, trim picks). Tests: `di-raider.test.ts`, fuzz green.
 
-### [ ] Phase 5: UI, art, rules book
+### [x] Phase 5: UI, art, rules book (done 2026-10-24)
 - Deep/Glimmer/Mist hex art, Boat and Raider sprites, Landfall flags, glimmer picker panel, boat build/move interaction on Board, rulebook "Drowned Isles" chapter, comic moment on first landfall and raider raid.
 - Done when: playtested with WS bots plus the built-in browser, mobile width checked.
+- Done notes: Glimmer/Mist art, `BoatPiece`/`RaiderPiece`/`LandfallFlag` in `art.tsx`; Board draws boats, raider, flags; `Build` gets a Boat button (new boat spot, or click own boat then destination, via `Pick` edges in `Game.tsx`); `panels/Glimmer.tsx` picker; Landfall counted in client glory; ComicPanel landfall + raider; rulebook tab "Drowned Isles". tsc clean, hand-played setup, boats, raider, 7 flow in browser vs WS bot. NOT hand-tested: my own boat build/move clicks, Glimmer picker modal (dice never hit), mobile width.
 
 ### [ ] Phase 6: More scenarios (optional, one per sitting)
 - Quartet Reach, Veiled Reach (Mist reveal on reach, gold on reveal), then Ashen Crossing, Hollow Kin, Silk Tithe, Raider Cove, Spires.

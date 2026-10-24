@@ -5,7 +5,7 @@ import type { PlayerView } from '@runeshore/shared';
 export function glory(v: PlayerView, id: string) {
   const b = Object.values(v.buildings).filter((x) => x.owner === id);
   return b.filter((x) => x.kind === 'outpost').length + 2 * b.filter((x) => x.kind === 'citadel').length
-    + (v.longestPath === id ? 2 : 0) + (v.grandHost === id ? 2 : 0) + hfGlory(v, id);
+    + (v.longestPath === id ? 2 : 0) + (v.grandHost === id ? 2 : 0) + 2 * (v.di?.landfall[id].length ?? 0) + hfGlory(v, id);
 }
 
 // Expansion Glory: Spires, Shields of the shore, Printer/Charter and the Peddler.
