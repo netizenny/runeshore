@@ -5,6 +5,8 @@ import { legalActions } from '../src/engine/legal';
 import { boardGeometry, edgeVertices, isPathEdge, vertexHexes } from '../src/board/geometry';
 import { DEFAULT_SETTINGS, type GameState } from '../src/types';
 import { claimLandfall } from '../src/engine/awards';
+import { liftMist } from '../src/engine/mist';
+import { viewFor } from '../src/view';
 import { PLAYERS } from './helpers';
 
 const di = () => createGame(PLAYERS, { ...DEFAULT_SETTINGS, drownedIsles: true }, 5);
@@ -105,5 +107,46 @@ describe('Quartet Reach', () => {
     const far = onIsle(i1)[0];
     s.buildings[far] = { owner: id, kind: 'outpost' };
     expect(claimLandfall(s, id, far)).toEqual([{ type: 'landfall', player: id, isle: i1 }]);
+  });
+});
+
+describe('Veiled Reach Mist', () => {
+  const vr = () => createGame(PLAYERS, { ...DEFAULT_SETTINGS, drownedIsles: true, scenario: 'veiled' }, 5);
+
+  it('hides 6 Mist hexes, keeps them off the wire, and deals the fog pool', () => {
+    const s = vr();
+    const mist = Object.values(s.board.hexes).filter((h) => h.terrain === 'mist');
+    expect(mist).toHaveLength(6);
+    expect(Object.keys(s.di!.mist!).sort()).toEqual(mist.map((h) => h.id).sort());
+    expect(Object.values(s.di!.mist!).map((m) => m.terrain).sort()).toEqual(['clay', 'fleece', 'glimmer', 'harvest', 'starmetal', 'timber']);
+    expect(viewFor(s, 'a').di!.mist).toBeUndefined();
+    expect(s.board.hexes[s.shadeHex].terrain).toBe('ashen');
+  });
+
+  it('a path beside Mist lifts it and pays a card; Glimmer pays a pick; hex then produces', () => {
+    const s = vr();
+    s.phase = { k: 'main' };
+    s.turn = 1;
+    const id = current(s);
+    const [hex] = Object.keys(s.di!.mist!);
+    const edge = [...boardGeometry(s.board).edgeSet].find((e) => e.split('~').includes(hex))!;
+    s.di!.mist![hex] = { terrain: 'clay', token: 8 };
+    const before = s.players.find((p) => p.id === id)!.hand.clay;
+    const ev = liftMist(s, id, edge);
+    expect(ev).toContainEqual({ type: 'revealed', player: id, hex, terrain: 'clay', token: 8 });
+    expect(s.board.hexes[hex]).toMatchObject({ terrain: 'clay', token: 8 });
+    expect(s.players.find((p) => p.id === id)!.hand.clay).toBe(before + 1);
+    expect(s.di!.mist![hex]).toBeUndefined();
+    expect(liftMist(s, id, edge)).toEqual([]);
+  });
+
+  it('a Glimmer reveal opens a pick', () => {
+    const s = vr();
+    s.phase = { k: 'main' };
+    const id = current(s);
+    const [hex] = Object.keys(s.di!.mist!);
+    s.di!.mist![hex] = { terrain: 'glimmer', token: 6 };
+    liftMist(s, id, [...boardGeometry(s.board).edgeSet].find((e) => e.split('~').includes(hex))!);
+    expect(s.phase).toEqual({ k: 'glimmer', pending: { [id]: 1 } });
   });
 });

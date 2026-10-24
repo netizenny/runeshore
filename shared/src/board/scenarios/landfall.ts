@@ -1,5 +1,6 @@
 import type { Resource, Terrain } from '../../types';
 import { QUARTET } from './quartet';
+import { VEILED } from './veiled';
 
 export interface Scenario {
   id: string; // also the hex-id prefix: `S${letter}`
@@ -8,6 +9,7 @@ export interface Scenario {
   radius: number; // every hex of this disc not listed in `land` is Deep
   anywhere?: true; // no home isle: setup may start on any isle
   land: [q: number, r: number, terrain: Terrain, token: number | null, home?: true][];
+  fog?: [terrain: Terrain, token: number | null][]; // hidden contents dealt onto the `mist` hexes
   ports: [q1: number, r1: number, q2: number, r2: number, kind: Resource | 'any'][];
 }
 
@@ -51,4 +53,4 @@ export const LANDFALL: Scenario = {
   ],
 };
 
-export const SCENARIOS: Record<string, Scenario> = { landfall: LANDFALL, quartet: QUARTET };
+export const SCENARIOS: Record<string, Scenario> = { landfall: LANDFALL, quartet: QUARTET, veiled: VEILED };

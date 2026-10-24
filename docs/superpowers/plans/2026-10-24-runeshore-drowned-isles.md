@@ -144,7 +144,8 @@ Sources: official 5th-ed rules text (ultraboardgames summary) + catan.com FAQ. C
 
 ### [ ] Phase 6: More scenarios (optional, one per sitting)
 - [x] Quartet Reach (done 2026-10-24): `scenarios/quartet.ts` (radius 4, 4 isles x 6 hexes, 8 ports, `anywhere: true` so `homeIsle` is '' and setup may start on any isle); `claimLandfall` skips any isle where the player already holds a building; lobby Scenario select; rulebook line; fuzz now runs both scenarios. Not hand-checked in browser (board art fits viewBox by math only).
-- Veiled Reach (Mist reveal on reach, gold on reveal), then Ashen Crossing, Hollow Kin, Silk Tithe, Raider Cove, Spires.
+- [x] Veiled Reach (done 2026-10-24): `scenarios/veiled.ts` (radius 4, 4 isles, 6 Mist hexes on isle fringes, `fog` pool dealt by rng in `createGame`); `engine/mist.ts` `liftMist` runs on path, setup path, boat build and boat move: reveals hex (`di.mist` hidden, stripped in `viewFor`), pays 1 card of its kind or a Glimmer pick in main phase only. Shortcut: Mist hides land only (no hidden sea), so isles/geometry stay static. Tests in `di-board.test.ts`, fuzz adds veiled. Not hand-checked in browser.
+- Next: Ashen Crossing, Hollow Kin, Silk Tithe, Raider Cove, Spires.
 - Each: map, scenario rules module, tests, art, rulebook entry.
 
 ### [ ] Phase 7: Ship it

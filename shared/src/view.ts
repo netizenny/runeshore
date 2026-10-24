@@ -29,9 +29,10 @@ export const eventFor = (e: GameEvent, viewer: PlayerId): GameEvent =>
 export const logFor = (s: GameState, viewer: PlayerId): GameEvent[] => s.log.map((e) => eventFor(e, viewer));
 
 export function viewFor(s: GameState, viewer: PlayerId): GameView {
-  const { seed: _seed, rngState: _rng, omenDeck, players, log: _log, hf, ...rest } = s;
+  const { seed: _seed, rngState: _rng, omenDeck, players, log: _log, hf, di, ...rest } = s;
   return {
     ...structuredClone(rest),
+    ...(di && { di: structuredClone({ ...di, mist: undefined }) }), // unlifted Mist stays on the server
     omenDeckCount: omenDeck.length,
     ...(hf && { hf: hfViewFor(s, hf, viewer) }),
     players: players.map(({ hand, omens, ...p }) => ({

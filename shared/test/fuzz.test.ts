@@ -85,7 +85,7 @@ function diInvariants(s: GameState) {
 }
 
 describe('fuzz, Drowned Isles', () => {
-  for (const [n, scenario] of [[3, 'landfall'], [4, 'landfall'], [3, 'quartet'], [4, 'quartet']] as const) {
+  for (const [n, scenario] of [[3, 'landfall'], [4, 'landfall'], [3, 'quartet'], [4, 'quartet'], [3, 'veiled'], [4, 'veiled']] as const) {
     it(`50 seeds with ${n} players on ${scenario} end with a winner and keep invariants`, () => {
       for (let seed = 1; seed <= 50; seed++) {
         const { state, steps } = drive(newGame(seed, n, { drownedIsles: true, scenario, gloryTarget: 8 }), seed, 4000, diInvariants);

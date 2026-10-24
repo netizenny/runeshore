@@ -73,6 +73,7 @@ export const BOOKS: Book[] = [
       t('Boats', 'Linking', 'Paths and Boats join only at your own Outpost or Citadel on the shared corner.'),
       t('Boats', 'Moving a Boat', 'Once per turn, after the roll: lift one Boat you did not build this turn whose open end touches none of your other pieces, and set it down on any spot a new Boat could go. Not out of a closed route, and not away from the Raider.'),
       t('Boats', 'Longest trail', 'Paths and Boats count together as one route (minimum 5 for 2 Glory). An opposing Outpost or Citadel still breaks the chain.'),
+      t('Setup', 'Veiled Reach', 'Mist hexes hide their land. Build a Path or Boat beside one to lift it: you take one card of its kind (or a Glimmer pick), and it then plays like any hex.'),
       t('Setup', 'Quartet Reach', 'Four equal isles in a ring. Start anywhere: your two Outposts may sit on different isles. Landfall pays for every isle you did not start on.'),
       t('Setup', 'Home isle', 'In First Landfall you place your starting Outposts on the home isle only; the other isles are reached by Boat.'),
     ],

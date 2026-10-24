@@ -3,6 +3,7 @@ import { COSTS, RESOURCES } from '../constants';
 import { boardGeometry, edgeVertices, isPathEdge, vertexEdges, vertexHexes, vertexNeighbors } from '../board/geometry';
 import { player, type Result } from './setup';
 import { claimLandfall } from './awards';
+import { liftMist } from './mist';
 
 export const canPay = (s: GameState, id: PlayerId, c: ResourceCounts) => RESOURCES.every((r) => player(s, id).hand[r] >= c[r]);
 
@@ -37,10 +38,11 @@ export function buildPath(s: GameState, id: PlayerId, a: Extract<Action, { type:
   }
   s.paths[a.edge] = id;
   p.piecesLeft.path--;
+  const lifted = liftMist(s, id, a.edge);
   if (ph.k === 'waymaking') {
     s.phase = ph.left === 2 && p.piecesLeft.path > 0 && hasLegalPath(s, id) ? { ...ph, left: 1 } : { k: ph.then };
   }
-  return [{ type: 'built', player: id, piece: 'path', at: a.edge }];
+  return [{ type: 'built', player: id, piece: 'path', at: a.edge }, ...lifted];
 }
 
 export function buildOutpost(s: GameState, id: PlayerId, a: Extract<Action, { type: 'buildOutpost' }>): Result {

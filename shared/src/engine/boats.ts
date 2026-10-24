@@ -3,6 +3,7 @@ import { COSTS } from '../constants';
 import { boardGeometry, edgeVertices, vertexEdges } from '../board/geometry';
 import type { Result } from './setup';
 import { canPay, pay } from './build';
+import { liftMist } from './mist';
 
 // A boat sits on any edge that is not land on both sides (isPathEdge's complement plus coasts).
 // A Raider hex blocks building on, or moving a boat off, any of its edges.
@@ -41,7 +42,7 @@ export function buildBoat(s: GameState, id: PlayerId, a: Extract<Action, { type:
   s.di.boats[a.edge] = id;
   s.di.builtTurn[a.edge] = s.turn;
   s.di.boatsLeft[id]--;
-  return [{ type: 'built', player: id, piece: 'boat', at: a.edge }];
+  return [{ type: 'built', player: id, piece: 'boat', at: a.edge }, ...liftMist(s, id, a.edge)];
 }
 
 export function moveBoat(s: GameState, id: PlayerId, a: Extract<Action, { type: 'moveBoat' }>): Result {
@@ -56,5 +57,5 @@ export function moveBoat(s: GameState, id: PlayerId, a: Extract<Action, { type: 
   di.boats[a.to] = id;
   di.builtTurn[a.to] = s.turn;
   di.movedTurn = s.turn;
-  return [{ type: 'boatMoved', player: id, from: a.from, to: a.to }];
+  return [{ type: 'boatMoved', player: id, from: a.from, to: a.to }, ...liftMist(s, id, a.to)];
 }

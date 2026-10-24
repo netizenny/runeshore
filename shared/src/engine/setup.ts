@@ -1,5 +1,6 @@
 import type { Action, GameEvent, GameState, PlayerId, Resource } from '../types';
 import { RESOURCES } from '../constants';
+import { liftMist } from './mist';
 import { edgeVertices, isPathEdge, vertexHexes, vertexNeighbors, boardGeometry } from '../board/geometry';
 
 // Handlers mutate the (already cloned) state and return events, or an error string.
@@ -45,6 +46,7 @@ export function placePath(s: GameState, id: PlayerId, a: Extract<Action, { type:
   if (!edgeVertices(a.edge).includes(ph.lastOutpost!)) return 'path must touch the new outpost';
   s.paths[a.edge] = id;
   player(s, id).piecesLeft.path--;
+  const lifted = liftMist(s, id, a.edge);
   const n = s.order.length;
   if (ph.round === 1 && s.current < n - 1) {
     s.current++;
@@ -58,5 +60,5 @@ export function placePath(s: GameState, id: PlayerId, a: Extract<Action, { type:
     s.phase = { k: 'roll' };
     s.turn = 1;
   }
-  return [{ type: 'built', player: id, piece: 'path', at: a.edge }];
+  return [{ type: 'built', player: id, piece: 'path', at: a.edge }, ...lifted];
 }

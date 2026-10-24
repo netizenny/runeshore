@@ -138,6 +138,7 @@ export interface DIState {
   movedTurn: number; // turn a boat last moved (one move per turn)
   landfall: Record<PlayerId, string[]>; // isles with a Landfall mark
   raiderHex: HexId | null; // off-board until first moved
+  mist?: Record<HexId, { terrain: Terrain; token: number | null }>; // hidden contents of unlifted Mist hexes (server only)
 }
 
 export interface GameState {
@@ -215,6 +216,7 @@ export type GameEvent =
   | { type: 'raiderMoved'; player: PlayerId; hex: HexId }
   | { type: 'glimmered'; player: PlayerId; cards: ResourceCounts }
   | { type: 'landfall'; player: PlayerId; isle: string }
+  | { type: 'revealed'; player: PlayerId; hex: HexId; terrain: Terrain; token: number | null }
   | { type: 'sentinel'; player: PlayerId; did: 'built' | 'activated' | 'promoted' | 'moved' | 'displaced' | 'lost' | 'chased'; at: VertexId }
   | { type: 'fleetAdvanced'; pos: number }
   | { type: 'fleetAttack'; strength: number; defence: number; held: boolean }

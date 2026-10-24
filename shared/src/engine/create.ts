@@ -4,6 +4,7 @@ import { generateBoard, scenarioBoard, scenarioIsles } from '../board/generate';
 import { SCENARIOS } from '../board/scenarios/landfall';
 import { shuffle } from '../rng';
 import { initHF } from './hf/state';
+import { dealMist } from './mist';
 
 export function createGame(players: { id: PlayerId; name: string; color: PlayerColor }[], settings: Settings, seed: number): GameState {
   let rng = seed >>> 0;
@@ -11,10 +12,12 @@ export function createGame(players: { id: PlayerId; name: string; color: PlayerC
   [order, rng] = shuffle(players.map((p) => p.id), rng);
   const sc = settings.drownedIsles ? SCENARIOS[settings.scenario] : undefined;
   if (settings.drownedIsles && !sc) throw new Error('scenario not built yet');
-  // Scenario boards are fixed, so they leave rng untouched.
+  // Scenario boards are fixed, so they leave rng untouched; only Mist is dealt at random.
   const [board, afterBoard] = sc ? [scenarioBoard(sc), rng] : generateBoard(settings.boardMode, rng, settings.boardSize === 'large');
+  const mistHexes = Object.values(board.hexes).filter((h) => h.terrain === 'mist').map((h) => h.id);
+  const [mist, afterMist] = sc && mistHexes.length ? dealMist(sc, mistHexes, afterBoard) : [undefined, afterBoard];
   // No Omen deck in the expansion; skipping the shuffle keeps mode-off rng use unchanged.
-  const [omenDeck, afterDeck] = settings.hollowFleet ? [[], afterBoard] : shuffle(OMEN_DECK, afterBoard);
+  const [omenDeck, afterDeck] = settings.hollowFleet ? [[], afterMist] : shuffle(OMEN_DECK, afterMist);
   const [hf, afterHF] = settings.hollowFleet ? initHF(players.map((p) => p.id), afterDeck) : [undefined, afterDeck];
   const bank = emptyCounts();
   for (const r of RESOURCES) bank[r] = BANK_EACH;
@@ -54,6 +57,7 @@ export function createGame(players: { id: PlayerId; name: string; color: PlayerC
         builtTurn: {},
         movedTurn: 0,
         raiderHex: null,
+        ...(mist && { mist }),
         landfall: Object.fromEntries(players.map((p) => [p.id, []])),
       },
     }),

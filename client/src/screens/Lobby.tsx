@@ -75,6 +75,7 @@ export function Lobby(p: {
                 <select value={lobby.settings.scenario} onChange={(e) => set({ scenario: e.target.value as Settings['scenario'] })}>
                   <option value="landfall">First Landfall</option>
                   <option value="quartet">Quartet Reach</option>
+                  <option value="veiled">Veiled Reach</option>
                 </select>
               </>
             )}
