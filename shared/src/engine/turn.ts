@@ -16,7 +16,11 @@ export function roll(s: GameState, _id: PlayerId): Result {
   const total = s.dice[0] + s.dice[1];
   const events: Result = [{ type: 'rolled', player: s.order[s.current], dice: s.dice }];
   s.phase = { k: 'main' };
-  if (total !== 7) events.push({ type: 'produced', gains: produce(s, total) });
+  if (total !== 7) {
+    events.push({ type: 'produced', gains: produce(s, total) });
+    const pending = glimmerOwed(s, total);
+    if (Object.keys(pending).length) s.phase = { k: 'glimmer', pending };
+  }
   else startSeven(s);
   return events;
 }
@@ -69,17 +73,65 @@ export function discard(s: GameState, id: PlayerId, a: Extract<Action, { type: '
   return [{ type: 'discarded', player: id, count: total }];
 }
 
+const bankTotal = (s: GameState) => RESOURCES.reduce((n, r) => n + s.bank[r], 0);
+
+// Glimmer fields pay picks, not cards: outpost 1, citadel 2. A short vault trims picks to what is left.
+function glimmerOwed(s: GameState, total: number) {
+  const pending: Record<PlayerId, number> = {};
+  for (const hex of Object.values(s.board.hexes)) {
+    if (hex.token !== total || hex.id === s.shadeHex || hex.terrain !== 'glimmer') continue;
+    for (const v of hexVertices(hex.id)) {
+      const b = s.buildings[v];
+      if (b) pending[b.owner] = (pending[b.owner] ?? 0) + (b.kind === 'citadel' ? 2 : 1);
+    }
+  }
+  for (const p of Object.keys(pending)) pending[p] = Math.min(pending[p], bankTotal(s));
+  for (const p of Object.keys(pending)) if (!pending[p]) delete pending[p];
+  return pending;
+}
+
+export function chooseGlimmer(s: GameState, id: PlayerId, a: Extract<Action, { type: 'chooseGlimmer' }>): Result {
+  const ph = s.phase;
+  if (ph.k !== 'glimmer' || !ph.pending[id]) return 'no Glimmer pick owed';
+  let total = 0;
+  for (const r of RESOURCES) {
+    const n = a.cards[r];
+    if (!Number.isInteger(n) || n < 0 || n > s.bank[r]) return 'bad pick';
+    total += n;
+  }
+  const want = Math.min(ph.pending[id], bankTotal(s));
+  if (total !== want) return `pick exactly ${want}`;
+  for (const r of RESOURCES) {
+    s.bank[r] -= a.cards[r];
+    player(s, id).hand[r] += a.cards[r];
+  }
+  delete ph.pending[id];
+  if (!bankTotal(s)) ph.pending = {};
+  if (!Object.keys(ph.pending).length) s.phase = { k: 'main' };
+  return [{ type: 'glimmered', player: id, cards: { ...a.cards } }];
+}
+
 export function moveShade(s: GameState, id: PlayerId, a: Extract<Action, { type: 'moveShade' }>): Result {
   const ph = s.phase;
   if (ph.k !== 'moveShade') return 'not moving the Shade';
   if (!Object.hasOwn(s.board.hexes, a.hex)) return 'no such hex';
-  if (a.hex === s.shadeHex) return 'the Shade must move';
-  if (s.board.hexes[a.hex].terrain === 'deep') return 'the Shade stays on land';
-  s.shadeHex = a.hex;
-  const victims = [...new Set(hexVertices(a.hex).map((v) => s.buildings[v]?.owner))].filter(
-    (o): o is PlayerId => !!o && o !== id && handSize(player(s, o).hand) > 0,
-  );
-  const events: Result = [{ type: 'shadeMoved', player: id, hex: a.hex }];
+  const raider = !!a.raider;
+  if (raider) {
+    if (!s.di) return 'no Raider in this game';
+    if (s.board.hexes[a.hex].terrain !== 'deep') return 'the Raider stays on the Deep';
+    if (a.hex === s.di.raiderHex) return 'the Raider must move';
+    s.di.raiderHex = a.hex;
+  } else {
+    if (a.hex === s.shadeHex) return 'the Shade must move';
+    if (s.board.hexes[a.hex].terrain === 'deep') return 'the Shade stays on land';
+    s.shadeHex = a.hex;
+  }
+  // The Shade robs outposts around its hex; the Raider robs owners of Boats along its hex.
+  const owners = raider
+    ? Object.entries(s.di!.boats).filter(([e]) => e.split('~').includes(a.hex)).map(([, o]) => o)
+    : hexVertices(a.hex).map((v) => s.buildings[v]?.owner);
+  const victims = [...new Set(owners)].filter((o): o is PlayerId => !!o && o !== id && handSize(player(s, o).hand) > 0);
+  const events: Result = [raider ? { type: 'raiderMoved', player: id, hex: a.hex } : { type: 'shadeMoved', player: id, hex: a.hex }];
   if (victims.length > 1) {
     s.phase = { k: 'steal', hex: a.hex, victims, then: ph.then };
     return events;

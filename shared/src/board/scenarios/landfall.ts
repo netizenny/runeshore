@@ -30,11 +30,11 @@ export const LANDFALL: Scenario = {
     // east isle
     [2, 0, 'starmetal', 11],
     [3, -1, 'harvest', 9],
-    [3, -2, 'fleece', 2],
+    [3, -2, 'glimmer', 4],
     // south isle
     [-2, 3, 'starmetal', 5],
     [-1, 3, 'timber', 11],
-    [0, 3, 'clay', 3],
+    [0, 3, 'glimmer', 10],
   ],
   ports: [
     [-1, -2, 0, -2, 'any'],

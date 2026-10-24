@@ -53,6 +53,7 @@ export function createGame(players: { id: PlayerId; name: string; color: PlayerC
         boatsLeft: Object.fromEntries(players.map((p) => [p.id, BOATS_PER_PLAYER])),
         builtTurn: {},
         movedTurn: 0,
+        raiderHex: null,
         landfall: Object.fromEntries(players.map((p) => [p.id, []])),
       },
     }),

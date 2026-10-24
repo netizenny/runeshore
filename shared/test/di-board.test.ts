@@ -60,7 +60,7 @@ describe('Drowned Isles board', () => {
     s.phase = { k: 'moveShade', then: 'main' };
     const deep = Object.values(s.board.hexes).find((h) => h.terrain === 'deep')!.id;
     expect(applyAction(s, current(s), { type: 'moveShade', hex: deep })).toMatchObject({ ok: false });
-    expect(legalActions(s, current(s)).some((a) => a.type === 'moveShade' && s.board.hexes[a.hex].terrain === 'deep')).toBe(false);
+    expect(legalActions(s, current(s)).some((a) => a.type === 'moveShade' && !a.raider && s.board.hexes[a.hex].terrain === 'deep')).toBe(false);
   });
 
   it('with the toggle off nothing changes', () => {

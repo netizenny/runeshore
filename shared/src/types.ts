@@ -86,6 +86,7 @@ export type Phase =
   | { k: 'roll' }
   | { k: 'discard'; pending: Record<PlayerId, number> }
   | { k: 'moveShade'; then: 'roll' | 'main' }
+  | { k: 'glimmer'; pending: Record<PlayerId, number> } // owed picks from Glimmer fields
   | { k: 'steal'; hex: HexId; victims: PlayerId[]; then: 'roll' | 'main' }
   | { k: 'main' }
   | { k: 'waymaking'; left: 1 | 2; then: 'roll' | 'main' }
@@ -136,6 +137,7 @@ export interface DIState {
   builtTurn: Record<EdgeId, number>; // turn each boat was built or last moved to
   movedTurn: number; // turn a boat last moved (one move per turn)
   landfall: Record<PlayerId, string[]>; // isles with a Landfall mark
+  raiderHex: HexId | null; // off-board until first moved
 }
 
 export interface GameState {
@@ -168,13 +170,14 @@ export type Action =
   | { type: 'placePath'; edge: EdgeId }
   | { type: 'roll' }
   | { type: 'discard'; cards: ResourceCounts; commodities?: Record<Commodity, number> }
-  | { type: 'moveShade'; hex: HexId }
+  | { type: 'moveShade'; hex: HexId; raider?: true }
   | { type: 'steal'; victim: PlayerId }
   | { type: 'buildPath'; edge: EdgeId }
   | { type: 'buildOutpost'; vertex: VertexId }
   | { type: 'buildCitadel'; vertex: VertexId }
   | { type: 'buildBoat'; edge: EdgeId }
   | { type: 'moveBoat'; from: EdgeId; to: EdgeId }
+  | { type: 'chooseGlimmer'; cards: ResourceCounts }
   | { type: 'buyOmen' }
   | { type: 'playOmen'; kind: 'warden' }
   | { type: 'playOmen'; kind: 'waymaking' }
@@ -209,6 +212,8 @@ export type GameEvent =
   | { type: 'stole'; thief: PlayerId; victim: PlayerId; resource: Resource | null }
   | { type: 'built'; player: PlayerId; piece: 'path' | 'outpost' | 'citadel' | 'bulwark' | 'boat'; at: string }
   | { type: 'boatMoved'; player: PlayerId; from: EdgeId; to: EdgeId }
+  | { type: 'raiderMoved'; player: PlayerId; hex: HexId }
+  | { type: 'glimmered'; player: PlayerId; cards: ResourceCounts }
   | { type: 'landfall'; player: PlayerId; isle: string }
   | { type: 'sentinel'; player: PlayerId; did: 'built' | 'activated' | 'promoted' | 'moved' | 'displaced' | 'lost' | 'chased'; at: VertexId }
   | { type: 'fleetAdvanced'; pos: number }

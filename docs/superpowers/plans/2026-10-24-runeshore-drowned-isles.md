@@ -131,10 +131,11 @@ Sources: official 5th-ed rules text (ultraboardgames summary) + catan.com FAQ. C
 - Done when: new `di-*.test.ts` green, fuzz over 50 seeds with expansion on.
 - Done notes: `engine/boats.ts` (buildBoat, moveBoat, boatSpotOk, boatMovable); boat state lives in `state.di` (boats, boatsLeft, builtTurn, movedTurn, landfall), not top-level `boats`. `longestPathLength` walks paths + boats, switching kind only at own building. Landfall = +2 renown via `claimLandfall` on outpost build. Outposts can hang off a boat; all-sea vertices refused. Skipped: boat-instead-of-path in setup, boats via Waymaking omen (do in phase 4/5 if wanted). Tests: `di-boats.test.ts`, fuzz 50 seeds x 3/4 players (~4 min).
 
-### [ ] Phase 4: Raider and Glimmer
+### [x] Phase 4: Raider and Glimmer (done 2026-10-24)
 - Seven flow: move shade OR raider; steal from adjacent boat owner; block boat build/move at its hex.
 - Glimmer production: pick-a-resource action (1 settlement, 2 city), bank-shortage handling, auto-pick for bots/timeouts.
 - Done when: raider + glimmer tests green; fuzz green.
+- Done notes: `moveShade` gains `raider?: true` (deep hex only, victims = boat owners on its edges, `di.raiderHex` starts null); `boatSpotOk`/`boatMovable` refuse raided edges. Glimmer: new phase `glimmer {pending}` after a non-7 roll, `chooseGlimmer {cards}`, picks trimmed to vault total, Shade blocks it, any seated player may answer (ANYONE), autoAct via legalActions. Landfall map: east `[3,-2]` now glimmer 4, south `[0,3]` now glimmer 10. Assumed defaults for open questions 2-3 (off-board start, trim picks). Tests: `di-raider.test.ts`, fuzz green.
 
 ### [ ] Phase 5: UI, art, rules book
 - Deep/Glimmer/Mist hex art, Boat and Raider sprites, Landfall flags, glimmer picker panel, boat build/move interaction on Board, rulebook "Drowned Isles" chapter, comic moment on first landfall and raider raid.

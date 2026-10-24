@@ -60,6 +60,11 @@ export function legalActions(s: GameState, id: PlayerId): Action[] {
     }
     return out;
   }
+  if (ph.k === 'glimmer') {
+    const n = Math.min(ph.pending[id] ?? 0, RESOURCES.reduce((t, r) => t + s.bank[r], 0));
+    if (n) for (const d of discards(s.bank, RESOURCES, n)) out.push({ type: 'chooseGlimmer', cards: Object.fromEntries(RESOURCES.map((r) => [r, d[r]])) as ResourceCounts });
+    return out;
+  }
   if (ph.k === 'displaced') {
     if (ph.owner === id) for (const to of reach(s, id, ph.vertex)) add({ type: 'moveDisplaced', to });
     return out;
@@ -98,6 +103,7 @@ export function legalActions(s: GameState, id: PlayerId): Action[] {
       return out;
     case 'moveShade':
       for (const h of Object.keys(s.board.hexes)) if (h !== s.shadeHex && s.board.hexes[h].terrain !== 'deep') out.push({ type: 'moveShade', hex: h });
+      if (s.di) for (const h of Object.keys(s.board.hexes)) if (h !== s.di.raiderHex && s.board.hexes[h].terrain === 'deep') out.push({ type: 'moveShade', hex: h, raider: true });
       return out;
     case 'steal':
       for (const victim of ph.victims) out.push({ type: 'steal', victim });
@@ -168,6 +174,7 @@ export function legalActions(s: GameState, id: PlayerId): Action[] {
 export function pendingPlayers(s: GameState): PlayerId[] {
   if (s.phase.k === 'ended') return [];
   if (s.phase.k === 'displaced') return [s.phase.owner];
+  if (s.phase.k === 'glimmer') return Object.keys(s.phase.pending);
   if (s.phase.k === 'arcanaGive') return Object.keys(s.phase.pending);
   if (s.phase.k === 'deserter') return [s.phase.target];
   if (s.phase.k === 'fleetLoss' || s.phase.k === 'fleetReward') return s.phase.pending;

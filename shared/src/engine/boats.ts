@@ -5,6 +5,9 @@ import type { Result } from './setup';
 import { canPay, pay } from './build';
 
 // A boat sits on any edge that is not land on both sides (isPathEdge's complement plus coasts).
+// A Raider hex blocks building on, or moving a boat off, any of its edges.
+const raided = (s: GameState, e: EdgeId) => !!s.di!.raiderHex && e.split('~').includes(s.di!.raiderHex);
+
 const isBoatEdge = (s: GameState, e: EdgeId) => {
   const { landSet } = boardGeometry(s.board);
   return !e.split('~').every((h) => landSet.has(h));
@@ -14,7 +17,7 @@ const isBoatEdge = (s: GameState, e: EdgeId) => {
 // `without` is a boat being moved, treated as already lifted off the board.
 export function boatSpotOk(s: GameState, id: PlayerId, edge: EdgeId, without?: EdgeId): boolean {
   const boats = s.di!.boats;
-  if (!boardGeometry(s.board).edgeSet.has(edge) || !isBoatEdge(s, edge) || s.paths[edge] || (boats[edge] && edge !== without)) return false;
+  if (!boardGeometry(s.board).edgeSet.has(edge) || !isBoatEdge(s, edge) || s.paths[edge] || raided(s, edge) || (boats[edge] && edge !== without)) return false;
   return edgeVertices(edge).some((v) => {
     const b = s.buildings[v];
     if (b) return b.owner === id;
@@ -25,7 +28,7 @@ export function boatSpotOk(s: GameState, id: PlayerId, edge: EdgeId, without?: E
 // Movable: the player's own, not new this turn, and one end touches none of their other pieces.
 export function boatMovable(s: GameState, id: PlayerId, edge: EdgeId): boolean {
   const di = s.di!;
-  if (di.boats[edge] !== id || di.builtTurn[edge] === s.turn || di.movedTurn === s.turn) return false;
+  if (di.boats[edge] !== id || di.builtTurn[edge] === s.turn || di.movedTurn === s.turn || raided(s, edge)) return false;
   return edgeVertices(edge).some((v) => s.buildings[v]?.owner !== id && !vertexEdges(v).some((e) => e !== edge && (s.paths[e] === id || di.boats[e] === id)));
 }
 
