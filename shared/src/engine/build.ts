@@ -49,6 +49,7 @@ export function buildOutpost(s: GameState, id: PlayerId, a: Extract<Action, { ty
   if (!ALL_VERTICES.includes(v)) return 'no such vertex';
   if (p.piecesLeft.outpost < 1) return 'no outposts left';
   if (s.buildings[v] || vertexNeighbors(v).some((n) => s.buildings[n])) return 'too close to another building';
+  if (s.hf?.sentinels[v]) return 'a Sentinel stands there';
   if (!vertexEdges(v).some((e) => s.paths[e] === id)) return 'outpost must touch your path';
   if (!canPay(s, id, COSTS.outpost)) return 'cannot afford';
   pay(s, id, COSTS.outpost);

@@ -8,6 +8,7 @@ import { tradeRatio } from './trade';
 import { player } from './setup';
 import { TRACKS, hfPlayer, stocks } from './hf/state';
 import { reach } from './hf/sentinels';
+import { arcanaCandidates } from './hf/arcana-legal';
 
 const accepts = (s: GameState, id: PlayerId, a: Action) => applyAction(s, id, a).ok;
 
@@ -60,6 +61,20 @@ export function legalActions(s: GameState, id: PlayerId): Action[] {
   }
   if (ph.k === 'displaced') {
     if (ph.owner === id) for (const to of reach(s, id, ph.vertex)) add({ type: 'moveDisplaced', to });
+    return out;
+  }
+  if (ph.k === 'arcanaGive') {
+    const n = ph.pending[id];
+    if (!n) return out;
+    const hand = { ...me.hand, ...hfPlayer(s, id).commodities };
+    for (const d of discards(hand, ph.mode === 'harbor' ? COMMODITIES : [...RESOURCES, ...COMMODITIES], n)) {
+      const cards = Object.fromEntries(RESOURCES.map((r) => [r, d[r] ?? 0])) as ResourceCounts;
+      add({ type: 'arcanaGive', cards, commodities: { vellum: d.vellum ?? 0, silk: d.silk ?? 0, sigil: d.sigil ?? 0 } });
+    }
+    return out;
+  }
+  if (ph.k === 'deserter') {
+    if (ph.target === id) for (const [vertex, k] of Object.entries(s.hf!.sentinels)) if (k.owner === id) add({ type: 'arcanaPickSentinel', vertex });
     return out;
   }
   if (ph.k === 'fleetLoss' || ph.k === 'fleetReward') {
@@ -128,6 +143,8 @@ export function legalActions(s: GameState, id: PlayerId): Action[] {
       break;
   }
 
+  if (s.hf && (ph.k === 'roll' || ph.k === 'main')) for (const a of arcanaCandidates(s, id)) add(a);
+
   // Omens play before the roll or in the main phase.
   const kinds = new Set(me.omens.map((o) => o.kind));
   if (kinds.has('warden')) add({ type: 'playOmen', kind: 'warden' });
@@ -142,6 +159,8 @@ export function legalActions(s: GameState, id: PlayerId): Action[] {
 export function pendingPlayers(s: GameState): PlayerId[] {
   if (s.phase.k === 'ended') return [];
   if (s.phase.k === 'displaced') return [s.phase.owner];
+  if (s.phase.k === 'arcanaGive') return Object.keys(s.phase.pending);
+  if (s.phase.k === 'deserter') return [s.phase.target];
   if (s.phase.k === 'fleetLoss' || s.phase.k === 'fleetReward') return s.phase.pending;
   return s.phase.k === 'discard' ? Object.keys(s.phase.pending) : [currentPlayer(s)];
 }

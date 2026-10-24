@@ -267,11 +267,11 @@ Cards **[verify each]**: Bishop ×2 (move the Shade, steal one card from each ad
 - Modify: `shared/src/engine/legal.ts`, `shared/src/view.ts`, `shared/src/protocol.ts`
 - Test: `shared/test/hf-legal.test.ts`, `shared/test/hf-view.test.ts`
 
-- [ ] **Step 1:** `legalActions` emits every new action for every new phase. Keep the existing pattern: cheap pre-filter, then confirm with `applyAction` so the two never disagree. Cap enumeration for card arguments (token swaps, trade targets) with a pre-filter, not brute force.
-- [ ] **Step 2:** `autoAct` default for every new decision: `fleetLoss` random Citadel (non-Spire first), `fleetReward` random track, `displaced` random legal vertex else remove, Arcana argument choices random among legal. Per spec: choose randomly among legal options, then end turn.
-- [ ] **Step 3:** `viewFor`: replace `hf.players[id].arcana` with a count for others, drop `arcanaDecks` to counts, keep the viewer's own hand (Review Focus 6). Events that reveal a card (Spy) are filtered like `stole`.
-- [ ] **Step 4:** Tests: for a handful of seeded mid-game states, every `legalActions` entry applies cleanly and `autoAct` ends every phase in finite steps.
-- [ ] **Step 5:** Commit `feat(hf): legal actions, autopilot, views`.
+- [x] **Step 1:** `legalActions` emits every new action for every new phase. Keep the existing pattern: cheap pre-filter, then confirm with `applyAction` so the two never disagree. Cap enumeration for card arguments (token swaps, trade targets) with a pre-filter, not brute force.
+- [x] **Step 2:** `autoAct` default for every new decision: `fleetLoss` random Citadel (non-Spire first), `fleetReward` random track, `displaced` random legal vertex else remove, Arcana argument choices random among legal. Per spec: choose randomly among legal options, then end turn.
+- [x] **Step 3:** `viewFor`: replace `hf.players[id].arcana` with a count for others, drop `arcanaDecks` to counts, keep the viewer's own hand (Review Focus 6). Events that reveal a card (Spy) are filtered like `stole`.
+- [x] **Step 4:** Tests: for a handful of seeded mid-game states, every `legalActions` entry applies cleanly and `autoAct` ends every phase in finite steps.
+- [x] **Step 5:** Commit `feat(hf): legal actions, autopilot, views`.
 
 ---
 
@@ -279,9 +279,9 @@ Cards **[verify each]**: Bishop ×2 (move the Shade, steal one card from each ad
 
 **Files:** Modify `shared/test/fuzz.test.ts`, `shared/test/drive.ts`
 
-- [ ] **Step 1:** Run the existing fuzz loop with `hollowFleet:true` over many seeds, 3 and 4 players. Per step assert: no thrown error, conservation of every resource and commodity (Review Focus 2), piece limits (Sentinels 2 per rank, Bulwarks 3, Spires 1 per track), Renown equals the recomputed sum, games end or hit a step cap with no stuck phase.
-- [ ] **Step 2:** Fix whatever the fuzz finds. This step is open-ended; stop at the first green long run (about 200 seeds).
-- [ ] **Step 3:** Commit `test(hf): fuzz with expansion`.
+- [x] **Step 1:** Run the existing fuzz loop with `hollowFleet:true` over many seeds, 3 and 4 players. Per step assert: no thrown error, conservation of every resource and commodity (Review Focus 2), piece limits (Sentinels 2 per rank, Bulwarks 3, Spires 1 per track), Renown equals the recomputed sum, games end or hit a step cap with no stuck phase.
+- [x] **Step 2:** Fix whatever the fuzz finds. This step is open-ended; stop at the first green long run (about 200 seeds).
+- [x] **Step 3:** Commit `test(hf): fuzz with expansion`.
 
 ---
 

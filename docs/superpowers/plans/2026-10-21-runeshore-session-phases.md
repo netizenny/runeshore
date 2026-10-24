@@ -153,10 +153,11 @@ Detailed plan: `docs/superpowers/plans/2026-10-23-runeshore-hollow-fleet.md` (Ta
   into a second session.
 - Done 2026-10-23: all 54 cards (`hf/arcana*.ts`, names in `ARCANA`), tests `hf-arcana-{core,lore,guild,crown}`. Rules from web card summaries, not the rulebook PDF [verify]: Cleric needs an awake Shade and steals base cards only; Diplomat "open" = one end touches none of the owner's pieces; Turncoat places its same-rank Sentinel at an argument vertex; Plot puts a Basic Sentinel on the vacated vertex. New phases `arcanaGive`, `deserter`; `legalActions`, `autoAct` and `viewFor` do not know them yet (H13), so autopilot never plays Arcana and hands still leak.
 
-### [ ] Session 15: Expansion autopilot, views, fuzz (Tasks H13–H14)
+### [x] Session 15: Expansion autopilot, views, fuzz (Tasks H13–H14)
 
 - `legalActions` and `autoAct` for every new decision point. Hidden info for Arcana.
 - Extend the fuzz test with the expansion on.
+- Done 2026-10-23: `hf/arcana-legal.ts`, `legalActions`/`pendingPlayers` cover `arcanaGive` and `deserter`, `viewFor` returns `HFView` (own Arcana only, deck counts, Fatecaster dice hidden), fuzz with expansion (40 seeds x 3/4 players) green. Fuzz found: Outpost could be built on a Sentinel vertex, now refused. Autopilot `main` still only ends turn (never plays Arcana).
 
 ### [ ] Session 16: Expansion UI and playtest (Tasks H15–H17)
 
