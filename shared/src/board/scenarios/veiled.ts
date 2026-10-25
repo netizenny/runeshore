@@ -1,12 +1,12 @@
 import type { Scenario } from './landfall';
 
-// Veiled Reach: two isles with a band of Mist between them. A path or Boat beside an intersection that touches
+// Veiled Reach: two isles with a band of Mist between them, a sea gap apart so the fog is reached only by Boat. A path or Boat beside an intersection that touches
 // Mist lifts it; what lies under may be land, a Glimmer field or open Deep.
 export const VEILED: Scenario = {
   id: 'veiled',
   prefix: 'Sv',
   name: 'Veiled Reach',
-  radius: 4,
+  radius: 5,
   target: 12,
   noLandfall: true,
   redAdjacent: true,
@@ -14,23 +14,23 @@ export const VEILED: Scenario = {
   raiderStart: [0, 3],
   land: [
     // west isle
-    [-2, -1, 'harvest', 9],
-    [-1, -1, 'timber', 6],
-    [-3, 0, 'clay', 10],
-    [-2, 0, 'fleece', 8],
-    [-1, 0, 'starmetal', 3],
-    [-3, 1, 'timber', 4],
-    [-2, 1, 'clay', 11],
-    [-4, 1, 'fleece', 5],
+    [-3, -1, 'harvest', 9],
+    [-2, -1, 'timber', 6],
+    [-4, 0, 'clay', 10],
+    [-3, 0, 'fleece', 8],
+    [-2, 0, 'starmetal', 3],
+    [-4, 1, 'timber', 4],
+    [-3, 1, 'clay', 11],
+    [-5, 1, 'fleece', 5],
     // east isle
-    [2, 1, 'harvest', 9],
-    [1, 1, 'timber', 6],
-    [3, 0, 'clay', 10],
-    [2, 0, 'fleece', 8],
-    [1, 0, 'starmetal', 5],
-    [3, -1, 'timber', 4],
-    [2, -1, 'starmetal', 12],
-    [4, -1, 'harvest', 11],
+    [3, 1, 'harvest', 9],
+    [2, 1, 'timber', 6],
+    [4, 0, 'clay', 10],
+    [3, 0, 'fleece', 8],
+    [2, 0, 'starmetal', 5],
+    [4, -1, 'timber', 4],
+    [3, -1, 'starmetal', 12],
+    [5, -1, 'harvest', 11],
     // the Mist band, top to bottom
     [2, -4, 'mist', null],
     [1, -3, 'mist', null],
@@ -52,13 +52,13 @@ export const VEILED: Scenario = {
     tokens: [2, 3, 3, 4, 5, 6, 8, 9, 9, 10, 11],
   },
   ports: [
-    [-2, -1, -2, -2, 'any'],
-    [-3, 0, -4, 0, 'timber'],
-    [-4, 1, -4, 2, 'any'],
-    [-2, 1, -2, 2, 'clay'],
-    [2, 1, 2, 2, 'starmetal'],
-    [3, 0, 4, 0, 'fleece'],
-    [4, -1, 4, -2, 'any'],
-    [2, -1, 2, -2, 'harvest'],
+    [-3, -1, -3, -2, 'any'],
+    [-4, 0, -5, 0, 'timber'],
+    [-5, 1, -5, 2, 'any'],
+    [-3, 1, -3, 2, 'clay'],
+    [3, 1, 3, 2, 'starmetal'],
+    [4, 0, 5, 0, 'fleece'],
+    [5, -1, 5, -2, 'any'],
+    [3, -1, 3, -2, 'harvest'],
   ],
 };
