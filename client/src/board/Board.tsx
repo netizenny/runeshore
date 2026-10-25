@@ -3,7 +3,7 @@ import type { Action, Hex } from '@runeshore/shared';
 import { FRAME, boardGeometry, edgeVertices, hexPixel, hexVertices, vertexPixel, type PlayerView } from '@runeshore/shared';
 import { BoatPiece, BulwarkRim, Citadel, LandfallFlag, Outpost, PathLine, PeddlerToken, Port, RaiderPiece, S, SentinelPiece, Shade, SpireCrest, TERRAIN_FILL, TerrainArt, Token } from './art';
 
-export type Mode = 'outpost' | 'path' | 'boat' | 'citadel' | 'shade' | 'sentinel' | 'arcana' | null;
+export type Mode = 'outpost' | 'path' | 'boat' | 'moveboat' |'citadel' | 'shade' | 'sentinel' | 'arcana' | null;
 
 // A clickable spot chosen by the Game screen for the expansion modes.
 export type Pick = { kind: 'vertex' | 'hex' | 'edge'; id: string; go(): void };

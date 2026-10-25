@@ -51,12 +51,10 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
     legal.filter((a) => a.type === type).map((a) => ({ kind: 'vertex', id: (a as unknown as Record<string, string>)[key], go: () => act(a) }));
   // Boat mode: click a new boat spot, or one of your movable boats then its destination.
   const edgePick = (id: string, go: () => void): Pick => ({ kind: 'edge', id, go });
-  const boatPicks: Pick[] = mode !== 'boat' ? [] : boatFrom
-    ? legal.flatMap((a) => a.type === 'moveBoat' && a.from === boatFrom ? [edgePick(a.to, () => act(a))] : [])
-    : [
-        ...legal.flatMap((a) => a.type === 'buildBoat' ? [edgePick(a.edge, () => act(a))] : []),
-        ...[...new Set(legal.flatMap((a) => a.type === 'moveBoat' ? [a.from] : []))].map((e) => edgePick(e, () => setBoatFrom(e))),
-      ];
+  const boatPicks: Pick[] = mode === 'boat' ? legal.flatMap((a) => a.type === 'buildBoat' ? [edgePick(a.edge, () => act(a))] : [])
+    : mode !== 'moveboat' ? []
+    : boatFrom ? legal.flatMap((a) => a.type === 'moveBoat' && a.from === boatFrom ? [edgePick(a.to, () => act(a))] : [])
+    : [...new Set(legal.flatMap((a) => a.type === 'moveBoat' ? [a.from] : []))].map((e) => edgePick(e, () => setBoatFrom(e)));
   // Starting boats (setup) and Twin Paths boats are placed in path mode.
   const freeBoats: Pick[] = legal.flatMap((a) => a.type === 'placeBoat' || (ph.k === 'waymaking' && a.type === 'buildBoat') ? [edgePick(a.edge, () => act(a))] : []);
   const frame = legal.find((a) => a.type === 'moveShade' && a.hex === FRAME);

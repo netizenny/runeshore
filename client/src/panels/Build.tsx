@@ -10,10 +10,11 @@ export function Build({ legal, picked, setPicked, act, boats }: { boats?: boolea
   return (
     <div className="build">
       {all.map(([m, t, label]) => (
-        <button key={m} disabled={!has(legal, t) && !(m === 'boat' && has(legal, 'moveBoat'))} data-on={picked === m} onClick={() => setPicked(picked === m ? null : m)}>
+        <button key={m} disabled={!has(legal, t)} data-on={picked === m} onClick={() => setPicked(picked === m ? null : m)}>
           {label} <Cards c={COSTS[m]} />
         </button>
       ))}
+      {boats && <button disabled={!has(legal, 'moveBoat')} data-on={picked === 'moveboat'} onClick={() => setPicked(picked === 'moveboat' ? null : 'moveboat')}>Move Boat (free)</button>}
       <button disabled={!has(legal, 'buyOmen')} onClick={() => act({ type: 'buyOmen' })}>Rune <Cards c={COSTS.omen} /></button>
     </div>
   );
