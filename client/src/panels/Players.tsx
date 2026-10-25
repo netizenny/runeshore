@@ -33,13 +33,14 @@ export function Players({ view, waiting, deadline }: { view: PlayerView; waiting
         const p = view.players.find((x) => x.id === id)!;
         const turn = view.order[view.current] === id;
         const g = glory(view, id);
+        const relics = id === view.you ? (p.omens ?? []).filter((o) => o.kind === 'relic').length : 0;
         return (
           <div key={id} className="pl" data-turn={turn} style={{ borderLeftColor: `var(--${p.color})` }}>
             <div className="pl-head">
               <span className="pl-rank">{rank === 0 && g > 0 ? '👑' : rank + 1}</span>
               <b>{turn && '▶ '}{p.name}{id === view.you ? ' (you)' : ''}</b>
               {waiting.includes(id) && <span className="ring">{left === null ? '…' : `${left}s`}</span>}
-              <span className="pl-glory" title="Glory">♛ {g}</span>
+              <span className="pl-glory" title={relics ? 'Glory (bracket: with your hidden Relics, only you see it)' : 'Glory'}>♛ {g}{relics > 0 && ` (${g + relics})`}</span>
             </div>
             <div className="pl-stats">
               <span title="Paths (roads)">Roads <b>{Object.values(view.paths).filter((o) => o === id).length}</b></span>
