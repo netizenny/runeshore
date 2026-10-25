@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Action, Hex } from '@runeshore/shared';
 import { FRAME, boardGeometry, edgeVertices, hexPixel, hexVertices, vertexPixel, type PlayerView } from '@runeshore/shared';
 import { BoatPiece, BulwarkRim, Citadel, LandfallFlag, Outpost, PathLine, PeddlerToken, Port, RaiderPiece, S, SentinelPiece, Shade, SpireCrest, TERRAIN_FILL, TerrainArt, Token } from './art';
@@ -31,8 +31,34 @@ export function Board({ view, legal, mode, onAction, pick = [] }: { view: Player
   const edgeActs = legal.filter((a) => mode === 'path' && PATH.includes(a.type)) as Extract<Action, { edge: string }>[];
   const hexActs = legal.filter((a) => mode === 'shade' && a.type === 'moveShade' && a.hex !== FRAME) as Extract<Action, { hex: string }>[];
 
+  // Scroll-wheel zoom about the cursor: z >= 1, (px, py) is the viewBox origin offset from the base frame.
+  const [zoom, setZoom] = useState({ z: 1, px: 0, py: 0 });
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [W, H, X0, Y0] = [580 * k, 540 * k, -290 * k, -270 * k];
+  useEffect(() => {
+    const svg = svgRef.current!;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const m = svg.getScreenCTM();
+      if (!m) return;
+      const c = new DOMPoint(e.clientX, e.clientY).matrixTransform(m.inverse());
+      setZoom(({ z, px, py }) => {
+        const nz = Math.min(4, Math.max(1, z * Math.exp(-e.deltaY * 0.002)));
+        const r = z / nz; // new size / old size
+        const clamp = (v: number, size: number, base: number) => Math.min(base + W - size, Math.max(base, v));
+        return {
+          z: nz,
+          px: clamp(c.x - (c.x - (X0 + px)) * r, W / nz, X0) - X0,
+          py: clamp(c.y - (c.y - (Y0 + py)) * r, H / nz, Y0) - Y0,
+        };
+      });
+    };
+    svg.addEventListener('wheel', onWheel, { passive: false });
+    return () => svg.removeEventListener('wheel', onWheel);
+  }, [W, H, X0, Y0]);
+
   return (
-    <svg viewBox={`${-290 * k} ${-270 * k} ${580 * k} ${540 * k}`} style={{ width: '100%', height: '100%' }} role="img" aria-label="Runeshore board">
+    <svg ref={svgRef} viewBox={`${X0 + zoom.px} ${Y0 + zoom.py} ${W / zoom.z} ${H / zoom.z}`} style={{ width: '100%', height: '100%' }} role="img" aria-label="Runeshore board">
       <rect x={-290 * k} y={-270 * k} width={580 * k} height={540 * k} fill="var(--night)" />
       <g fill="none" stroke="var(--ink-gold-dim)" strokeWidth={0.8} opacity={0.35}>
         {Array.from({ length: 9 }, (_, i) => <path key={i} d={`M-280 ${-250 + i * 62} q35 -9 70 0 t70 0 t70 0 t70 0 t70 0 t70 0 t70 0 t70 0`} />)}
