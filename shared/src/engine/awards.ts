@@ -1,6 +1,7 @@
 import type { EdgeId, GameEvent, GameState, PlayerId, VertexId } from '../types';
 import { LANDFALL_GLORY } from '../constants';
 import { edgeVertices, vertexEdges, vertexHexes } from '../board/geometry';
+import { SCENARIOS } from '../board/scenarios/landfall';
 import { player } from './setup';
 import { hfScore } from './hf/score';
 
@@ -36,8 +37,8 @@ const ownsOnIsle = (s: GameState, id: PlayerId, isle: string, except: VertexId) 
 // First outpost on each isle other than the ones you started on earns a Landfall mark.
 export function claimLandfall(s: GameState, id: PlayerId, vertex: VertexId): GameEvent[] {
   const di = s.di;
-  if (!di) return [];
-  const isles = new Set(vertexHexes(vertex).map((h) => di.isleOf[h]));
+  if (!di || SCENARIOS[s.settings.scenario].noLandfall) return [];
+  const isles = new Set(vertexHexes(vertex).map((h) => di.isleOf[h]).filter(Boolean));
   return [...isles].filter((i) => i !== di.homeIsle && !di.landfall[id].includes(i) && !ownsOnIsle(s, id, i, vertex)).map((isle) => {
     di.landfall[id].push(isle);
     return { type: 'landfall' as const, player: id, isle };

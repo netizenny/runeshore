@@ -53,11 +53,51 @@ export function scenarioBoard(sc: Scenario): Board {
   return { hexes, ports };
 }
 
+// Keeps each scenario's land shape and port spots but deals terrains, number tokens and port kinds at random.
+// Each isle shuffles within itself, so its desert and gold stay put and every start stays fair. Tokens obey the official
+// placement rules: no 6/8 side by side (unless the scenario allows it), none on gold, and in `calmWoods` scenarios none of
+// 2, 3, 11, 12 on timber or fleece. Mist hexes stay Mist; their contents are dealt later by dealMist.
+export function randomizeScenario(sc: Scenario, board: Board, rng: number): [Board, number] {
+  const { edgeSet } = geometry(sc.prefix);
+  const { isleOf } = scenarioIsles(sc, board);
+  const groups: Record<string, HexId[]> = {};
+  for (const l of sc.land) {
+    if (l[2] === 'mist') continue;
+    const id = hexId(l[0], l[1], sc.prefix);
+    (groups[isleOf[id]] ??= []).push(id);
+  }
+  const low = (t: number | null) => t === 2 || t === 3 || t === 11 || t === 12;
+  let s = rng;
+  const hexes: Record<HexId, Hex> = { ...board.hexes };
+  for (const slots of Object.values(groups)) {
+    let terrains: Terrain[];
+    [terrains, s] = shuffle(slots.map((id) => board.hexes[id].terrain), s);
+    slots.forEach((id, i) => (hexes[id] = { ...hexes[id], terrain: terrains[i], token: null }));
+    const numbered = slots.filter((id) => hexes[id].terrain !== 'ashen');
+    const pool = slots.map((id) => board.hexes[id].token).filter((t) => t !== null) as number[];
+    const bad = (id: string, i: number) => {
+      const { terrain, token } = hexes[id];
+      if (terrain === 'glimmer' && hot(token)) return true;
+      if (sc.calmWoods && (terrain === 'timber' || terrain === 'fleece') && low(token)) return true;
+      return !sc.redAdjacent && hot(token) && numbered.some((o, j) => j > i && hot(hexes[o].token) && edgeSet.has(edgeId(id, o)));
+    };
+    for (let tries = 0; tries < 2000; tries++) {
+      let tk: number[];
+      [tk, s] = shuffle(pool, s);
+      numbered.forEach((id, k) => (hexes[id] = { ...hexes[id], token: tk[k] }));
+      if (!numbered.some(bad)) break;
+    }
+  }
+  let kinds: typeof PORTS;
+  [kinds, s] = shuffle(board.ports.map((p) => p.kind), s);
+  return [{ hexes, ports: board.ports.map((p, i) => ({ ...p, kind: kinds[i] })) }, s];
+}
+
 // Land hexes grouped into isles by flood fill over shared edges; the home isle holds the `home` hex ('' when setup may start anywhere).
 export function scenarioIsles(sc: Scenario, board: Board): { isleOf: Record<HexId, string>; homeIsle: string } {
   const isleOf: Record<HexId, string> = {};
   const { edgeSet } = geometry(sc.prefix);
-  const land = Object.values(board.hexes).filter((h) => h.terrain !== 'deep').map((h) => h.id);
+  const land = Object.values(board.hexes).filter((h) => h.terrain !== 'deep' && h.terrain !== 'mist').map((h) => h.id);
   let n = 0;
   for (const start of land) {
     if (isleOf[start]) continue;

@@ -131,3 +131,28 @@ describe('boats', () => {
     expect(act(s, { type: 'buildOutpost', vertex: sea }).ok).toBe(false);
   });
 });
+
+describe('official boat details', () => {
+  it('Twin Paths may lay boats free, in any mix', () => {
+    const { s } = game();
+    const hand = { ...s.players.find((p) => p.id === 'a')!.hand };
+    s.phase = { k: 'waymaking', left: 2, then: 'main' };
+    let n = ok(act(s, boatsFor(s)[0]));
+    expect(n.phase).toMatchObject({ k: 'waymaking', left: 1 });
+    n = ok(act(n, boatsFor(n).find((b) => !n.di!.boats[b.edge])!));
+    expect(n.phase).toEqual({ k: 'main' });
+    expect(Object.keys(n.di!.boats)).toHaveLength(2);
+    expect(n.players.find((p) => p.id === 'a')!.hand).toEqual(hand);
+  });
+
+  it('an own path at a boat end does not close it (only boats and buildings do)', () => {
+    const { s, home } = game();
+    const first = boatsFor(s)[0].edge;
+    s.di!.boats[first] = 'a';
+    s.di!.builtTurn[first] = 1;
+    const far = edgeVertices(first).find((v) => v !== home)!;
+    const path = vertexEdges(far).find((e) => e !== first && !s.di!.boats[e] && isPathEdge(e));
+    if (path) s.paths[path] = 'a';
+    expect(legalActions(s, 'a').some((a) => a.type === 'moveBoat' && a.from === first)).toBe(true);
+  });
+});

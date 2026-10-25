@@ -10,8 +10,13 @@ export interface Scenario {
   radius: number; // every hex of this disc not listed in `land` is Deep
   anywhere?: true; // no home isle: setup may start on any isle
   big?: true; // a large map seating 2-6; the others seat 2-4
+  target: number; // default renown to win (official: 14 New Shores, 13 Four Islands, 12 Fog Islands)
+  noLandfall?: true; // no first-outpost bonus per isle
+  redAdjacent?: true; // 6s and 8s may sit side by side
+  calmWoods?: true; // timber and fleece never take 2, 3, 11 or 12
+  raiderStart: [q: number, r: number]; // Deep hex the Raider begins on
   land: [q: number, r: number, terrain: Terrain, token: number | null, home?: true][];
-  fog?: [terrain: Terrain, token: number | null][]; // hidden contents dealt onto the `mist` hexes
+  fog?: { terrains: Terrain[]; tokens: number[] }; // hidden terrains and number tokens, dealt separately onto the `mist` hexes (`deep` takes no token)
   ports: [q1: number, r1: number, q2: number, r2: number, kind: Resource | 'any'][];
 }
 
@@ -21,6 +26,8 @@ export const LANDFALL: Scenario = {
   prefix: 'Sf',
   name: 'First Landfall',
   radius: 3,
+  target: 14,
+  raiderStart: [1, 2],
   land: [
     // home isle
     [-1, 0, 'harvest', 9, true],

@@ -1,5 +1,5 @@
 import type { Action, ApplyResult, GameState, PlayerId } from '../types';
-import { placeOutpost, placePath, type Result } from './setup';
+import { placeBoat, placeOutpost, placePath, type Result } from './setup';
 import { chooseGlimmer, discard, endTurn, moveShade, roll, steal } from './turn';
 import { buildCitadel, buildOutpost, buildPath } from './build';
 import { buildBoat, moveBoat } from './boats';
@@ -17,7 +17,7 @@ export const currentPlayer = (s: GameState): PlayerId => s.order[s.current];
 
 type Handler = (s: GameState, id: PlayerId, a: any) => Result;
 const HANDLERS: Record<Action['type'], Handler> = {
-  placeOutpost, placePath, roll, discard, chooseGlimmer, moveShade, steal, buildPath, buildOutpost, buildCitadel, buildBoat, moveBoat,
+  placeOutpost, placePath, placeBoat, roll, discard, chooseGlimmer, moveShade, steal, buildPath, buildOutpost, buildCitadel, buildBoat, moveBoat,
   buildSentinel, activateSentinel, promoteSentinel, moveSentinel, moveDisplaced, chaseShade, buildBulwark, chooseLoss, chooseReward, improve, playArcana, arcanaGive, arcanaPickSentinel,
   buyOmen, playOmen, bankTrade, offerTrade, respondTrade, confirmTrade, cancelTrade, endTurn,
 };

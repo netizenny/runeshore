@@ -1,7 +1,8 @@
 import type { Action, GameEvent, GameState, PlayerId, Resource } from '../types';
 import { RESOURCES } from '../constants';
 import { liftMist } from './mist';
-import { edgeVertices, isPathEdge, vertexHexes, vertexNeighbors, boardGeometry } from '../board/geometry';
+import { boatSpotOk } from './boats';
+import { edgeVertices, landHexesAt, pathEdgeOn, vertexHexes, vertexNeighbors, boardGeometry } from '../board/geometry';
 
 // Handlers mutate the (already cloned) state and return events, or an error string.
 export type Result = GameEvent[] | string;
@@ -10,7 +11,7 @@ export const player = (s: GameState, id: PlayerId) => s.players.find((p) => p.id
 
 // Setup outposts must touch land, and on a Drowned Isles board only the home isle (any isle when it has none).
 export const setupSpotOk = (s: GameState, v: string) =>
-  vertexHexes(v).some((h) => !s.di?.homeIsle || s.di.isleOf[h] === s.di.homeIsle);
+  landHexesAt(s.board, v).some((h) => !s.di?.homeIsle || s.di.isleOf[h] === s.di.homeIsle);
 
 export function placeOutpost(s: GameState, id: PlayerId, a: Extract<Action, { type: 'placeOutpost' }>): Result {
   const ph = s.phase;
@@ -37,21 +38,13 @@ export function placeOutpost(s: GameState, id: PlayerId, a: Extract<Action, { ty
   return [{ type: 'built', player: id, piece: 'outpost', at: v }];
 }
 
-export function placePath(s: GameState, id: PlayerId, a: Extract<Action, { type: 'placePath' }>): Result {
-  const ph = s.phase;
-  if (ph.k !== 'setup' || ph.step !== 'path') return 'not placing a path';
-  if (!boardGeometry(s.board).edgeSet.has(a.edge)) return 'no such edge';
-  if (s.paths[a.edge]) return 'path already there';
-  if (!isPathEdge(a.edge)) return 'paths need land';
-  if (!edgeVertices(a.edge).includes(ph.lastOutpost!)) return 'path must touch the new outpost';
-  s.paths[a.edge] = id;
-  player(s, id).piecesLeft.path--;
-  const lifted = liftMist(s, id, a.edge);
+// Advances the snake-order setup once a starting path or boat is down.
+function nextSetupStep(s: GameState, round: 1 | 2) {
   const n = s.order.length;
-  if (ph.round === 1 && s.current < n - 1) {
+  if (round === 1 && s.current < n - 1) {
     s.current++;
     s.phase = { k: 'setup', round: 1, step: 'outpost' };
-  } else if (ph.round === 1) {
+  } else if (round === 1) {
     s.phase = { k: 'setup', round: 2, step: 'outpost' }; // last player goes again
   } else if (s.current > 0) {
     s.current--;
@@ -60,5 +53,33 @@ export function placePath(s: GameState, id: PlayerId, a: Extract<Action, { type:
     s.phase = { k: 'roll' };
     s.turn = 1;
   }
+}
+
+// A coastal starting outpost may take a boat on an adjacent sea edge instead of a path.
+export function placeBoat(s: GameState, id: PlayerId, a: Extract<Action, { type: 'placeBoat' }>): Result {
+  const ph = s.phase;
+  if (ph.k !== 'setup' || ph.step !== 'path') return 'not placing a path';
+  if (!s.di) return 'no boats in this game';
+  if (!edgeVertices(a.edge).includes(ph.lastOutpost!)) return 'boat must touch the new outpost';
+  if (s.di.boatsLeft[id] < 1 || !boatSpotOk(s, id, a.edge)) return 'no boat can go there';
+  s.di.boats[a.edge] = id;
+  s.di.builtTurn[a.edge] = s.turn;
+  s.di.boatsLeft[id]--;
+  const lifted = liftMist(s, id, a.edge);
+  nextSetupStep(s, ph.round);
+  return [{ type: 'built', player: id, piece: 'boat', at: a.edge }, ...lifted];
+}
+
+export function placePath(s: GameState, id: PlayerId, a: Extract<Action, { type: 'placePath' }>): Result {
+  const ph = s.phase;
+  if (ph.k !== 'setup' || ph.step !== 'path') return 'not placing a path';
+  if (!boardGeometry(s.board).edgeSet.has(a.edge)) return 'no such edge';
+  if (s.paths[a.edge]) return 'path already there';
+  if (!pathEdgeOn(s.board, a.edge)) return 'paths need land';
+  if (!edgeVertices(a.edge).includes(ph.lastOutpost!)) return 'path must touch the new outpost';
+  s.paths[a.edge] = id;
+  player(s, id).piecesLeft.path--;
+  const lifted = liftMist(s, id, a.edge);
+  nextSetupStep(s, ph.round);
   return [{ type: 'built', player: id, piece: 'path', at: a.edge }, ...lifted];
 }

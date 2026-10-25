@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { Action, ClientMsg, PlayerView, ServerMsg } from '@runeshore/shared';
+import { FRAME } from '@runeshore/shared';
 import { Board, type Mode, type Pick } from '../board/Board';
 import { ComicPanel } from '../fx/ComicPanel';
 import { ArcanaHand, arcanaPicks, playsOf } from '../panels/Arcana';
@@ -56,13 +57,16 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
         ...legal.flatMap((a) => a.type === 'buildBoat' ? [edgePick(a.edge, () => act(a))] : []),
         ...[...new Set(legal.flatMap((a) => a.type === 'moveBoat' ? [a.from] : []))].map((e) => edgePick(e, () => setBoatFrom(e))),
       ];
-  const pick: Pick[] = boatPicks.length ? boatPicks : ph.k === 'displaced' ? forcedPick('moveDisplaced', 'to')
+  // Starting boats (setup) and Twin Paths boats are placed in path mode.
+  const freeBoats: Pick[] = legal.flatMap((a) => a.type === 'placeBoat' || (ph.k === 'waymaking' && a.type === 'buildBoat') ? [edgePick(a.edge, () => act(a))] : []);
+  const frame = legal.find((a) => a.type === 'moveShade' && a.hex === FRAME);
+  const pick: Pick[] = boatPicks.length ? boatPicks : freeBoats.length ? freeBoats : ph.k === 'displaced' ? forcedPick('moveDisplaced', 'to')
     : ph.k === 'fleetLoss' ? forcedPick('chooseLoss', 'vertex')
     : ph.k === 'deserter' ? forcedPick('arcanaPickSentinel', 'vertex')
     : (card && arcanaPicks(playsOf(legal, card), act)) || sentinelPicks(legal, sub, from, setFrom, act);
   const name = view.players.find((p) => p.id === view.order[view.current])?.name;
-  const prompt = ph.k === 'waymaking' ? `Twin Paths: lay ${ph.left} more path${ph.left > 1 ? 's' : ''}`
-    : ph.k === 'setup' ? `Setup: place your ${ph.step}`
+  const prompt = ph.k === 'waymaking' ? `Twin Paths: lay ${ph.left} more path${ph.left > 1 ? 's' : ''} or boat${ph.left > 1 ? 's' : ''}`
+    : ph.k === 'setup' ? `Setup: place your ${ph.step}${ph.step === 'path' && freeBoats.length ? ' (or a boat)' : ''}`
     : has(legal, 'moveShade') ? 'Move the Shade to a hex'
     : ph.k === 'discard' ? 'Waiting for discards'
     : ph.k === 'displaced' ? 'A Sentinel was displaced: move it' + (ph.owner === view.you ? '' : ` (${view.players.find((p) => p.id === ph.owner)?.name})`)
@@ -79,7 +83,7 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
 
   return (
     <div className="game" data-hf={!!hf}>
-      <div className="bar"><b>{prompt}</b>{view.dice && ph.k !== 'roll' && <span>🎲 {view.dice[0]} + {view.dice[1]}</span>}</div>
+      <div className="bar"><b>{prompt}</b>{frame && <button onClick={() => act(frame)}>Raider to the frame</button>}{view.dice && ph.k !== 'roll' && <span>🎲 {view.dice[0]} + {view.dice[1]}</span>}</div>
       <div className="board"><button className="book" title="Rulebook" onClick={() => setBook(true)}>📖</button><Board view={view} legal={legal} mode={mode} onAction={act} pick={pick} /></div>
       <aside className="side">
         {hf && <Fleet hf={hf} />}

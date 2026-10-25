@@ -163,7 +163,7 @@ export class Room {
     if (p.drownedIsles === true && p.hollowFleet !== true) next.hollowFleet = false;
     if (p.hollowFleet === true && p.drownedIsles !== true) next.drownedIsles = false;
     // Toggling the mode moves the default target unless the host sent one too.
-    const target = (x: Settings) => (x.hollowFleet ? 13 : x.drownedIsles ? 14 : 10);
+    const target = (x: Settings) => (x.hollowFleet ? 13 : x.drownedIsles ? SCENARIOS[x.scenario]?.target ?? 14 : 10);
     if (p.gloryTarget === undefined && target(next) !== target(this.settings)) next.gloryTarget = target(next);
     const ok =
       typeof next.hollowFleet === 'boolean' &&

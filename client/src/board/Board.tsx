@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import type { Action, Hex } from '@runeshore/shared';
-import { boardGeometry, edgeVertices, hexPixel, hexVertices, vertexPixel, type PlayerView } from '@runeshore/shared';
+import { FRAME, boardGeometry, edgeVertices, hexPixel, hexVertices, vertexPixel, type PlayerView } from '@runeshore/shared';
 import { BoatPiece, BulwarkRim, Citadel, LandfallFlag, Outpost, PathLine, PeddlerToken, Port, RaiderPiece, S, SentinelPiece, Shade, SpireCrest, TERRAIN_FILL, TerrainArt, Token } from './art';
 
 export type Mode = 'outpost' | 'path' | 'boat' | 'citadel' | 'shade' | 'sentinel' | 'arcana' | null;
@@ -29,7 +29,7 @@ export function Board({ view, legal, mode, onAction, pick = [] }: { view: Player
 
   const vertexActs = legal.filter((a) => (mode === 'outpost' && OUTPOST.includes(a.type)) || (mode === 'citadel' && a.type === 'buildCitadel')) as Extract<Action, { vertex: string }>[];
   const edgeActs = legal.filter((a) => mode === 'path' && PATH.includes(a.type)) as Extract<Action, { edge: string }>[];
-  const hexActs = legal.filter((a) => mode === 'shade' && a.type === 'moveShade') as Extract<Action, { hex: string }>[];
+  const hexActs = legal.filter((a) => mode === 'shade' && a.type === 'moveShade' && a.hex !== FRAME) as Extract<Action, { hex: string }>[];
 
   return (
     <svg viewBox={`${-290 * k} ${-270 * k} ${580 * k} ${540 * k}`} style={{ width: '100%', height: '100%' }} role="img" aria-label="Runeshore board">

@@ -1,6 +1,6 @@
 import type { Action, ApplyResult, Commodity, GameEvent, GameState, PlayerId, Resource, ResourceCounts } from '../types';
-import { COMMODITIES, COSTS, IMPROVE_MAX, TRACK_COMMODITY, RESOURCES, emptyCounts, isCommodity } from '../constants';
-import { boardGeometry, isPathEdge, vertexEdges, vertexNeighbors } from '../board/geometry';
+import { COMMODITIES, COSTS, FRAME, IMPROVE_MAX, NOT_LAND, TRACK_COMMODITY, RESOURCES, emptyCounts, isCommodity } from '../constants';
+import { boardGeometry, pathEdgeOn, vertexEdges, vertexNeighbors } from '../board/geometry';
 import { randInt, shuffle } from '../rng';
 import { applyAction, currentPlayer } from './apply';
 import { canPay, pathSpotOk } from './build';
@@ -98,18 +98,25 @@ export function legalActions(s: GameState, id: PlayerId): Action[] {
           if (!s.buildings[v] && !vertexNeighbors(v).some((n) => s.buildings[n]) && setupSpotOk(s, v)) out.push({ type: 'placeOutpost', vertex: v });
         }
       } else {
-        for (const e of vertexEdges(ph.lastOutpost!)) if (!s.paths[e] && isPathEdge(e)) out.push({ type: 'placePath', edge: e });
+        for (const e of vertexEdges(ph.lastOutpost!)) {
+          if (!s.paths[e] && pathEdgeOn(s.board, e)) out.push({ type: 'placePath', edge: e });
+          if (s.di && s.di.boatsLeft[id] > 0 && boatSpotOk(s, id, e)) out.push({ type: 'placeBoat', edge: e });
+        }
       }
       return out;
     case 'moveShade':
-      for (const h of Object.keys(s.board.hexes)) if (h !== s.shadeHex && s.board.hexes[h].terrain !== 'deep') out.push({ type: 'moveShade', hex: h });
+      for (const h of Object.keys(s.board.hexes)) if (h !== s.shadeHex && !NOT_LAND.includes(s.board.hexes[h].terrain)) out.push({ type: 'moveShade', hex: h });
+      if (s.di?.raiderHex) out.push({ type: 'moveShade', hex: FRAME, raider: true });
       if (s.di) for (const h of Object.keys(s.board.hexes)) if (h !== s.di.raiderHex && s.board.hexes[h].terrain === 'deep') out.push({ type: 'moveShade', hex: h, raider: true });
       return out;
     case 'steal':
       for (const victim of ph.victims) out.push({ type: 'steal', victim });
       return out;
     case 'waymaking':
-      for (const e of boardGeometry(s.board).edges) if (pathSpotOk(s, id, e)) out.push({ type: 'buildPath', edge: e });
+      for (const e of boardGeometry(s.board).edges) {
+        if (pathSpotOk(s, id, e)) out.push({ type: 'buildPath', edge: e });
+        if (s.di && s.di.boatsLeft[id] > 0 && boatSpotOk(s, id, e)) out.push({ type: 'buildBoat', edge: e });
+      }
       return out;
     case 'roll':
       out.push({ type: 'roll' });

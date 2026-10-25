@@ -1,9 +1,10 @@
 import type { Action, EdgeId, GameState, PlayerId, ResourceCounts } from '../types';
 import { COSTS, RESOURCES } from '../constants';
-import { boardGeometry, edgeVertices, isPathEdge, vertexEdges, vertexHexes, vertexNeighbors } from '../board/geometry';
+import { boardGeometry, edgeVertices, landHexesAt, pathEdgeOn, vertexEdges, vertexNeighbors } from '../board/geometry';
 import { player, type Result } from './setup';
 import { claimLandfall } from './awards';
 import { liftMist } from './mist';
+import { canWayMake } from './boats';
 
 export const canPay = (s: GameState, id: PlayerId, c: ResourceCounts) => RESOURCES.every((r) => player(s, id).hand[r] >= c[r]);
 
@@ -16,7 +17,7 @@ export function pay(s: GameState, id: PlayerId, c: ResourceCounts) {
 
 // A path joins at a vertex where you own a building, or own another path and no opponent building blocks it.
 export function pathSpotOk(s: GameState, id: PlayerId, edge: EdgeId): boolean {
-  if (!boardGeometry(s.board).edgeSet.has(edge) || s.paths[edge] || s.di?.boats[edge] || !isPathEdge(edge)) return false;
+  if (!boardGeometry(s.board).edgeSet.has(edge) || s.paths[edge] || s.di?.boats[edge] || !pathEdgeOn(s.board, edge)) return false;
   return edgeVertices(edge).some((v) => {
     const b = s.buildings[v];
     if (b) return b.owner === id;
@@ -40,7 +41,7 @@ export function buildPath(s: GameState, id: PlayerId, a: Extract<Action, { type:
   p.piecesLeft.path--;
   const lifted = liftMist(s, id, a.edge);
   if (ph.k === 'waymaking') {
-    s.phase = ph.left === 2 && p.piecesLeft.path > 0 && hasLegalPath(s, id) ? { ...ph, left: 1 } : { k: ph.then };
+    s.phase = ph.left === 2 && canWayMake(s, id) ? { ...ph, left: 1 } : { k: ph.then };
   }
   return [{ type: 'built', player: id, piece: 'path', at: a.edge }, ...lifted];
 }
@@ -54,7 +55,7 @@ export function buildOutpost(s: GameState, id: PlayerId, a: Extract<Action, { ty
   if (s.buildings[v] || vertexNeighbors(v).some((n) => s.buildings[n])) return 'too close to another building';
   if (s.hf?.sentinels[v]) return 'a Sentinel stands there';
   if (!vertexEdges(v).some((e) => s.paths[e] === id || s.di?.boats[e] === id)) return 'outpost must touch your path or boat';
-  if (!vertexHexes(v).length) return 'no land there';
+  if (!landHexesAt(s.board, v).length) return 'no land there';
   if (!canPay(s, id, COSTS.outpost)) return 'cannot afford';
   pay(s, id, COSTS.outpost);
   s.buildings[v] = { owner: id, kind: 'outpost' };

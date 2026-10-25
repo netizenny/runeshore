@@ -137,7 +137,7 @@ export interface DIState {
   builtTurn: Record<EdgeId, number>; // turn each boat was built or last moved to
   movedTurn: number; // turn a boat last moved (one move per turn)
   landfall: Record<PlayerId, string[]>; // isles with a Landfall mark
-  raiderHex: HexId | null; // off-board until first moved
+  raiderHex: HexId | null; // starts on the scenario's mark; null once sent off to the frame
   mist?: Record<HexId, { terrain: Terrain; token: number | null }>; // hidden contents of unlifted Mist hexes (server only)
 }
 
@@ -169,6 +169,7 @@ export interface GameState {
 export type Action =
   | { type: 'placeOutpost'; vertex: VertexId }
   | { type: 'placePath'; edge: EdgeId }
+  | { type: 'placeBoat'; edge: EdgeId } // setup only: a boat instead of the starting path
   | { type: 'roll' }
   | { type: 'discard'; cards: ResourceCounts; commodities?: Record<Commodity, number> }
   | { type: 'moveShade'; hex: HexId; raider?: true }

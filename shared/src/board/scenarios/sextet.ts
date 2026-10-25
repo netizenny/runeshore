@@ -28,6 +28,8 @@ export const SEXTET: Scenario = {
   prefix: 'Sx',
   name: 'Sextet Reach',
   radius: 5,
+  target: 14,
+  raiderStart: [0, 0],
   anywhere: true,
   big: true,
   land: ISLES.flatMap((isle, i) =>

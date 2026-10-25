@@ -1,6 +1,7 @@
 import type { Action, GameState, PlayerId } from '../types';
 import { COSTS, RESOURCES } from '../constants';
-import { canPay, hasLegalPath, pay } from './build';
+import { canPay, pay } from './build';
+import { canWayMake } from './boats';
 import { player, type Result } from './setup';
 
 export function buyOmen(s: GameState, id: PlayerId): Result {
@@ -23,7 +24,7 @@ export function playOmen(s: GameState, id: PlayerId, a: Extract<Action, { type: 
   const i = p.omens.findIndex((o) => o.kind === a.kind && o.boughtTurn < s.turn);
   if (i < 0) return 'you have no such Rune to play';
   // Validate before spending the card.
-  if (a.kind === 'waymaking' && (p.piecesLeft.path < 1 || !hasLegalPath(s, id))) return 'no path can be placed';
+  if (a.kind === 'waymaking' && !canWayMake(s, id)) return 'no path or boat can be placed';
   if (a.kind === 'bounty') {
     const [x, y] = a.pick;
     if (!RESOURCES.includes(x) || !RESOURCES.includes(y)) return 'bad pick';
@@ -38,7 +39,7 @@ export function playOmen(s: GameState, id: PlayerId, a: Extract<Action, { type: 
     p.wardensPlayed++;
     s.phase = { k: 'moveShade', then: ph.k };
   } else if (a.kind === 'waymaking') {
-    s.phase = { k: 'waymaking', left: p.piecesLeft.path >= 2 ? 2 : 1, then: ph.k };
+    s.phase = { k: 'waymaking', left: 2, then: ph.k };
   } else if (a.kind === 'bounty') {
     for (const r of a.pick) {
       s.bank[r]--;

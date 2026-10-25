@@ -101,6 +101,14 @@ export const boardGeometry = (b: Board) => of(Object.keys(b.hexes)[0]);
 // A path needs land on at least one side; open-water edges are for Boats.
 export const isPathEdge = (e: EdgeId): boolean => split(e, '~').some((h) => of(e).landSet.has(h));
 
+// Real land right now: Deep and unlifted Mist hexes are sea. The universe's landSet is static, so it only says where land can ever be.
+export const isLandHex = (b: Board, h: HexId): boolean => {
+  const t = b.hexes[h]?.terrain;
+  return !!t && t !== 'deep' && t !== 'mist';
+};
+export const pathEdgeOn = (b: Board, e: EdgeId): boolean => split(e, '~').some((h) => isLandHex(b, h));
+export const landHexesAt = (b: Board, v: VertexId): HexId[] => vertexHexes(v).filter((h) => isLandHex(b, h));
+
 // The standard board's lists, kept for callers that only ever see that board.
 export const LAND_HEXES = STANDARD.land;
 export const ALL_VERTICES: VertexId[] = STANDARD.vertices;

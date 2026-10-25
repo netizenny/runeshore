@@ -19,7 +19,7 @@ export function Log({ view }: { view: PlayerView }) {
       case 'discarded': return `${n(e.player)} cast off ${e.count} cards`;
       case 'shadeMoved': return `${n(e.player)} moved the Shade`;
       case 'stole': return <>{n(e.thief)} stole {e.resource ? <Cards c={{ [e.resource]: 1 }} /> : 'a card'} from {n(e.victim)}</>;
-      case 'revealed': return `${n(e.player)} lifted the Mist: ${e.terrain}${e.token ? ` ${e.token}` : ''}`;
+      case 'revealed': return `${n(e.player)} lifted the Mist: ${e.terrain === 'deep' ? 'open Deep' : e.terrain}${e.token ? ` ${e.token}` : ''}`;
       case 'built': {
         const color = `var(--${view.players.find((p) => p.id === e.player)?.color})`;
         const icon = e.piece === 'outpost' ? <Outpost color={color} /> : e.piece === 'citadel' ? <Citadel color={color} /> : e.piece === 'path' ? <PathLine a={{ x: -8, y: 5 }} b={{ x: 8, y: -5 }} color={color} /> : null;

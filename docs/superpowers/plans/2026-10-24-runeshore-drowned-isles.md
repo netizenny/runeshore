@@ -162,3 +162,9 @@ Sources: official 5th-ed rules text (ultraboardgames summary) + catan.com FAQ. C
 ## Risks
 - Hex-id scheme ("q,r", `L` prefix for large map) must extend to arbitrary shapes; Phase 1 decides.
 - Hollow Fleet also uses "fleet" wording and a Fleet panel; keep Boat UI separate to avoid confusion.
+
+## Rulebook audit fixes (2026-10-24, vs CN3083 Seafarers 2025)
+- Veiled Reach rebuilt as official Fog Islands: two isles (8 hexes each) split by a 13-hex Mist band; hidden pool holds 2 Deep + 2 Glimmer + land, terrains and tokens dealt apart. A path/boat lifts every Mist hex at either end of its edge; land pays 1 card (Glimmer: pick; setup/Twin Paths: scarcest resource shortcut), Deep pays nothing. No Landfall, win at 12, start on either isle, Shade starts on a 12 token. Geometry stays static; `isLandHex`/`pathEdgeOn`/`landHexesAt` read the board so unlifted Mist and revealed Deep act as sea.
+- Per-scenario `target` (14 / 13 / 12; Sextet 14), `calmWoods` (Quartet: no 2/3/11/12 on timber or fleece), Quartet has no Glimmer, randomizer shuffles per isle and keeps red numbers off Glimmer.
+- Boats: open end ignores own paths; starting boat (`placeBoat`) instead of a path; Twin Paths lays boats; Raider starts on `raiderStart` and may go to the frame (`moveShade hex:'frame'`).
+- Not done: official Wonders/Cloth/Pirate/Forgotten Tribe scenarios (scope cut earlier). Not hand-checked in the browser.

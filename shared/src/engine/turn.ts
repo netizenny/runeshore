@@ -1,5 +1,5 @@
 import type { Action, Commodity, GameState, PlayerId, Resource, ResourceCounts } from '../types';
-import { COMMODITIES, COMMODITY_OF, RESOURCES, isCommodity } from '../constants';
+import { COMMODITIES, COMMODITY_OF, FRAME, NOT_LAND, RESOURCES, isCommodity } from '../constants';
 import { hexVertices } from '../board/geometry';
 import { randInt } from '../rng';
 import { player, type Result } from './setup';
@@ -114,16 +114,18 @@ export function chooseGlimmer(s: GameState, id: PlayerId, a: Extract<Action, { t
 export function moveShade(s: GameState, id: PlayerId, a: Extract<Action, { type: 'moveShade' }>): Result {
   const ph = s.phase;
   if (ph.k !== 'moveShade') return 'not moving the Shade';
-  if (!Object.hasOwn(s.board.hexes, a.hex)) return 'no such hex';
   const raider = !!a.raider;
+  // The Raider may also be sent off to the frame (`raiderHex` null), where it robs no one.
+  const frame = raider && a.hex === FRAME;
+  if (!frame && !Object.hasOwn(s.board.hexes, a.hex)) return 'no such hex';
   if (raider) {
     if (!s.di) return 'no Raider in this game';
-    if (s.board.hexes[a.hex].terrain !== 'deep') return 'the Raider stays on the Deep';
-    if (a.hex === s.di.raiderHex) return 'the Raider must move';
-    s.di.raiderHex = a.hex;
+    if (!frame && s.board.hexes[a.hex].terrain !== 'deep') return 'the Raider stays on the Deep';
+    if (frame ? s.di.raiderHex === null : a.hex === s.di.raiderHex) return 'the Raider must move';
+    s.di.raiderHex = frame ? null : a.hex;
   } else {
     if (a.hex === s.shadeHex) return 'the Shade must move';
-    if (s.board.hexes[a.hex].terrain === 'deep') return 'the Shade stays on land';
+    if (NOT_LAND.includes(s.board.hexes[a.hex].terrain)) return 'the Shade stays on land';
     s.shadeHex = a.hex;
   }
   // The Shade robs outposts around its hex; the Raider robs owners of Boats along its hex.

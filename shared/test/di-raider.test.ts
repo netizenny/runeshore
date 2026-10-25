@@ -25,7 +25,7 @@ describe('Raider', () => {
   // A deep hex with a boat edge owned by 'b' (with a card in hand) on it.
   function raided() {
     const s = game();
-    const hex = hexOf(s, 'deep').find((h) => hexVertices(h.id).length)!.id;
+    const hex = hexOf(s, 'deep').find((h) => h.id !== s.di!.raiderHex && hexVertices(h.id).length)!.id;
     const edge = [...new Set(hexVertices(hex).flatMap(vertexEdges))].find((e) => e.split('~').includes(hex))!;
     s.di!.boats[edge] = 'b';
     s.players.find((p) => p.id === 'b')!.hand.clay = 2;
@@ -33,9 +33,9 @@ describe('Raider', () => {
     return { s, hex, edge };
   }
 
-  it('moves to deep hexes only, steals from a boat owner, and starts off-board', () => {
+  it('moves to deep hexes only, steals from a boat owner, and starts on the scenario mark', () => {
     const { s, hex } = raided();
-    expect(s.di!.raiderHex).toBeNull();
+    expect(s.di!.raiderHex).toBe('Sf1,2');
     const land = hexOf(s, 'timber')[0].id;
     expect(applyAction(s, 'a', { type: 'moveShade', hex: land, raider: true }).ok).toBe(false);
     const n = ok(applyAction(s, 'a', { type: 'moveShade', hex, raider: true }));
@@ -45,6 +45,17 @@ describe('Raider', () => {
     expect(n.log.some((e) => e.type === 'stole' && e.victim === 'b')).toBe(true);
     expect(n.phase.k).toBe('main');
     expect(applyAction(n, 'a', { type: 'moveShade', hex, raider: true }).ok).toBe(false);
+  });
+
+  it('can be sent off to the frame, where it robs no one, and back', () => {
+    const { s } = raided();
+    const n = ok(applyAction(s, 'a', { type: 'moveShade', hex: 'frame', raider: true }));
+    expect(n.di!.raiderHex).toBeNull();
+    expect(n.log.some((e) => e.type === 'stole')).toBe(false);
+    expect(n.phase.k).toBe('main');
+    n.phase = { k: 'moveShade', then: 'main' };
+    expect(applyAction(n, 'a', { type: 'moveShade', hex: 'frame', raider: true }).ok).toBe(false);
+    expect(legalActions(n, 'a').some((m) => m.type === 'moveShade' && m.hex === 'frame')).toBe(false);
   });
 
   it('is offered as a legal alternative to the Shade', () => {

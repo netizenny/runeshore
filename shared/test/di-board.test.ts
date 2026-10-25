@@ -2,7 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { createGame } from '../src/engine/create';
 import { applyAction } from '../src/engine/apply';
 import { legalActions } from '../src/engine/legal';
-import { boardGeometry, edgeVertices, isPathEdge, vertexHexes } from '../src/board/geometry';
+import { boardGeometry, edgeId, edgeVertices, isPathEdge, vertexEdges, vertexHexes } from '../src/board/geometry';
+import { QUARTET } from '../src/board/scenarios/quartet';
+import { VEILED } from '../src/board/scenarios/veiled';
+import { SCENARIOS } from '../src/board/scenarios/landfall';
+import { setupSpotOk } from '../src/engine/setup';
 import { DEFAULT_SETTINGS, type GameState } from '../src/types';
 import { claimLandfall } from '../src/engine/awards';
 import { liftMist } from '../src/engine/mist';
@@ -113,14 +117,69 @@ describe('Quartet Reach', () => {
 describe('Veiled Reach Mist', () => {
   const vr = () => createGame(PLAYERS, { ...DEFAULT_SETTINGS, drownedIsles: true, scenario: 'veiled' }, 5);
 
-  it('hides 6 Mist hexes, keeps them off the wire, and deals the fog pool', () => {
+  it('splits two isles with 13 Mist hexes, keeps them off the wire, and deals the fog pool', () => {
     const s = vr();
     const mist = Object.values(s.board.hexes).filter((h) => h.terrain === 'mist');
-    expect(mist).toHaveLength(6);
+    expect(mist).toHaveLength(13);
+    expect(new Set(Object.values(s.di!.isleOf)).size).toBe(2);
     expect(Object.keys(s.di!.mist!).sort()).toEqual(mist.map((h) => h.id).sort());
-    expect(Object.values(s.di!.mist!).map((m) => m.terrain).sort()).toEqual(['clay', 'fleece', 'glimmer', 'harvest', 'starmetal', 'timber']);
+    expect(Object.values(s.di!.mist!).map((m) => m.terrain).sort()).toEqual([...VEILED.fog!.terrains].sort());
+    expect(Object.values(s.di!.mist!).filter((m) => m.terrain !== 'deep').map((m) => m.token).sort()).toEqual([...VEILED.fog!.tokens].sort());
+    expect(Object.values(s.di!.mist!).every((m) => (m.terrain === 'deep') === (m.token === null))).toBe(true);
     expect(viewFor(s, 'a').di!.mist).toBeUndefined();
-    expect(s.board.hexes[s.shadeHex].terrain).toBe('ashen');
+    expect(s.board.hexes[s.shadeHex].token).toBe(12);
+  });
+
+  it('a path lifts Mist at either end of its edge, not only on the edge itself', () => {
+    const s = vr();
+    s.phase = { k: 'main' };
+    const mist = s.di!.mist!;
+    const edge = [...boardGeometry(s.board).edgeSet].find((e) => !e.split('~').some((h) => mist[h]) && edgeVertices(e).some((v) => v.split('|').some((h) => mist[h])))!;
+    const ev = liftMist(s, current(s), edge);
+    expect(ev.length).toBeGreaterThan(0);
+    expect(ev.every((e) => e.type === 'revealed' && !edge.split('~').includes(e.hex))).toBe(true);
+  });
+
+  it('a Deep reveal pays nothing and turns the hex into sea; unlifted Mist takes no outpost', () => {
+    const s = vr();
+    s.phase = { k: 'main' };
+    const id = current(s);
+    const [hex] = Object.keys(s.di!.mist!);
+    const v = [...boardGeometry(s.board).vertices].find((x) => x.split('|').every((h) => [undefined, 'mist', 'deep'].includes(s.board.hexes[h]?.terrain)) && x.split('|').includes(hex))!;
+    expect(setupSpotOk(s, v)).toBe(false);
+    s.di!.mist![hex] = { terrain: 'deep', token: null };
+    const hand = { ...s.players.find((p) => p.id === id)!.hand };
+    liftMist(s, id, [...boardGeometry(s.board).edgeSet].find((e) => e.split('~').includes(hex))!);
+    expect(s.board.hexes[hex]).toMatchObject({ terrain: 'deep', token: null });
+    expect(s.players.find((p) => p.id === id)!.hand).toEqual(hand);
+  });
+
+  it('has no Landfall marks, wins at 12, and each isle is a start', () => {
+    const s = vr();
+    const id = current(s);
+    const v = [...boardGeometry(s.board).vertices].find((x) => vertexHexes(x).some((h) => s.board.hexes[h].terrain === 'timber'))!;
+    s.buildings[v] = { owner: id, kind: 'outpost' };
+    expect(claimLandfall(s, id, v)).toEqual([]);
+    expect(VEILED.target).toBe(12);
+    expect(s.di!.homeIsle).toBe('');
+  });
+
+  it('a starting boat may replace the starting path', () => {
+    const s = vr();
+    const id = current(s);
+    const v = [...boardGeometry(s.board).vertices].find((x) => vertexHexes(x).some((h) => s.board.hexes[h].terrain !== 'mist' && s.board.hexes[h].terrain !== 'deep') && vertexEdges(x).some((e) => e.split('~').some((h) => s.board.hexes[h].terrain === 'deep')))!;
+    let n = applyAction(s, id, { type: 'placeOutpost', vertex: v });
+    expect(n.ok).toBe(true);
+    const st = (n as { state: GameState }).state;
+    const boat = legalActions(st, id).find((a) => a.type === 'placeBoat');
+    expect(boat).toBeTruthy();
+    const r = applyAction(st, id, boat!);
+    expect(r.ok).toBe(true);
+    const after = (r as { state: GameState }).state;
+    expect(Object.keys(after.di!.boats)).toHaveLength(1);
+    expect(after.di!.boatsLeft[id]).toBe(14);
+    expect(after.phase).toMatchObject({ k: 'setup', step: 'outpost' });
+    expect(after.current).toBe(1);
   });
 
   it('a path beside Mist lifts it and pays a card; Glimmer pays a pick; hex then produces', () => {
@@ -177,5 +236,50 @@ describe('Sextet Reach', () => {
     expect(s.bank.clay).toBe(24);
     expect(s.omenDeck).toHaveLength(34);
     expect(s.di!.homeIsle).toBe('');
+  });
+});
+
+describe('Drowned Isles randomization', () => {
+  it.each(['landfall', 'quartet', 'veiled', 'sextet'] as const)('%s deals different terrains, tokens and ports per seed', (scenario) => {
+    const sig = (seed: number) => {
+      const s = createGame(PLAYERS, { ...DEFAULT_SETTINGS, drownedIsles: true, scenario }, seed);
+      return JSON.stringify([Object.values(s.board.hexes).map((h) => [h.terrain, h.token]), s.board.ports.map((p) => p.kind)]);
+    };
+    expect(new Set([1, 2, 3, 4, 5].map(sig)).size).toBeGreaterThan(1);
+  });
+});
+
+describe('Official scenario rules', () => {
+  it('Quartet Reach has no Glimmer, wins at 13, and keeps low tokens off timber and fleece', () => {
+    expect(QUARTET.land.some((l) => l[2] === 'glimmer')).toBe(false);
+    expect(QUARTET.target).toBe(13);
+    for (const seed of [1, 2, 3, 4, 5, 6, 7, 8]) {
+      const s = createGame(PLAYERS, { ...DEFAULT_SETTINGS, drownedIsles: true, scenario: 'quartet' }, seed);
+      for (const h of Object.values(s.board.hexes)) {
+        if (h.terrain === 'timber' || h.terrain === 'fleece') expect([2, 3, 11, 12]).not.toContain(h.token);
+      }
+    }
+  });
+
+  it.each(['landfall', 'quartet', 'veiled'] as const)('%s never puts a red number on gold or beside another (unless allowed)', (scenario) => {
+    const sc = SCENARIOS[scenario];
+    for (const seed of [1, 2, 3, 4, 5, 6]) {
+      const s = createGame(PLAYERS, { ...DEFAULT_SETTINGS, drownedIsles: true, scenario }, seed);
+      const hot = Object.values(s.board.hexes).filter((h) => h.token === 6 || h.token === 8);
+      for (const h of Object.values(s.board.hexes)) if (h.terrain === 'glimmer') expect(hot).not.toContain(h);
+      if (!sc.redAdjacent) for (const a of hot) for (const b of hot) expect(boardGeometry(s.board).edgeSet.has(edgeId(a.id, b.id)) && a !== b).toBe(false);
+    }
+  });
+
+  it('Landfall keeps its desert on the home isle when shuffled', () => {
+    for (const seed of [1, 2, 3, 4]) {
+      const s = createGame(PLAYERS, { ...DEFAULT_SETTINGS, drownedIsles: true }, seed);
+      const at = (t: string) => Object.values(s.board.hexes).filter((h) => h.terrain === t).map((h) => s.di!.isleOf[h.id]);
+      expect(at('ashen')).toEqual([s.di!.homeIsle]);
+    }
+  });
+
+  it('targets follow the official scenarios', () => {
+    expect([SCENARIOS.landfall.target, SCENARIOS.quartet.target, SCENARIOS.veiled.target]).toEqual([14, 13, 12]);
   });
 });
