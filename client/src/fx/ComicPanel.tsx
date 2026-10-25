@@ -22,7 +22,7 @@ function caption(e: GameEvent, v: PlayerView): Cap | null {
   }
 }
 
-// Each new big moment shows for ~1.2s, queued in order; the last one stays on screen until replaced. The win screen stays until the player leaves.
+// Each new big moment shows for ~1.2s, queued in order; the last one fades after 2.5s. The win screen stays until the player leaves.
 export function ComicPanel({ events, view }: { events: GameEvent[]; view: PlayerView }) {
   const [queue, setQueue] = useState<Cap[]>([]);
   useEffect(() => {
@@ -30,8 +30,8 @@ export function ComicPanel({ events, view }: { events: GameEvent[]; view: Player
     if (c.length) setQueue((q) => [...q, ...c]);
   }, [events]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
-    if (queue.length < 2) return;
-    const t = setTimeout(() => setQueue((q) => q.slice(1)), 1200);
+    if (!queue.length) return;
+    const t = setTimeout(() => setQueue((q) => q.slice(1)), queue.length > 1 ? 1200 : 2500);
     return () => clearTimeout(t);
   }, [queue]);
 

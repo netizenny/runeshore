@@ -43,18 +43,18 @@ export function Players({ view, waiting, deadline }: { view: PlayerView; waiting
               <span className="pl-glory" title={relics ? 'Glory (bracket: with your hidden Relics, only you see it)' : 'Glory'}>♛ {g}{relics > 0 && ` (${g + relics})`}</span>
             </div>
             <div className="pl-stats">
-              <span title="Paths (roads)">Roads <b>{Object.values(view.paths).filter((o) => o === id).length}</b></span>
+              <span title="Paths (roads)" className={view.longestPath === id ? 'hl' : undefined}>Roads <b>{Object.values(view.paths).filter((o) => o === id).length}</b></span>
               <span title="Outposts (houses)">Houses <b>{Object.values(view.buildings).filter((x) => x.owner === id && x.kind === 'outpost').length}</b></span>
               <span title="Citadels">Citadels <b>{Object.values(view.buildings).filter((x) => x.owner === id && x.kind === 'citadel').length}</b></span>
               <span title="Cards">Cards <b>{p.handCount}</b></span>
               {view.hf ? <span title="Arcana">Arcana <b>{view.hf.players[id].arcanaCount}</b></span> : <span title="Runes">ᚱ <b>{p.omenCount}</b></span>}
               {view.hf && <span title="Commodities">Goods <b>{Object.values(view.hf.players[id].commodities).reduce((a, b) => a + b, 0)}</b></span>}
-              {p.wardensPlayed > 0 && <span title="Warriors played">⚔ <b>{p.wardensPlayed}</b></span>}
+              <span title="Warriors played" className={view.grandHost === id ? 'hl' : undefined}>Warriors <b>{p.wardensPlayed}</b></span>
             </div>
             {(view.longestPath === id || view.grandHost === id) && (
               <div className="pl-badges">
-                {view.longestPath === id && <em title="Longest Trail">Longest Trail</em>}
-                {view.grandHost === id && <em title="Warlord">Warlord</em>}
+                {view.longestPath === id && <em className="hl" title="Longest Trail">Longest Trail</em>}
+                {view.grandHost === id && <em className="hl" title="Warlord">Warlord</em>}
               </div>
             )}
           </div>
