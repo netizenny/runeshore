@@ -1,12 +1,19 @@
 {
+  "1": "Game.tsx",
   "4": "legal.ts",
   "8": "constants.ts",
-  "10": "hf-arcana-guild.test.ts",
+  "10": "helpers.ts",
   "11": "awards.ts",
   "12": "client/package.json",
   "13": "geometry.ts",
-  "17": "apply.ts",
-  "18": "hf-arcana-crown.test.ts",
-  "21": "GameState",
+  "17": "Board.tsx",
+  "18": "shared/src/index.ts",
+  "19": "hf-improve.test.ts",
+  "20": "content.ts",
+  "21": "types.ts",
+  "23": "Improve.tsx",
+  "24": "vitest",
+  "28": "ComicPanel.tsx",
+  "32": "DiceBook.tsx",
   "36": "Task 7: Building and trading"
 }

@@ -1,7 +1,7 @@
 # Graph Report - Runeshore  (2026-10-24)
 
 ## Corpus Check
-- 128 files · ~67,386 words
+- 128 files · ~67,513 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 2 file(s) not represented in the graph (top: (none) 1, .css 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `984914d4`
+- Built from commit: `a84cfa0e`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 

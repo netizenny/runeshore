@@ -24,10 +24,10 @@
     "semantic_hash": "d7f439b81a49c0d89d9d6b9ee3fe76ce"
   },
   "client/src/board/art.tsx": {
-    "mtime": 1792871853.620364,
-    "seen": 1792876848.0053732,
-    "ast_hash": "5d80f6c42b71523753c883c3323febc1",
-    "semantic_hash": "5d80f6c42b71523753c883c3323febc1"
+    "mtime": 1792890847.5412672,
+    "seen": 1792891689.6258316,
+    "ast_hash": "2d328590b5281bd737d5b54607cf4401",
+    "semantic_hash": ""
   },
   "client/src/fx/ComicPanel.tsx": {
     "mtime": 1792871891.2544239,
@@ -210,10 +210,10 @@
     "semantic_hash": "2faeddfbfca60dcdd248ae1c6c9dfde2"
   },
   "shared/src/board/generate.ts": {
-    "mtime": 1792886917.1687088,
-    "seen": 1792888419.2912102,
-    "ast_hash": "6d764c4e537f4abebeab9ca7872ccf7a",
-    "semantic_hash": "6d764c4e537f4abebeab9ca7872ccf7a"
+    "mtime": 1792891332.047739,
+    "seen": 1792891689.6258855,
+    "ast_hash": "153bf0db9c3e0a492edc2b14efcace36",
+    "semantic_hash": ""
   },
   "shared/src/board/geometry.ts": {
     "mtime": 1792890235.7102015,
@@ -708,15 +708,15 @@
     "semantic_hash": "4a80f46c051e08a6b360d429f5fba7a1"
   },
   "shared/src/board/scenarios/landfall.ts": {
-    "mtime": 1792890235.6774633,
-    "seen": 1792890783.9848592,
-    "ast_hash": "75daa8d881c4496fa9165decc4b02a06",
+    "mtime": 1792891331.9454942,
+    "seen": 1792891689.625888,
+    "ast_hash": "8c35e06d21c01f012c27fc21c7a9da54",
     "semantic_hash": ""
   },
   "shared/test/di-board.test.ts": {
-    "mtime": 1792890419.8130178,
-    "seen": 1792890783.984943,
-    "ast_hash": "f5aba61268ea8d0b9cf4dac3a4be3e74",
+    "mtime": 1792891615.219091,
+    "seen": 1792891689.6259317,
+    "ast_hash": "02c19be6a058020eb2dcf724bcb20060",
     "semantic_hash": ""
   },
   "shared/src/engine/boats.ts": {
@@ -744,33 +744,33 @@
     "semantic_hash": "65b2dbfe7a2736898fcda1d2c842e85c"
   },
   "shared/src/board/scenarios/quartet.ts": {
-    "mtime": 1792890235.6099124,
-    "seen": 1792890783.9848611,
-    "ast_hash": "4dc6cf92c053eb300737454675dc8a15",
+    "mtime": 1792891606.3670683,
+    "seen": 1792891689.625889,
+    "ast_hash": "150eccb61af45c12dbc928b05d1bb16c",
     "semantic_hash": ""
   },
   "shared/src/board/scenarios/veiled.ts": {
-    "mtime": 1792890220.7269318,
-    "seen": 1792890783.984866,
-    "ast_hash": "5a7d9322aaee77c4191369375df951d0",
+    "mtime": 1792891331.9797127,
+    "seen": 1792891689.625891,
+    "ast_hash": "59f2a077240ec9b4f05fb0fb2e7c39f8",
     "semantic_hash": ""
   },
   "shared/src/engine/mist.ts": {
-    "mtime": 1792888523.5167832,
-    "seen": 1792890783.9849155,
-    "ast_hash": "8a467542244e860f1c510f34063ed874",
+    "mtime": 1792891466.146485,
+    "seen": 1792891689.625917,
+    "ast_hash": "7f8c8f6164cfdb0cf01054281c6d7992",
     "semantic_hash": ""
   },
   "shared/src/board/scenarios/sextet.ts": {
-    "mtime": 1792890234.9958992,
-    "seen": 1792890783.9848635,
-    "ast_hash": "69a7c72db0764e6ba391f130c5616e23",
+    "mtime": 1792891647.3687541,
+    "seen": 1792891689.62589,
+    "ast_hash": "34e1cfea4e72f560cf1f55118ed89082",
     "semantic_hash": ""
   },
   "shared/src/board/scenarios/veiled6.ts": {
-    "mtime": 1792890261.179828,
-    "seen": 1792890783.984868,
-    "ast_hash": "3d2db1605e1e1af77423e5efd9004d72",
+    "mtime": 1792891332.0149944,
+    "seen": 1792891689.6258922,
+    "ast_hash": "97ce70925ea0e6b52d5c4990557bfb0a",
     "semantic_hash": ""
   },
   "shared/test/di-fog.test.ts": {
