@@ -57,7 +57,7 @@ export interface Settings {
   turnTimerSec: 15 | 30 | 45;
   hollowFleet: boolean;
   drownedIsles: boolean;
-  scenario: 'landfall' | 'quartet' | 'veiled' | 'sextet';
+  scenario: 'landfall' | 'quartet' | 'veiled' | 'sextet' | 'veiled6';
 }
 
 export const DEFAULT_SETTINGS: Settings = {

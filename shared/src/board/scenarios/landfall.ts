@@ -2,6 +2,7 @@ import type { Resource, Terrain } from '../../types';
 import { QUARTET } from './quartet';
 import { SEXTET } from './sextet';
 import { VEILED } from './veiled';
+import { VEILED6 } from './veiled6';
 
 export interface Scenario {
   id: string; // also the hex-id prefix: `S${letter}`
@@ -47,7 +48,7 @@ export const LANDFALL: Scenario = {
     // south isle
     [-2, 3, 'starmetal', 5],
     [-1, 3, 'timber', 11],
-    [0, 3, 'glimmer', 10],
+    [0, 3, 'fleece', 10],
   ],
   ports: [
     [-1, -2, 0, -2, 'any'],
@@ -62,4 +63,4 @@ export const LANDFALL: Scenario = {
   ],
 };
 
-export const SCENARIOS: Record<string, Scenario> = { landfall: LANDFALL, quartet: QUARTET, veiled: VEILED, sextet: SEXTET };
+export const SCENARIOS: Record<string, Scenario> = { landfall: LANDFALL, quartet: QUARTET, veiled: VEILED, sextet: SEXTET, veiled6: VEILED6 };

@@ -1,6 +1,6 @@
 import type { Scenario } from './landfall';
 
-// Quartet Reach: four equal isles in a ring; start anywhere, every isle but your first gives a Landfall mark.
+// Quartet Reach: four equal isles in a ring; start anywhere but the south-west Glimmer isle, every isle but your first gives a Landfall mark.
 export const QUARTET: Scenario = {
   id: 'quartet',
   prefix: 'Sq',
@@ -35,7 +35,7 @@ export const QUARTET: Scenario = {
     // south-west isle
     [-2, 3, 'starmetal', 2],
     [-1, 3, 'fleece', 5],
-    [-3, 3, 'clay', 8],
+    [-3, 3, 'glimmer', 8],
     [-2, 2, 'harvest', 12],
     [-1, 2, 'timber', 6],
     [-2, 4, 'ashen', null],

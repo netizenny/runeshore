@@ -1,7 +1,22 @@
+import type { Resource, Terrain } from '../../types';
 import type { Scenario } from './landfall';
 
-// Veiled Reach: two isles with a band of Mist between them, a sea gap apart so the fog is reached only by Boat. A path or Boat beside an intersection that touches
-// Mist lifts it; what lies under may be land, a Glimmer field or open Deep.
+type Hx = [number, number];
+// An isle is its template turned or mirrored into one of the four corners.
+const CORNERS: ((h: Hx) => Hx)[] = [([q, r]) => [q, r], ([q, r]) => [-q - r, r], ([q, r]) => [-q, -r], ([q, r]) => [q + r, -r]];
+const SHAPE: Hx[] = [[4, -3], [5, -3], [4, -2], [3, -2], [3, -3], [4, -4]]; // north-east corner: center, then its ring (the far hex left Deep)
+const OUTER_PORTS: [Hx, Hx][] = [[[4, -4], [4, -5]], [[4, -2], [5, -2]]]; // land hex, Deep hex beyond it
+const ISLES: [Terrain, number][][] = [
+  [['harvest', 9], ['timber', 6], ['clay', 10], ['fleece', 5], ['starmetal', 3], ['clay', 4]],
+  [['timber', 10], ['harvest', 8], ['starmetal', 5], ['clay', 11], ['fleece', 9], ['harvest', 4]],
+  [['clay', 9], ['fleece', 8], ['timber', 4], ['harvest', 3], ['starmetal', 10], ['timber', 11]],
+  [['fleece', 6], ['starmetal', 9], ['harvest', 11], ['clay', 12], ['timber', 5], ['starmetal', 8]],
+];
+const PORT_KINDS: (Resource | 'any')[] = ['any', 'timber', 'any', 'harvest', 'starmetal', 'any', 'fleece', 'clay'];
+const MIST: Hx[] = [[0, 0], [1, 0], [0, 1], [-1, 1], [-1, 0], [0, -1], [1, -1]];
+
+// Veiled Reach: four isles, one in each corner, around a heart of Mist a sea gap away from all of them, so the fog is reached only by Boat.
+// A path or Boat beside an intersection that touches Mist lifts it; what lies under may be land, the one Glimmer field or open Deep.
 export const VEILED: Scenario = {
   id: 'veiled',
   prefix: 'Sv',
@@ -9,56 +24,16 @@ export const VEILED: Scenario = {
   radius: 5,
   target: 12,
   noLandfall: true,
-  redAdjacent: true,
   anywhere: true,
-  raiderStart: [0, 3],
+  raiderStart: [2, 0],
   land: [
-    // west isle
-    [-3, -1, 'harvest', 9],
-    [-2, -1, 'timber', 6],
-    [-4, 0, 'clay', 10],
-    [-3, 0, 'fleece', 8],
-    [-2, 0, 'starmetal', 3],
-    [-4, 1, 'timber', 4],
-    [-3, 1, 'clay', 11],
-    [-5, 1, 'fleece', 5],
-    // east isle
-    [3, 1, 'harvest', 9],
-    [2, 1, 'timber', 6],
-    [4, 0, 'clay', 10],
-    [3, 0, 'fleece', 8],
-    [2, 0, 'starmetal', 5],
-    [4, -1, 'timber', 4],
-    [3, -1, 'starmetal', 12],
-    [5, -1, 'harvest', 11],
-    // the Mist band, top to bottom
-    [2, -4, 'mist', null],
-    [1, -3, 'mist', null],
-    [2, -3, 'mist', null],
-    [1, -2, 'mist', null],
-    [0, -1, 'mist', null],
-    [1, -1, 'mist', null],
-    [0, 0, 'mist', null],
-    [0, 1, 'mist', null],
-    [-1, 1, 'mist', null],
-    [-1, 2, 'mist', null],
-    [-1, 3, 'mist', null],
-    [-2, 3, 'mist', null],
-    [-2, 4, 'mist', null],
+    ...ISLES.flatMap((isle, i) => isle.map(([terrain, token], k) => [...CORNERS[i](SHAPE[k]), terrain, token] as Scenario['land'][number])),
+    ...MIST.map(([q, r]) => [q, r, 'mist', null] as Scenario['land'][number]),
   ],
-  // One per Mist hex. Terrains and tokens are dealt apart; Deep takes no token (13 hexes, 11 tokens).
+  // One per Mist hex. Terrains and tokens are dealt apart; Deep takes no token (7 hexes, 6 tokens). No red numbers under the fog.
   fog: {
-    terrains: ['deep', 'deep', 'glimmer', 'glimmer', 'harvest', 'harvest', 'clay', 'clay', 'timber', 'fleece', 'fleece', 'starmetal', 'starmetal'],
-    tokens: [2, 3, 3, 4, 5, 6, 8, 9, 9, 10, 11],
+    terrains: ['glimmer', 'deep', 'harvest', 'clay', 'timber', 'fleece', 'starmetal'],
+    tokens: [3, 4, 5, 9, 10, 11],
   },
-  ports: [
-    [-3, -1, -3, -2, 'any'],
-    [-4, 0, -5, 0, 'timber'],
-    [-5, 1, -5, 2, 'any'],
-    [-3, 1, -3, 2, 'clay'],
-    [3, 1, 3, 2, 'starmetal'],
-    [4, 0, 5, 0, 'fleece'],
-    [5, -1, 5, -2, 'any'],
-    [3, -1, 3, -2, 'harvest'],
-  ],
+  ports: CORNERS.flatMap((to, i) => OUTER_PORTS.map(([land, sea], k) => [...to(land), ...to(sea), PORT_KINDS[i * 2 + k]] as Scenario['ports'][number])),
 };

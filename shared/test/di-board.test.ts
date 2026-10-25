@@ -80,7 +80,7 @@ describe('Drowned Isles board', () => {
 describe('Quartet Reach', () => {
   const qr = () => createGame(PLAYERS, { ...DEFAULT_SETTINGS, drownedIsles: true, scenario: 'quartet' }, 5);
 
-  it('builds 4 isles of 6 hexes, ports on land-deep edges, setup allowed anywhere', () => {
+  it('builds 4 isles of 6 hexes, ports on land-deep edges, setup allowed anywhere but the Glimmer isle', () => {
     const s = qr();
     const land = Object.values(s.board.hexes).filter((h) => h.terrain !== 'deep');
     expect(land).toHaveLength(24);
@@ -95,7 +95,7 @@ describe('Quartet Reach', () => {
     const isles = new Set(
       legalActions(s, current(s)).flatMap((a) => (a.type === 'placeOutpost' ? vertexHexes(a.vertex).map((h) => s.di!.isleOf[h]) : [])),
     );
-    expect(isles.size).toBe(4);
+    expect(isles.size).toBe(3);
   });
 
   it('Landfall skips the isle you started on, pays on a new one', () => {
@@ -117,11 +117,11 @@ describe('Quartet Reach', () => {
 describe('Veiled Reach Mist', () => {
   const vr = () => createGame(PLAYERS, { ...DEFAULT_SETTINGS, drownedIsles: true, scenario: 'veiled' }, 5);
 
-  it('splits two isles with 13 Mist hexes, keeps them off the wire, and deals the fog pool', () => {
+  it('rings a 7-hex heart of Mist with four isles, keeps them off the wire, and deals the fog pool', () => {
     const s = vr();
     const mist = Object.values(s.board.hexes).filter((h) => h.terrain === 'mist');
-    expect(mist).toHaveLength(13);
-    expect(new Set(Object.values(s.di!.isleOf)).size).toBe(2);
+    expect(mist).toHaveLength(7);
+    expect(new Set(Object.values(s.di!.isleOf)).size).toBe(4);
     expect(Object.keys(s.di!.mist!).sort()).toEqual(mist.map((h) => h.id).sort());
     expect(Object.values(s.di!.mist!).map((m) => m.terrain).sort()).toEqual([...VEILED.fog!.terrains].sort());
     expect(Object.values(s.di!.mist!).filter((m) => m.terrain !== 'deep').map((m) => m.token).sort()).toEqual([...VEILED.fog!.tokens].sort());
@@ -240,7 +240,7 @@ describe('Sextet Reach', () => {
 });
 
 describe('Drowned Isles randomization', () => {
-  it.each(['landfall', 'quartet', 'veiled', 'sextet'] as const)('%s deals different terrains, tokens and ports per seed', (scenario) => {
+  it.each(['landfall', 'quartet', 'veiled', 'sextet', 'veiled6'] as const)('%s deals different terrains, tokens and ports per seed', (scenario) => {
     const sig = (seed: number) => {
       const s = createGame(PLAYERS, { ...DEFAULT_SETTINGS, drownedIsles: true, scenario }, seed);
       return JSON.stringify([Object.values(s.board.hexes).map((h) => [h.terrain, h.token]), s.board.ports.map((p) => p.kind)]);
@@ -250,8 +250,8 @@ describe('Drowned Isles randomization', () => {
 });
 
 describe('Official scenario rules', () => {
-  it('Quartet Reach has no Glimmer, wins at 13, and keeps low tokens off timber and fleece', () => {
-    expect(QUARTET.land.some((l) => l[2] === 'glimmer')).toBe(false);
+  it('Quartet Reach wins at 13, and keeps low tokens off timber and fleece', () => {
+    expect(QUARTET.land.filter((l) => l[2] === 'glimmer')).toHaveLength(1);
     expect(QUARTET.target).toBe(13);
     for (const seed of [1, 2, 3, 4, 5, 6, 7, 8]) {
       const s = createGame(PLAYERS, { ...DEFAULT_SETTINGS, drownedIsles: true, scenario: 'quartet' }, seed);
@@ -281,5 +281,40 @@ describe('Official scenario rules', () => {
 
   it('targets follow the official scenarios', () => {
     expect([SCENARIOS.landfall.target, SCENARIOS.quartet.target, SCENARIOS.veiled.target]).toEqual([14, 13, 12]);
+  });
+});
+
+describe('Glimmer fields and starts', () => {
+  const six = Array.from({ length: 6 }, (_, i) => ({ id: 'abcdef'[i], name: `P${i}`, color: 'ember' as const }));
+  const gold = (scenario: keyof typeof SCENARIOS, outer = true) =>
+    SCENARIOS[scenario].land.filter((l) => l[2] === (outer ? 'glimmer' : 'mist')).length;
+
+  it('2-4 maps hold one Glimmer field on an outer isle, 2-6 maps two; Veiled Reach hides them in the fog', () => {
+    expect([gold('landfall'), gold('quartet'), gold('sextet'), gold('veiled'), gold('veiled6')]).toEqual([1, 1, 2, 0, 0]);
+    expect(SCENARIOS.veiled.fog!.terrains.filter((t) => t === 'glimmer')).toHaveLength(1);
+    expect(SCENARIOS.veiled6.fog!.terrains.filter((t) => t === 'glimmer')).toHaveLength(2);
+    expect(SCENARIOS.veiled6.fog!.terrains).toHaveLength(gold('veiled6', false));
+  });
+
+  it.each(['quartet', 'sextet'] as const)('%s never allows a starting outpost on a Glimmer isle', (scenario) => {
+    for (const seed of [1, 2, 3]) {
+      const s = createGame(six, { ...DEFAULT_SETTINGS, drownedIsles: true, scenario }, seed);
+      const goldIsles = new Set(Object.values(s.board.hexes).filter((h) => h.terrain === 'glimmer').map((h) => s.di!.isleOf[h.id]));
+      expect(goldIsles.size).toBe(SCENARIOS[scenario].land.filter((l) => l[2] === 'glimmer').length);
+      const spots = legalActions(s, current(s)).filter((a) => a.type === 'placeOutpost').flatMap((a) => vertexHexes((a as { vertex: string }).vertex));
+      expect(spots.length).toBeGreaterThan(0);
+      for (const h of spots) expect(goldIsles.has(s.di!.isleOf[h])).toBe(false);
+    }
+  });
+
+  it('Greater Veiled Reach: six isles, a 13-hex heart, a sea gap, start anywhere', () => {
+    const s = createGame(six, { ...DEFAULT_SETTINGS, drownedIsles: true, scenario: 'veiled6' }, 5);
+    expect(Object.values(s.board.hexes).filter((h) => h.terrain === 'mist')).toHaveLength(13);
+    expect(new Set(Object.values(s.di!.isleOf)).size).toBe(6);
+    expect(s.board.hexes[s.shadeHex].token).toBe(12);
+    expect(s.board.ports).toHaveLength(12);
+    const dist = (a: number[], b: number[]) => Math.max(Math.abs(a[0] - b[0]), Math.abs(a[1] - b[1]), Math.abs(a[0] + a[1] - b[0] - b[1]));
+    const mist = SCENARIOS.veiled6.land.filter((h) => h[2] === 'mist');
+    for (const m of mist) for (const l of SCENARIOS.veiled6.land.filter((h) => h[2] !== 'mist')) expect(dist([m[0], m[1]], [l[0], l[1]])).toBeGreaterThan(1);
   });
 });
