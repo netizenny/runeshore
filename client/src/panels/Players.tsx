@@ -42,6 +42,9 @@ export function Players({ view, waiting, deadline }: { view: PlayerView; waiting
               <span className="pl-glory" title="Glory">♛ {g}</span>
             </div>
             <div className="pl-stats">
+              <span title="Paths (roads)">Roads <b>{Object.values(view.paths).filter((o) => o === id).length}</b></span>
+              <span title="Outposts (houses)">Houses <b>{Object.values(view.buildings).filter((x) => x.owner === id && x.kind === 'outpost').length}</b></span>
+              <span title="Citadels">Citadels <b>{Object.values(view.buildings).filter((x) => x.owner === id && x.kind === 'citadel').length}</b></span>
               <span title="Cards">Cards <b>{p.handCount}</b></span>
               {view.hf ? <span title="Arcana">Arcana <b>{view.hf.players[id].arcanaCount}</b></span> : <span title="Runes">ᚱ <b>{p.omenCount}</b></span>}
               {view.hf && <span title="Commodities">Goods <b>{Object.values(view.hf.players[id].commodities).reduce((a, b) => a + b, 0)}</b></span>}
