@@ -86,9 +86,14 @@ const TERRAIN_ART: Record<Terrain, ReactNode> = {
   ),
   glimmer: (
     <g {...ink}>
-      <path d="M-26 20 L-16 -10 L-6 20 Z" fill="#8f6ad0" />
-      <path d="M-6 20 L6 -26 L18 20 Z" fill="#b48cf0" />
-      <path d="M18 20 L26 -4 L34 20 Z" fill="#8f6ad0" />
+      <defs>
+        <linearGradient id="rainbow" x1="0" y1="0" x2="1" y2="1">
+          {['#ff5d5d', '#ffb347', '#ffe66d', '#6ee07a', '#5cc8ff', '#a78bfa'].map((c, i) => <stop key={c} offset={i / 5} stopColor={c} />)}
+        </linearGradient>
+      </defs>
+      <path d="M-26 20 L-16 -10 L-6 20 Z" fill="#5cc8ff" />
+      <path d="M-6 20 L6 -26 L18 20 Z" fill="url(#rainbow)" />
+      <path d="M18 20 L26 -4 L34 20 Z" fill="#ff7ab8" />
       <path d="M6 -26 L2 2 M6 -26 L12 4" fill="none" strokeWidth={0.9} />
       <path d="M-30 -20 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2 l5 -2 Z" fill={GOLD} stroke="none" />
     </g>
