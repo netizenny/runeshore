@@ -57,6 +57,38 @@ export function Board({ view, legal, mode, onAction, pick = [] }: { view: Player
     return () => svg.removeEventListener('wheel', onWheel);
   }, [W, H, X0, Y0]);
 
+  // Hold left button and drag to pan; a drag past 4px swallows the click that follows so it won't place a piece.
+  useEffect(() => {
+    const svg = svgRef.current!;
+    let last: { x: number; y: number } | null = null;
+    let moved = 0;
+    const onDown = (e: PointerEvent) => { if (e.button === 0) { last = { x: e.clientX, y: e.clientY }; moved = 0; } };
+    const onMove = (e: PointerEvent) => {
+      const m = svg.getScreenCTM();
+      if (!last || !m) return;
+      const [dx, dy] = [e.clientX - last.x, e.clientY - last.y];
+      last = { x: e.clientX, y: e.clientY };
+      moved += Math.abs(dx) + Math.abs(dy);
+      if (moved < 4) return;
+      setZoom(({ z, px, py }) => {
+        const clamp = (v: number, max: number) => Math.min(max, Math.max(0, v));
+        return { z, px: clamp(px - dx / m.a, W - W / z), py: clamp(py - dy / m.d, H - H / z) };
+      });
+    };
+    const onUp = () => { last = null; };
+    const onClick = (e: MouseEvent) => { if (moved >= 4) { e.stopPropagation(); e.preventDefault(); } moved = 0; };
+    svg.addEventListener('pointerdown', onDown);
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    svg.addEventListener('click', onClick, true);
+    return () => {
+      svg.removeEventListener('pointerdown', onDown);
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      svg.removeEventListener('click', onClick, true);
+    };
+  }, [W, H, X0, Y0]);
+
   return (
     <svg ref={svgRef} viewBox={`${X0 + zoom.px} ${Y0 + zoom.py} ${W / zoom.z} ${H / zoom.z}`} style={{ width: '100%', height: '100%' }} role="img" aria-label="Runeshore board">
       <rect x={-290 * k} y={-270 * k} width={580 * k} height={540 * k} fill="var(--night)" />
