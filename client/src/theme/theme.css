@@ -84,6 +84,16 @@ button[data-on='true'] { background: var(--ink-gold-dim); color: var(--night); }
 .game .board { position: relative; }
 .book { position: absolute; top: .5rem; left: .5rem; z-index: 3; font-size: 1.3rem; }
 .book.mute { left: 4rem; }
+/* dice spellbook: pages are dice faces, leaves flip on each new turn */
+.tome { position: absolute; top: .5rem; right: .5rem; z-index: 3; width: 150px; height: 100px; display: flex; perspective: 600px; filter: drop-shadow(0 4px 6px #0008); }
+.tome-page { flex: 1; display: grid; place-items: center; background: var(--parchment); color: var(--night); border: 3px solid #5a3a1e; }
+.tome-page.l { border-radius: 8px 0 0 8px; border-right-width: 1px; background: linear-gradient(90deg, var(--parchment) 70%, #cdb98a); }
+.tome-page.r { border-radius: 0 8px 8px 0; border-left-width: 1px; background: linear-gradient(270deg, var(--parchment) 70%, #cdb98a); }
+.tome-page span { font: 700 3rem Cinzel, serif; color: var(--blood); }
+.tome[data-flip='false'] .tome-page span { animation: pop .25s ease-out; }
+.tome small { position: absolute; bottom: -1.3rem; width: 100%; text-align: center; color: var(--ink-gold); }
+.tome-leaf { position: absolute; top: 0; left: 50%; width: 50%; height: 100%; background: var(--parchment); border: 3px solid #5a3a1e; border-radius: 0 8px 8px 0; transform-origin: left center; backface-visibility: hidden; animation: leaf .55s ease-in-out both; }
+@keyframes leaf { from { transform: rotateY(0); } to { transform: rotateY(-180deg); } }
 .rulebook { inset: auto; top: 50%; left: 50%; width: 50vw; height: 50vh; min-width: 320px; display: flex; flex-direction: column; z-index: 6; }
 .rb-head { display: flex; gap: .6rem; align-items: center; }
 .rb-head h2 { margin: 0 auto 0 0; }

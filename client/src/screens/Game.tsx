@@ -3,6 +3,7 @@ import type { Action, ClientMsg, PlayerView, ServerMsg } from '@runeshore/shared
 import { FRAME } from '@runeshore/shared';
 import { Board, type Mode, type Pick } from '../board/Board';
 import { ComicPanel } from '../fx/ComicPanel';
+import { DiceBook } from '../fx/DiceBook';
 import { ArcanaHand, arcanaPicks, playsOf } from '../panels/Arcana';
 import { Build } from '../panels/Build';
 import { Commodities } from '../panels/Commodities';
@@ -83,8 +84,8 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
 
   return (
     <div className="game" data-hf={!!hf}>
-      <div className="bar"><b>{prompt}</b>{frame && <button onClick={() => act(frame)}>Raider to the frame</button>}{view.dice && ph.k !== 'roll' && <span>🎲 {view.dice[0]} + {view.dice[1]}</span>}</div>
-      <div className="board"><button className="book" title="Rulebook" onClick={() => setBook(true)}>📖</button><button className="book mute" title="Sound on/off" onClick={() => { setMuted(!muted); setMute(!muted); }}>{muted ? '🔇' : '🔊'}</button><Board view={view} legal={legal} mode={mode} onAction={act} pick={pick} /></div>
+      <div className="bar"><b>{prompt}</b>{frame && <button onClick={() => act(frame)}>Raider to the frame</button>}</div>
+      <div className="board"><DiceBook dice={view.dice} turn={view.turn} /><button className="book" title="Rulebook" onClick={() => setBook(true)}>📖</button><button className="book mute" title="Sound on/off" onClick={() => { setMuted(!muted); setMute(!muted); }}>{muted ? '🔇' : '🔊'}</button><Board view={view} legal={legal} mode={mode} onAction={act} pick={pick} /></div>
       <aside className="side">
         {hf && <Fleet hf={hf} />}
         <Players view={view} waiting={game.waitingOn.map((w) => w.player)} deadline={game.deadline} />
