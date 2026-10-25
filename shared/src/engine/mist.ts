@@ -1,7 +1,7 @@
 import type { EdgeId, GameEvent, GameState, HexId, PlayerId, Terrain } from '../types';
 import { RESOURCES } from '../constants';
 import { shuffle } from '../rng';
-import { edgeVertices } from '../board/geometry';
+import { edgeVertices, isLandHex } from '../board/geometry';
 import type { Scenario } from '../board/scenarios/landfall';
 
 // Deals the scenario's hidden terrains and number tokens onto its Mist hexes (apart, as in the official facedown piles;
@@ -12,6 +12,11 @@ export function dealMist(sc: Scenario, mistHexes: HexId[], rng: number): [Record
   let t = 0;
   return [Object.fromEntries(mistHexes.map((h, i) => [h, { terrain: terrains[i], token: terrains[i] === 'deep' ? null : tokens[t++] }])), next];
 }
+
+// Fog land takes no paths and no outposts of its own: a spot needs a non-fog land hex beside it. Only boats reach it.
+const solid = (s: GameState, hexes: HexId[]) => hexes.some((h) => isLandHex(s.board, h) && !s.di?.fogHexes?.includes(h));
+export const pathEdgeSolid = (s: GameState, e: EdgeId) => solid(s, e.split('~'));
+export const vertexSolid = (s: GameState, v: string) => solid(s, v.split('|'));
 
 // A path or Boat beside an intersection that touches Mist lifts every Mist hex there. Land pays the builder
 // 1 card of its kind (a Glimmer field, a pick); Deep pays nothing.

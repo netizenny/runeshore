@@ -59,7 +59,7 @@ export function createGame(players: { id: PlayerId; name: string; color: PlayerC
         builtTurn: {},
         movedTurn: 0,
         raiderHex: hexId(sc.raiderStart[0], sc.raiderStart[1], sc.prefix),
-        ...(mist && { mist }),
+        ...(mist && { mist, fogHexes: mistHexes }),
         landfall: Object.fromEntries(players.map((p) => [p.id, []])),
       },
     }),

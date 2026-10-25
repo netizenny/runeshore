@@ -3,7 +3,7 @@ import { COSTS, RESOURCES } from '../constants';
 import { boardGeometry, edgeVertices, landHexesAt, pathEdgeOn, vertexEdges, vertexNeighbors } from '../board/geometry';
 import { player, type Result } from './setup';
 import { claimLandfall } from './awards';
-import { liftMist } from './mist';
+import { liftMist, pathEdgeSolid, vertexSolid } from './mist';
 import { canWayMake } from './boats';
 
 export const canPay = (s: GameState, id: PlayerId, c: ResourceCounts) => RESOURCES.every((r) => player(s, id).hand[r] >= c[r]);
@@ -17,7 +17,7 @@ export function pay(s: GameState, id: PlayerId, c: ResourceCounts) {
 
 // A path joins at a vertex where you own a building, or own another path and no opponent building blocks it.
 export function pathSpotOk(s: GameState, id: PlayerId, edge: EdgeId): boolean {
-  if (!boardGeometry(s.board).edgeSet.has(edge) || s.paths[edge] || s.di?.boats[edge] || !pathEdgeOn(s.board, edge)) return false;
+  if (!boardGeometry(s.board).edgeSet.has(edge) || s.paths[edge] || s.di?.boats[edge] || !pathEdgeOn(s.board, edge) || !pathEdgeSolid(s, edge)) return false;
   return edgeVertices(edge).some((v) => {
     const b = s.buildings[v];
     if (b) return b.owner === id;
@@ -56,6 +56,7 @@ export function buildOutpost(s: GameState, id: PlayerId, a: Extract<Action, { ty
   if (s.hf?.sentinels[v]) return 'a Sentinel stands there';
   if (!vertexEdges(v).some((e) => s.paths[e] === id || s.di?.boats[e] === id)) return 'outpost must touch your path or boat';
   if (!landHexesAt(s.board, v).length) return 'no land there';
+  if (!vertexSolid(s, v)) return 'outposts cannot stand on fog land';
   if (!canPay(s, id, COSTS.outpost)) return 'cannot afford';
   pay(s, id, COSTS.outpost);
   s.buildings[v] = { owner: id, kind: 'outpost' };
