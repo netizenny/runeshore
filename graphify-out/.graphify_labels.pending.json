@@ -1,8 +1,12 @@
 {
-  "0": "geometry.ts",
-  "7": "legal.ts",
-  "16": "Runeshore: Siege of the Hollow Fleet (Cities & Knights) Implementation Plan",
-  "17": "services",
-  "18": "CLAUDE.md",
-  "19": "apply.ts"
+  "4": "legal.ts",
+  "8": "constants.ts",
+  "10": "hf-arcana-guild.test.ts",
+  "11": "awards.ts",
+  "12": "client/package.json",
+  "13": "geometry.ts",
+  "17": "apply.ts",
+  "18": "hf-arcana-crown.test.ts",
+  "21": "GameState",
+  "36": "Task 7: Building and trading"
 }
