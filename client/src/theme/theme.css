@@ -68,6 +68,7 @@ button[data-on='true'] { background: var(--ink-gold-dim); color: var(--night); }
 .step button { padding: 0 .5em; }
 .drawer, .modal { position: absolute; z-index: 5; background: var(--night-2); border: 2px solid var(--ink-gold); border-radius: 6px; padding: 1rem; }
 .drawer { right: 330px; bottom: 90px; max-height: 70%; overflow-y: auto; }
+.modal .castoff { font-size: 2.2rem; font-weight: 900; text-transform: uppercase; text-align: center; color: var(--ink-gold); margin: 0; }
 .modal { top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; gap: .5rem; }
 .offer { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; margin-bottom: .4rem; }
 .omens { position: relative; }

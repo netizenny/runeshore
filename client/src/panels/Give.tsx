@@ -16,7 +16,7 @@ export function Give({ title, type, hand, commodities, need, legal, act, onlyCom
   const match = legal.find((a): a is Give => a.type === type && RESOURCES.every((r) => a.cards[r] === c[r]) && COMMODITIES.every((x) => (a.commodities?.[x] ?? 0) === k[x]));
   return (
     <div className="modal">
-      <h3>{title} {need}</h3>
+      <h3 className={type === 'discard' ? 'castoff' : undefined}>{title} {need}</h3>
       {!onlyCommodities && RESOURCES.map((r) => (
         <div key={r} className="row"><ResIcon r={r} /> {r} ({hand[r]}) <Stepper value={c[r]} max={Math.min(hand[r], need - sum + c[r])} onChange={(v) => setC((p) => ({ ...p, [r]: v }))} /></div>
       ))}
