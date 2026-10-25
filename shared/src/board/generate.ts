@@ -77,7 +77,7 @@ export function randomizeScenario(sc: Scenario, board: Board, rng: number): [Boa
     const pool = slots.map((id) => board.hexes[id].token).filter((t) => t !== null) as number[];
     const bad = (id: string, i: number) => {
       const { terrain, token } = hexes[id];
-      if (terrain === 'glimmer' && hot(token)) return true;
+      if (terrain === 'glimmer' && !hot(token)) return true;
       if (sc.calmWoods && (terrain === 'timber' || terrain === 'fleece') && low(token)) return true;
       return !sc.redAdjacent && hot(token) && numbered.some((o, j) => j > i && hot(hexes[o].token) && edgeSet.has(edgeId(id, o)));
     };

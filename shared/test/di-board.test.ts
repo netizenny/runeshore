@@ -261,12 +261,13 @@ describe('Official scenario rules', () => {
     }
   });
 
-  it.each(['landfall', 'quartet', 'veiled'] as const)('%s never puts a red number on gold or beside another (unless allowed)', (scenario) => {
+  it.each(['landfall', 'quartet', 'veiled', 'sextet', 'veiled6'] as const)('%s keeps gold on a 6 or 8 and red numbers apart (unless allowed)', (scenario) => {
     const sc = SCENARIOS[scenario];
     for (const seed of [1, 2, 3, 4, 5, 6]) {
       const s = createGame(PLAYERS, { ...DEFAULT_SETTINGS, drownedIsles: true, scenario }, seed);
       const hot = Object.values(s.board.hexes).filter((h) => h.token === 6 || h.token === 8);
-      for (const h of Object.values(s.board.hexes)) if (h.terrain === 'glimmer') expect(hot).not.toContain(h);
+      for (const h of Object.values(s.board.hexes)) if (h.terrain === 'glimmer') expect(hot).toContain(h);
+      for (const m of Object.values(s.di?.mist ?? {})) if (m.terrain === 'glimmer') expect([6, 8]).toContain(m.token);
       if (!sc.redAdjacent) for (const a of hot) for (const b of hot) expect(boardGeometry(s.board).edgeSet.has(edgeId(a.id, b.id)) && a !== b).toBe(false);
     }
   });

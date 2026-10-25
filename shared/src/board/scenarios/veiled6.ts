@@ -25,11 +25,11 @@ export const VEILED6: Scenario = {
   anywhere: true,
   big: true,
   land: [...ringLand(ISLES), ...MIST.map(([q, r]) => [q, r, 'mist', null] as Scenario['land'][number])],
-  // 13 hexes, 11 tokens; no red numbers under the fog.
+  // 13 hexes, 11 tokens; the two Glimmer fields take the 6 and the 8.
   fog: {
     terrains: ['glimmer', 'glimmer', 'deep', 'deep', 'harvest', 'harvest', 'clay', 'clay', 'timber', 'timber', 'fleece', 'starmetal', 'starmetal'
 ],
-    tokens: [2, 3, 3, 4, 4, 5, 5, 9, 9, 10, 11],
+    tokens: [2, 3, 3, 4, 4, 5, 5, 6, 8, 10, 11],
   },
   ports: ringPorts(PORT_KINDS),
 };

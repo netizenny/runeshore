@@ -4,10 +4,10 @@ import type { Scenario } from './landfall';
 // One isle per row, as [terrain, token] for its center then its ring (clockwise from south-east, the outer hex left Deep).
 // Every isle holds all five resources; tokens match the large board's 35. Two far-apart isles hold a Glimmer field, so setup never starts there.
 const ISLES: [Terrain, number | null][][] = [
-  [['harvest', 10], ['timber', 6], ['clay', 3], ['starmetal', 8], ['fleece', 11], ['glimmer', 4]],
+  [['harvest', 10], ['timber', 4], ['clay', 3], ['starmetal', 3], ['fleece', 11], ['glimmer', 6]],
   [['clay', 9], ['fleece', 8], ['harvest', 4], ['clay', 2], ['starmetal', 6], ['timber', 11]],
-  [['timber', 5], ['harvest', 6], ['starmetal', 10], ['clay', 3], ['harvest', 12], ['fleece', 9]],
-  [['fleece', 4], ['clay', 8], ['timber', 11], ['harvest', 9], ['starmetal', 5], ['glimmer', 3]],
+  [['timber', 5], ['harvest', 6], ['starmetal', 10], ['clay', 8], ['harvest', 12], ['fleece', 9]],
+  [['fleece', 4], ['clay', 3], ['timber', 11], ['harvest', 9], ['starmetal', 5], ['glimmer', 8]],
   [['starmetal', 10], ['timber', 6], ['fleece', 5], ['clay', 2], ['harvest', 9], ['harvest', 11]],
   [['ashen', null], ['harvest', 8], ['fleece', 4], ['clay', 12], ['timber', 10], ['starmetal', 5]],
 ];

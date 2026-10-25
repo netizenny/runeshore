@@ -13,7 +13,7 @@ export const QUARTET: Scenario = {
   land: [
     // north-west isle
     [-2, -1, 'timber', 9],
-    [-1, -1, 'harvest', 4],
+    [-1, -1, 'harvest', 6],
     [-2, 0, 'clay', 10],
     [-2, -2, 'fleece', 5],
     [-1, -2, 'starmetal', 11],
@@ -37,7 +37,7 @@ export const QUARTET: Scenario = {
     [-1, 3, 'fleece', 5],
     [-3, 3, 'glimmer', 8],
     [-2, 2, 'harvest', 12],
-    [-1, 2, 'timber', 6],
+    [-1, 2, 'timber', 4],
     [-2, 4, 'ashen', null],
   ],
   ports: [

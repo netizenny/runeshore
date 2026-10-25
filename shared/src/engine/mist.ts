@@ -8,9 +8,14 @@ import type { Scenario } from '../board/scenarios/landfall';
 // Deep takes no token). Returns the hidden map and the new rng state.
 export function dealMist(sc: Scenario, mistHexes: HexId[], rng: number): [Record<HexId, { terrain: Terrain; token: number | null }>, number] {
   const [terrains, afterTerrains] = shuffle(sc.fog!.terrains, rng);
-  const [tokens, next] = shuffle(sc.fog!.tokens, afterTerrains);
+  const [shuffled, next] = shuffle(sc.fog!.tokens, afterTerrains);
+  // Glimmer fields only ever carry a 6 or an 8, so they draw first from the tokens with those numbers up front.
+  const tokens = [...shuffled].sort((a, b) => Number(b === 6 || b === 8) - Number(a === 6 || a === 8));
+  const order = mistHexes.map((_, i) => i).sort((a, b) => Number(terrains[b] === 'glimmer') - Number(terrains[a] === 'glimmer'));
+  const given: Record<number, number | null> = {};
   let t = 0;
-  return [Object.fromEntries(mistHexes.map((h, i) => [h, { terrain: terrains[i], token: terrains[i] === 'deep' ? null : tokens[t++] }])), next];
+  for (const i of order) given[i] = terrains[i] === 'deep' ? null : tokens[t++];
+  return [Object.fromEntries(mistHexes.map((h, i) => [h, { terrain: terrains[i], token: given[i] }])), next];
 }
 
 // Fog land takes no paths and no outposts of its own: a spot needs a non-fog land hex beside it. Only boats reach it.

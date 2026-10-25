@@ -30,10 +30,10 @@ export const VEILED: Scenario = {
     ...ISLES.flatMap((isle, i) => isle.map(([terrain, token], k) => [...CORNERS[i](SHAPE[k]), terrain, token] as Scenario['land'][number])),
     ...MIST.map(([q, r]) => [q, r, 'mist', null] as Scenario['land'][number]),
   ],
-  // One per Mist hex. Terrains and tokens are dealt apart; Deep takes no token (7 hexes, 6 tokens). No red numbers under the fog.
+  // One per Mist hex. Terrains and tokens are dealt apart; Deep takes no token (7 hexes, 6 tokens). The Glimmer field takes the 8; no other red numbers under the fog.
   fog: {
     terrains: ['glimmer', 'deep', 'harvest', 'clay', 'timber', 'fleece', 'starmetal'],
-    tokens: [3, 4, 5, 9, 10, 11],
+    tokens: [3, 4, 5, 8, 10, 11],
   },
   ports: CORNERS.flatMap((to, i) => OUTER_PORTS.map(([land, sea], k) => [...to(land), ...to(sea), PORT_KINDS[i * 2 + k]] as Scenario['ports'][number])),
 };

@@ -34,7 +34,7 @@ export const LANDFALL: Scenario = {
     [-1, 0, 'harvest', 9, true],
     [0, 0, 'timber', 6],
     [-1, 1, 'clay', 10],
-    [-2, 1, 'fleece', 8],
+    [-2, 1, 'fleece', 4],
     [-2, 0, 'ashen', null],
     [-1, -1, 'starmetal', 3],
     [0, -1, 'fleece', 5],
@@ -44,7 +44,7 @@ export const LANDFALL: Scenario = {
     // east isle
     [2, 0, 'starmetal', 11],
     [3, -1, 'harvest', 9],
-    [3, -2, 'glimmer', 4],
+    [3, -2, 'glimmer', 8],
     // south isle
     [-2, 3, 'starmetal', 5],
     [-1, 3, 'timber', 11],
