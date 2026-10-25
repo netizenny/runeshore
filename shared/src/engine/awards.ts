@@ -6,28 +6,27 @@ import { player } from './setup';
 import { hfScore } from './hf/score';
 
 // Longest simple trail of the player's paths and boats; an opponent building ends the trail at that vertex.
-// A trail may switch between paths and boats only at the player's own building.
-export function longestPathLength(s: GameState, id: PlayerId): number {
+// A trail may switch between paths and boats at any shared vertex.
+export function longestPathLength(s: Pick<GameState, 'paths' | 'buildings'> & { di?: { boats: GameState['paths'] } | null }, id: PlayerId): number {
   const boats = s.di?.boats ?? {};
-  const kind = (e: EdgeId) => (s.paths[e] === id ? 'p' : boats[e] === id ? 'b' : null);
-  const mine = [...Object.keys(s.paths), ...Object.keys(boats)].filter(kind);
+  const mineAt = (e: EdgeId) => s.paths[e] === id || boats[e] === id;
+  const mine = [...Object.keys(s.paths), ...Object.keys(boats)].filter(mineAt);
   const blocked = (v: VertexId) => !!s.buildings[v] && s.buildings[v].owner !== id;
   const used = new Set<EdgeId>();
   let best = 0;
-  const walk = (v: VertexId, len: number, from: 'p' | 'b' | null) => {
+  const walk = (v: VertexId, len: number) => {
     best = Math.max(best, len);
     for (const e of vertexEdges(v)) {
-      const k = kind(e);
-      if (!k || used.has(e) || (from && from !== k && s.buildings[v]?.owner !== id)) continue;
+      if (!mineAt(e) || used.has(e)) continue;
       const [a, b] = edgeVertices(e);
       const u = a === v ? b : a;
       used.add(e);
       if (blocked(u)) best = Math.max(best, len + 1);
-      else walk(u, len + 1, k);
+      else walk(u, len + 1);
       used.delete(e);
     }
   };
-  for (const e of mine) for (const v of edgeVertices(e)) walk(v, 0, null);
+  for (const e of mine) for (const v of edgeVertices(e)) walk(v, 0);
   return best;
 }
 

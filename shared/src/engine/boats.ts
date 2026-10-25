@@ -12,7 +12,7 @@ const raided = (s: GameState, e: EdgeId) => !!s.di!.raiderHex && e.split('~').in
 
 const isBoatEdge = (s: GameState, e: EdgeId) => !e.split('~').every((h) => isLandHex(s.board, h));
 
-// Boats join at a vertex where you own a building, or own another boat (never a path: they meet only at buildings).
+// Boats join at a vertex where you own a building, a boat or a path.
 // `without` is a boat being moved, treated as already lifted off the board.
 export function boatSpotOk(s: GameState, id: PlayerId, edge: EdgeId, without?: EdgeId): boolean {
   const boats = s.di!.boats;
@@ -20,7 +20,7 @@ export function boatSpotOk(s: GameState, id: PlayerId, edge: EdgeId, without?: E
   return edgeVertices(edge).some((v) => {
     const b = s.buildings[v];
     if (b) return b.owner === id;
-    return vertexEdges(v).some((e) => e !== edge && e !== without && boats[e] === id);
+    return vertexEdges(v).some((e) => e !== edge && e !== without && (boats[e] === id || s.paths[e] === id));
   });
 }
 

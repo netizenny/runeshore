@@ -15,13 +15,13 @@ export function pay(s: GameState, id: PlayerId, c: ResourceCounts) {
   }
 }
 
-// A path joins at a vertex where you own a building, or own another path and no opponent building blocks it.
+// A path joins at a vertex where you own a building, or own another path or boat and no opponent building blocks it.
 export function pathSpotOk(s: GameState, id: PlayerId, edge: EdgeId): boolean {
   if (!boardGeometry(s.board).edgeSet.has(edge) || s.paths[edge] || s.di?.boats[edge] || !pathEdgeOn(s.board, edge) || !pathEdgeSolid(s, edge)) return false;
   return edgeVertices(edge).some((v) => {
     const b = s.buildings[v];
     if (b) return b.owner === id;
-    return vertexEdges(v).some((e) => e !== edge && s.paths[e] === id);
+    return vertexEdges(v).some((e) => e !== edge && (s.paths[e] === id || s.di?.boats[e] === id));
   });
 }
 

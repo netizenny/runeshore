@@ -100,7 +100,7 @@ describe('boats', () => {
     expect(longestPathLength(m, 'a')).toBe(Object.keys(m.di!.boats).length);
   });
 
-  it('paths and boats join only at the owner\'s building', () => {
+  it('paths and boats join anywhere for the longest trail', () => {
     const { s, home } = game();
     const b = vertexEdges(home).find((e) => !isPathEdge(e))!;
     const path = vertexEdges(home).find((e) => e !== b && isPathEdge(e))!;
@@ -108,7 +108,7 @@ describe('boats', () => {
     s.paths[path] = 'a';
     expect(longestPathLength(s, 'a')).toBe(2); // joined at the outpost
     delete s.buildings[home];
-    expect(longestPathLength(s, 'a')).toBe(1); // no building: the trail cannot cross
+    expect(longestPathLength(s, 'a')).toBe(2); // no building: still joined
   });
 
   it('first outpost on a new isle gives Landfall (+2), once per isle', () => {

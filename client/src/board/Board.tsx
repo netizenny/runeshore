@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Action, Hex } from '@runeshore/shared';
-import { FRAME, boardGeometry, edgeVertices, hexPixel, hexVertices, vertexPixel, type PlayerView } from '@runeshore/shared';
+import { FRAME, boardGeometry, edgeVertices, hexPixel, hexVertices, longestPathLength, vertexPixel, type PlayerView } from '@runeshore/shared';
 import { BoatPiece, BulwarkRim, Citadel, LandfallFlag, Outpost, PathLine, PeddlerToken, Port, RaiderPiece, S, SentinelPiece, Shade, SpireCrest, TERRAIN_FILL, TerrainArt, Token } from './art';
 
 export type Mode = 'outpost' | 'path' | 'boat' | 'moveboat' |'citadel' | 'shade' | 'sentinel' | 'arcana' | null;
@@ -25,6 +25,7 @@ export function Board({ view, legal, mode, onAction, pick = [] }: { view: Player
     const { x, y } = hexPixel(hex, S);
     return { key: owner + isle, owner, x: x - 26 + pi * 9, y: y - 30 };
   }));
+  const routeLen: Record<string, number> = {};
   const poly = (h: Hex) => hexVertices(h.id).map((v) => { const p = vertexPixel(v, S); return `${p.x},${p.y}`; }).join(' ');
 
   const vertexActs = legal.filter((a) => (mode === 'outpost' && OUTPOST.includes(a.type)) || (mode === 'citadel' && a.type === 'buildCitadel')) as Extract<Action, { vertex: string }>[];
@@ -124,6 +125,11 @@ export function Board({ view, legal, mode, onAction, pick = [] }: { view: Player
 
       {Object.entries(view.paths).map(([e, owner]) => <PathLine key={e} a={edgePts[e][0]} b={edgePts[e][1]} color={colorOf(owner)} />)}
       {Object.entries(view.di?.boats ?? {}).map(([e, owner]) => <BoatPiece key={'bt' + e} a={edgePts[e][0]} b={edgePts[e][1]} color={colorOf(owner)} />)}
+      {[...Object.entries(view.paths), ...Object.entries(view.di?.boats ?? {})].map(([e, owner]) => (
+        <line key={'hv' + e} x1={edgePts[e][0].x} y1={edgePts[e][0].y} x2={edgePts[e][1].x} y2={edgePts[e][1].y} stroke="transparent" strokeWidth={10} strokeLinecap="round" style={{ pointerEvents: 'stroke' }}>
+          <title>{`${view.players.find((p) => p.id === owner)!.name}: longest route ${routeLen[owner] ??= longestPathLength(view, owner)}`}</title>
+        </line>
+      ))}
       {landfallFlags.map((f) => <g key={f.key} transform={`translate(${f.x} ${f.y})`}><LandfallFlag color={colorOf(f.owner)} /></g>)}
       {Object.keys(view.buildings).map((v) => {
         const b = view.buildings[v];
