@@ -17,6 +17,15 @@ it('fog-only edges and vertices are not solid', () => {
   expect(pathEdgeSolid(s, edges.find((e) => e.split('~').every((h) => fog.includes(h)))!)).toBe(false);
 });
 
+it('a lifted Mist hex is ordinary buildable land', () => {
+  const s = createGame(PLAYERS, { ...DEFAULT_SETTINGS, drownedIsles: true, scenario: 'veiled' } as never, 1);
+  const fog = s.di!.fogHexes!;
+  for (const h of fog) s.board.hexes[h] = { ...s.board.hexes[h], terrain: 'harvest' };
+  const fogOnly = boardGeometry(s.board).vertices.find((v) => vertexHexes(v).length && vertexHexes(v).every((h) => fog.includes(h)))!;
+  for (const h of fog) delete s.di!.mist![h];
+  expect(vertexSolid(s, fogOnly)).toBe(true);
+});
+
 it('Veiled Reach keeps a sea gap between the Mist and the isles', () => {
   const dist = (a: [number, number], b: [number, number]) => Math.max(Math.abs(a[0] - b[0]), Math.abs(a[1] - b[1]), Math.abs(a[0] + a[1] - b[0] - b[1]));
   const mist = VEILED.land.filter((h) => h[2] === 'mist');

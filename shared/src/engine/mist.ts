@@ -18,8 +18,9 @@ export function dealMist(sc: Scenario, mistHexes: HexId[], rng: number): [Record
   return [Object.fromEntries(mistHexes.map((h, i) => [h, { terrain: terrains[i], token: given[i] }])), next];
 }
 
-// Fog land takes no paths and no outposts of its own: a spot needs a non-fog land hex beside it. Only boats reach it.
-const solid = (s: GameState, hexes: HexId[]) => hexes.some((h) => isLandHex(s.board, h) && !s.di?.fogHexes?.includes(h));
+// Hidden fog land takes no paths and no outposts of its own: a spot needs a land hex beside it that is not still under Mist.
+// Once lifted, the hex is ordinary land (official Seafarers).
+const solid = (s: GameState, hexes: HexId[]) => hexes.some((h) => isLandHex(s.board, h) && !s.di?.mist?.[h]);
 export const pathEdgeSolid = (s: GameState, e: EdgeId) => solid(s, e.split('~'));
 export const vertexSolid = (s: GameState, v: string) => solid(s, v.split('|'));
 
