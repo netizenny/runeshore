@@ -31,21 +31,29 @@ export function Trade({ view, legal, act }: { view: PlayerView; legal: Action[];
     setGet(emptyCounts());
   };
 
+  const [tab, setTab] = useState<'players' | 'bank'>('players');
+  const from = kinds.filter((g) => bank.some((a) => a.give === g));
+
   if (!mine) return <div className="trade"><h3>Trade</h3><small>Wait for your turn to offer. Incoming offers show top right.</small></div>;
   return (
     <div className="trade">
-      <h3>Trade</h3>
-      <Pick label="GIVE" hand value={give} max={(r) => hand[r]} onChange={setGive} />
-      <Pick label="GET" hand={false} value={get} max={() => 9} onChange={setGet} />
-      <button className="go" disabled={!ok} onClick={send}>Offer to everyone</button>
-      <h4>Vault and ports</h4>
-      {kinds.map((g) => (
+      <div className="row">
+        <button data-on={tab === 'players'} onClick={() => setTab('players')}>Players</button>
+        <button data-on={tab === 'bank'} onClick={() => setTab('bank')}>Vault / ports</button>
+      </div>
+      {tab === 'players' ? (
+        <>
+          <Pick label="GIVE" hand value={give} max={(r) => hand[r]} onChange={setGive} />
+          <Pick label="GET" hand={false} value={get} max={() => 9} onChange={setGet} />
+          <button className="go" disabled={!ok} onClick={send}>Offer to everyone</button>
+        </>
+      ) : from.length ? from.map((g) => (
         <div key={g} className="row">{isCommodity(g) ? g : <ResIcon r={g} />} {ratio(g)}:1 →
-          {kinds.filter((r) => r !== g).map((r) => (
-            <button key={r} disabled={!bank.some((a) => a.give === g && a.get === r)} onClick={() => act({ type: 'bankTrade', give: g, get: r })}>{isCommodity(r) ? r : <ResIcon r={r} size={14} />}</button>
+          {kinds.filter((r) => bank.some((a) => a.give === g && a.get === r)).map((r) => (
+            <button key={r} onClick={() => act({ type: 'bankTrade', give: g, get: r })}>{isCommodity(r) ? r : <ResIcon r={r} size={14} />}</button>
           ))}
         </div>
-      ))}
+      )) : <small>Nothing to trade with the vault yet.</small>}
     </div>
   );
 }
