@@ -135,7 +135,7 @@ export function Board({ view, legal, mode, onAction, pick = [] }: { view: Player
         const b = view.buildings[v];
         if (!b) return null;
         const { x, y } = vertexPixel(v, S);
-        return <g key={v} transform={`translate(${x} ${y})`}>{b.kind === 'outpost' ? <Outpost color={colorOf(b.owner)} /> : <Citadel color={colorOf(b.owner)} />}</g>;
+        return <g key={v} transform={`translate(${x} ${y}) scale(${b.kind === 'outpost' ? 1.7 : 2})`}>{b.kind === 'outpost' ? <Outpost color={colorOf(b.owner)} /> : <Citadel color={colorOf(b.owner)} />}</g>;
       })}
       {Object.entries(view.hf?.sentinels ?? {}).map(([v, k]) => {
         const { x, y } = vertexPixel(v, S);
