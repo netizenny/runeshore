@@ -29,20 +29,30 @@ export function Players({ view, waiting, deadline }: { view: PlayerView; waiting
   const left = useSecondsLeft(deadline);
   return (
     <div className="players">
-      {view.order.map((id) => {
+      {[...view.order].sort((a, b) => glory(view, b) - glory(view, a)).map((id, rank) => {
         const p = view.players.find((x) => x.id === id)!;
         const turn = view.order[view.current] === id;
+        const g = glory(view, id);
         return (
           <div key={id} className="pl" data-turn={turn} style={{ borderLeftColor: `var(--${p.color})` }}>
-            <b>{p.name}{id === view.you ? ' (you)' : ''}</b>
-            <span title="Glory">♛ {glory(view, id)}</span>
-            <span title="Cards">🂠 {p.handCount}</span>
-            {view.hf ? <span title="Arcana">✦ {view.hf.players[id].arcanaCount}</span> : <span title="Runes">ᚱ {p.omenCount}</span>}
-            {view.hf && <span title="Commodities">📜 {Object.values(view.hf.players[id].commodities).reduce((a, b) => a + b, 0)}</span>}
-            {view.longestPath === id && <em title="Longest Trail">🛤</em>}
-            {view.grandHost === id && <em title="Warlord">Warlord</em>}
-            {p.wardensPlayed > 0 && <small title="Warriors played">⚔ {p.wardensPlayed}</small>}
-            {waiting.includes(id) && <span className="ring">{left === null ? '…' : `${left}s`}</span>}
+            <div className="pl-head">
+              <span className="pl-rank">{rank === 0 && g > 0 ? '👑' : rank + 1}</span>
+              <b>{turn && '▶ '}{p.name}{id === view.you ? ' (you)' : ''}</b>
+              {waiting.includes(id) && <span className="ring">{left === null ? '…' : `${left}s`}</span>}
+              <span className="pl-glory" title="Glory">♛ {g}</span>
+            </div>
+            <div className="pl-stats">
+              <span title="Cards">Cards <b>{p.handCount}</b></span>
+              {view.hf ? <span title="Arcana">Arcana <b>{view.hf.players[id].arcanaCount}</b></span> : <span title="Runes">ᚱ <b>{p.omenCount}</b></span>}
+              {view.hf && <span title="Commodities">Goods <b>{Object.values(view.hf.players[id].commodities).reduce((a, b) => a + b, 0)}</b></span>}
+              {p.wardensPlayed > 0 && <span title="Warriors played">⚔ <b>{p.wardensPlayed}</b></span>}
+            </div>
+            {(view.longestPath === id || view.grandHost === id) && (
+              <div className="pl-badges">
+                {view.longestPath === id && <em title="Longest Trail">Longest Trail</em>}
+                {view.grandHost === id && <em title="Warlord">Warlord</em>}
+              </div>
+            )}
           </div>
         );
       })}
