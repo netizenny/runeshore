@@ -19,6 +19,7 @@ import { Rulebook } from '../panels/Rulebook';
 import { Players } from '../panels/Players';
 import { ShadeSteal } from '../panels/ShadeSteal';
 import { Trade } from '../panels/Trade';
+import { isMuted, setMuted } from '../sound';
 
 type GameMsg = Omit<Extract<ServerMsg, { t: 'game' }>, 'view'> & { view: PlayerView };
 
@@ -30,6 +31,7 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
   const [picked, setPicked] = useState<Mode>(null);
   const [trading, setTrading] = useState(false);
   const [book, setBook] = useState(false);
+  const [muted, setMute] = useState(isMuted);
   const [sub, setSub] = useState<Sub | null>(null);
   const [from, setFrom] = useState<string | null>(null);
   const [card, setCard] = useState<string | null>(null);
@@ -82,7 +84,7 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
   return (
     <div className="game" data-hf={!!hf}>
       <div className="bar"><b>{prompt}</b>{frame && <button onClick={() => act(frame)}>Raider to the frame</button>}{view.dice && ph.k !== 'roll' && <span>🎲 {view.dice[0]} + {view.dice[1]}</span>}</div>
-      <div className="board"><button className="book" title="Rulebook" onClick={() => setBook(true)}>📖</button><Board view={view} legal={legal} mode={mode} onAction={act} pick={pick} /></div>
+      <div className="board"><button className="book" title="Rulebook" onClick={() => setBook(true)}>📖</button><button className="book mute" title="Sound on/off" onClick={() => { setMuted(!muted); setMute(!muted); }}>{muted ? '🔇' : '🔊'}</button><Board view={view} legal={legal} mode={mode} onAction={act} pick={pick} /></div>
       <aside className="side">
         {hf && <Fleet hf={hf} />}
         <Players view={view} waiting={game.waitingOn.map((w) => w.player)} deadline={game.deadline} />

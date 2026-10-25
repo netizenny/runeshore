@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ClientMsg, GameEvent, PlayerView, ServerMsg } from '@runeshore/shared';
 import { connect, type Status } from '../net/socket';
+import { play, playEvent } from '../sound';
 
 type Joined = Extract<ServerMsg, { t: 'joined' }>;
 type Lobby = Extract<ServerMsg, { t: 'lobby' }>;
@@ -55,6 +56,8 @@ export function useGame(roomId: string | null) {
   const [error, setError] = useState<string | null>(null);
   const conn = useRef<ReturnType<typeof connect> | null>(null);
   const log = useRef<GameEvent[]>([]);
+  const wasMyTurn = useRef(false);
+  const offers = useRef(0);
   const name = useRef(savedName());
   const room = useRef(roomId);
   room.current = roomId;
@@ -76,6 +79,18 @@ export function useGame(roomId: string | null) {
         else if (m.t === 'game') {
           // Full log arrives once per connection; later messages only add this move's events.
           log.current = m.log ?? [...log.current, ...m.events];
+          if (!m.log) {
+            const v = m.view;
+            m.events.forEach((e) => playEvent(e, v.you));
+            const myTurn = v.order[v.current] === v.you;
+            if (myTurn && !wasMyTurn.current) play('turn');
+            wasMyTurn.current = myTurn;
+            if (v.offers.length > offers.current && v.offers.some((o) => o.from !== v.you)) play('offer');
+            offers.current = v.offers.length;
+          } else {
+            wasMyTurn.current = m.view.order[m.view.current] === m.view.you;
+            offers.current = m.view.offers.length;
+          }
           setGame({ ...m, view: { ...m.view, log: log.current } });
         }
         else {
