@@ -87,6 +87,16 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
       <div className="bar"><b>{prompt}</b>{frame && <button onClick={() => act(frame)}>Raider to the frame</button>}</div>
       <div className="board"><DiceBook dice={view.dice} turn={view.turn} /><button className="book" title="Rulebook" onClick={() => setBook(true)}>📖</button><button className="book mute" title="Sound on/off" onClick={() => { setMuted(!muted); setMute(!muted); }}>{muted ? '🔇' : '🔊'}</button><Board view={view} legal={legal} mode={mode} onAction={act} pick={pick} /></div>
       <aside className="side">
+        <div
+          className="side-grip"
+          title="Drag to resize"
+          onPointerDown={(e) => e.currentTarget.setPointerCapture(e.pointerId)}
+          onPointerMove={(e) => {
+            if (!e.currentTarget.hasPointerCapture(e.pointerId)) return;
+            const w = Math.min(Math.max(window.innerWidth - e.clientX, 240), window.innerWidth * 0.6);
+            e.currentTarget.closest<HTMLElement>('.game')!.style.setProperty('--side-w', `${w}px`);
+          }}
+        />
         {hf && <Fleet hf={hf} />}
         <Players view={view} waiting={game.waitingOn.map((w) => w.player)} deadline={game.deadline} />
         <Log view={view} />
