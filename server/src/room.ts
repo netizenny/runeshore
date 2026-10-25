@@ -263,7 +263,13 @@ export class Room {
   private expire(id: PlayerId) {
     this.timers.delete(id);
     const events: GameEvent[] = [];
-    while (this.game && pendingPlayers(this.game).includes(id) && this.step(id, events));
+    try {
+      while (this.game && pendingPlayers(this.game).includes(id) && this.step(id, events));
+    } catch (e) {
+      console.error('autopilot failed', e); // a timer callback must never throw: it would kill every room
+    }
+    // Still pending means autoAct refused; forget the stamp so settle re-arms the timer instead of freezing the game.
+    if (this.game && pendingPlayers(this.game).includes(id)) this.drop(id);
     this.settle(events);
   }
 

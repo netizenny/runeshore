@@ -115,8 +115,8 @@ export function legalActions(s: GameState, id: PlayerId): Action[] {
       return out;
     case 'waymaking':
       for (const e of boardGeometry(s.board).edges) {
-        if (pathSpotOk(s, id, e)) out.push({ type: 'buildPath', edge: e });
-        if (s.di && s.di.boatsLeft[id] > 0 && boatSpotOk(s, id, e)) out.push({ type: 'buildBoat', edge: e });
+        if (pathSpotOk(s, id, e)) add({ type: 'buildPath', edge: e });
+        if (s.di && s.di.boatsLeft[id] > 0 && boatSpotOk(s, id, e)) add({ type: 'buildBoat', edge: e });
       }
       return out;
     case 'roll':

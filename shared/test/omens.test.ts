@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { applyAction } from '../src/engine/apply';
+import { legalActions } from '../src/engine/legal';
 import { vertexEdges, ALL_VERTICES } from '../src/board/geometry';
 import { emptyCounts } from '../src/constants';
 import type { Action, GameState, OmenKind } from '../src/types';
@@ -85,5 +86,12 @@ describe('play', () => {
     expect(w2.phase).toEqual({ k: 'roll' });
     expect(me(w2).hand).toEqual(emptyCounts());
     bad(withOmen('waymaking'), { type: 'playOmen', kind: 'waymaking' });
+  });
+
+  it('waymaking offers no path once the player has none left', () => {
+    const s = stateWith({ phase: { k: 'waymaking', left: 1, then: 'main' } });
+    s.buildings[ALL_VERTICES[20]] = { owner: s.order[s.current], kind: 'outpost' };
+    me(s).piecesLeft.path = 0;
+    expect(legalActions(s, me(s).id)).toEqual([]);
   });
 });
