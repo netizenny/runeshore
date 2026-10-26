@@ -18,15 +18,15 @@
     "semantic_hash": "371dda597bb5f4c357dcc7bc174cd482"
   },
   "client/src/board/Board.tsx": {
-    "mtime": 1792900789.4135098,
-    "seen": 1792975752.1994667,
-    "ast_hash": "5f688da32df1a60d8284bccbe26d25d9",
+    "mtime": 1792989231.1980991,
+    "seen": 1792989417.9846578,
+    "ast_hash": "f2f3fefa6102b9af95c3cf035818289c",
     "semantic_hash": ""
   },
   "client/src/board/art.tsx": {
-    "mtime": 1792896448.8741605,
-    "seen": 1792899675.977358,
-    "ast_hash": "10539160a2524bbd3273e20d3397b35c",
+    "mtime": 1792989238.7091055,
+    "seen": 1792989417.9846594,
+    "ast_hash": "08f581b5cd9e71df22a893c1e401242d",
     "semantic_hash": ""
   },
   "client/src/fx/ComicPanel.tsx": {
@@ -96,9 +96,9 @@
     "semantic_hash": "673b6fc7929487c0102fd90d5959b8d2"
   },
   "client/src/screens/Game.tsx": {
-    "mtime": 1792975850.3383322,
-    "seen": 1792975900.7759073,
-    "ast_hash": "d1e69de9135d106fe6632ae3bfb979d0",
+    "mtime": 1792978896.3217325,
+    "seen": 1792989417.9846907,
+    "ast_hash": "3f64eb2234bdf41c699165e083f5bb63",
     "semantic_hash": ""
   },
   "client/src/screens/Home.tsx": {
@@ -795,6 +795,12 @@
     "mtime": 1792975850.228346,
     "seen": 1792975900.7758682,
     "ast_hash": "1c7b7c8b20b40e127774193bd0adaaee",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-10-25-runeshore-volcano.md": {
+    "mtime": 1792990040.5057566,
+    "seen": 1792990091.116457,
+    "ast_hash": "aa6abb0352faea3ea9d9bbd44ef98041",
     "semantic_hash": ""
   }
 }

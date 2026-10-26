@@ -1,6 +1,4 @@
 {
-  "0": "Board Geometry & HF Plan",
-  "2": "Board Generation",
   "3": "HF Plan & Server Room",
   "5": "Build & Offers Panels",
   "6": "Pages CI Workflow",
@@ -11,7 +9,6 @@
   "16": "Server Package Deps",
   "22": "Arcana Guild/Lore Tests",
   "25": "Sentinel Tests",
-  "26": "Fleet & Commodity Panels",
   "27": "Shared Package Config",
   "29": "Client TS Config",
   "30": "Hollow Fleet Demo GIF",
