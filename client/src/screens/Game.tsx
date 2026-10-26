@@ -9,6 +9,7 @@ import { Build } from '../panels/Build';
 import { Commodities } from '../panels/Commodities';
 import { Fleet } from '../panels/Fleet';
 import { Give } from '../panels/Give';
+import { DiceStats } from '../panels/DiceStats';
 import { Glimmer } from '../panels/Glimmer';
 import { Improve, Reward } from '../panels/Improve';
 import { Sentinels, sentinelPicks, type Sub } from '../panels/Sentinels';
@@ -99,6 +100,7 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
         />
         {hf && <Fleet hf={hf} />}
         <Players view={view} waiting={game.waitingOn.map((w) => w.player)} deadline={game.deadline} />
+        <DiceStats view={view} />
         <Log view={view} />
       </aside>
       <div className="dock">
