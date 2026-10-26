@@ -1,12 +1,22 @@
 import type { EdgeId, GameEvent, GameState, HexId, PlayerId, Terrain } from '../types';
 import { RESOURCES } from '../constants';
-import { shuffle } from '../rng';
+import { randInt, shuffle } from '../rng';
 import { edgeVertices, isLandHex } from '../board/geometry';
 import type { Scenario } from '../board/scenarios/landfall';
 
 // Deals the scenario's hidden terrains and number tokens onto its Mist hexes (apart, as in the official facedown piles;
 // Deep takes no token). Returns the hidden map and the new rng state.
 export function dealMist(sc: Scenario, mistHexes: HexId[], rng: number): [Record<HexId, { terrain: Terrain; token: number | null }>, number] {
+  if (sc.random) {
+    // Volcano: every fog hex draws its own terrain and token.
+    let s = rng;
+    const draw = <T>(pool: readonly T[]): T => {
+      let i: number;
+      [i, s] = randInt(s, pool.length);
+      return pool[i];
+    };
+    return [Object.fromEntries(mistHexes.map((h) => [h, { terrain: draw(sc.random!.fog), token: draw(sc.random!.tokens) }])), s];
+  }
   const [terrains, afterTerrains] = shuffle(sc.fog!.terrains, rng);
   const [shuffled, next] = shuffle(sc.fog!.tokens, afterTerrains);
   // Glimmer fields only ever carry a 6 or an 8, so they draw first from the tokens with those numbers up front.

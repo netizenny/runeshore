@@ -14,7 +14,7 @@ const goldIsle = (s: GameState, isle: string) => Object.entries(s.di!.isleOf).so
 
 // Setup outposts must touch land, and on a Drowned Isles board only the home isle (any isle but a Glimmer one when it has none).
 export const setupSpotOk = (s: GameState, v: string) =>
-  landHexesAt(s.board, v).some((h) => !s.di || (!s.di.homeIsle || s.di.isleOf[h] === s.di.homeIsle) && !goldIsle(s, s.di.isleOf[h]));
+  s.di?.startZone ? vertexHexes(v).some((h) => s.di!.startZone!.includes(h)) : landHexesAt(s.board, v).some((h) => !s.di || (!s.di.homeIsle || s.di.isleOf[h] === s.di.homeIsle) && !goldIsle(s, s.di.isleOf[h]));
 
 export function placeOutpost(s: GameState, id: PlayerId, a: Extract<Action, { type: 'placeOutpost' }>): Result {
   const ph = s.phase;

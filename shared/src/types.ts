@@ -139,6 +139,7 @@ export interface DIState {
   landfall: Record<PlayerId, string[]>; // isles with a Landfall mark
   raiderHex: HexId | null; // starts on the scenario's mark; null once sent off to the frame
   fogHexes?: HexId[]; // hexes that began as Mist: boats only, no paths or outposts that touch nothing else
+  startZone?: HexId[]; // when set, setup outposts must touch one of these hexes (Volcano's corner clusters)
   mist?: Record<HexId, { terrain: Terrain; token: number | null }>; // hidden contents of unlifted Mist hexes (server only)
 }
 

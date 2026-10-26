@@ -21,7 +21,8 @@ export interface Scenario {
   fog?: { terrains: Terrain[]; tokens: number[] }; // hidden terrains and number tokens, dealt separately onto the `mist` hexes (`deep` takes no token)
   // Random deal: land hexes whose terrain is in `corner` take a random one of them; every other numbered land hex, a random token
   // (Glimmer from `goldTokens`). Desert stays bare. Port kinds: the first of each pair is 3:1, the second a random `portResources`.
-  random?: { corner: Terrain[]; tokens: number[]; goldTokens: number[]; portResources: Resource[] };
+  // Mist hexes each draw a terrain from `fog` and a token from `tokens`, independently; setup outposts must touch a `corner` hex.
+  random?: { corner: Terrain[]; tokens: number[]; goldTokens: number[]; portResources: Resource[]; fog: Terrain[] };
   ports: [q1: number, r1: number, q2: number, r2: number, kind: Resource | 'any'][];
 }
 

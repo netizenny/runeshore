@@ -52,11 +52,7 @@ export const VOLCANO: Scenario = {
     tokens: [2, 3, 4, 5, 6, 8, 9, 10, 11, 12],
     goldTokens: [6, 8],
     portResources: ['clay', 'fleece', 'timber', 'harvest', 'starmetal'] as Resource[],
-  },
-  // Phase 2 replaces this with a per-hex random deal; for now a flat pool of the five resources.
-  fog: {
-    terrains: Array.from({ length: 18 }, (_, i) => (['clay', 'fleece', 'timber', 'harvest', 'starmetal'] as Terrain[])[i % 5]),
-    tokens: Array.from({ length: 18 }, (_, i) => [2, 3, 4, 5, 6, 8, 9, 10, 11, 12][i % 10]),
+    fog: ['clay', 'fleece', 'timber', 'harvest', 'starmetal'],
   },
   ports: PORTS,
 };

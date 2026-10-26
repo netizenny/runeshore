@@ -75,7 +75,7 @@ Rules above are confirmed or defaulted by the user. Confirm the small assumption
 
 New `shared/src/board/scenarios/volcano.ts` with a `Scenario`: radius to cover 11-wide rows, `land` list from the layout, fog hexes as `mist`, ports, `raiderStart`. Extend `Scenario` with optional random pools (resource set per region, token rule per region) because current scenarios hardcode terrain and token. Add a `randomizeVolcano` step (or a `random` field read by `createGame`) that deals corners, ore tokens and gold token from a seeded rng (`shuffle`, `randInt` already exist). Register in `SCENARIOS`. Done when: unit tests check counts (20/14/18/18/1), corner terrains only the four resources, desert tokenless, gold 6 or 8, ore tokens legal, seeds reproducible.
 
-### [ ] Phase 2: Fog and setup
+### [x] Phase 2: Fog and setup
 
 Wire `dealMist` to the 18 fog hexes with the five-resource pool. Check `solid()` and `vertexSolid`: fog ring touches ore, so paths and outposts next to fog land normally; no Boats needed. Setup restricts starts to the four corner clusters (use `home` flags or a new `startZone`; `anywhere` must not allow ore or desert starts). Done when: tests for lift on a path, reveal payout (resource, Glimmer pick, token), start-zone restriction, and no invalid hex ids.
 
