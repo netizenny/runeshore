@@ -86,7 +86,7 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
   return (
     <div className="game" data-hf={!!hf}>
       <div className="bar"><b>{prompt}</b>{frame && <button onClick={() => act(frame)}>Raider to the frame</button>}</div>
-      <div className="board"><DiceBook dice={view.dice} turn={view.turn} /><button className="book" title="Rulebook" onClick={() => setBook(true)}>📖</button><button className="book mute" title="Sound on/off" onClick={() => { setMuted(!muted); setMute(!muted); }}>{muted ? '🔇' : '🔊'}</button><Board view={view} legal={legal} mode={mode} onAction={act} pick={pick} /></div>
+      <div className="board"><DiceBook dice={view.dice} turn={view.turn} /><div className="corner"><button className="book" title="Rulebook" onClick={() => setBook(true)}>📖</button><button className="book" title="Sound on/off" onClick={() => { setMuted(!muted); setMute(!muted); }}>{muted ? '🔇' : '🔊'}</button><DiceStats view={view} /></div><Board view={view} legal={legal} mode={mode} onAction={act} pick={pick} /></div>
       <aside className="side">
         <div
           className="side-grip"
@@ -100,7 +100,6 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
         />
         {hf && <Fleet hf={hf} />}
         <Players view={view} waiting={game.waitingOn.map((w) => w.player)} deadline={game.deadline} />
-        <DiceStats view={view} />
         <Log view={view} />
       </aside>
       <div className="dock">

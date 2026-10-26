@@ -90,8 +90,8 @@ button[data-on='true'] { background: var(--ink-gold-dim); color: var(--night); }
 .offers { position: absolute; z-index: 6; top: 3rem; right: 330px; display: flex; flex-direction: column; gap: .5rem; max-width: 260px; }
 .offers .offer { flex-direction: column; align-items: stretch; margin: 0; padding: .5rem; background: var(--night-2); border: 2px solid var(--ink-gold); border-radius: 6px; }
 .game .board { position: relative; }
-.book { position: absolute; top: .5rem; left: .5rem; z-index: 3; font-size: 1.3rem; }
-.book.mute { top: 4rem; }
+.corner { position: absolute; top: .5rem; left: .5rem; z-index: 3; display: flex; flex-direction: column; align-items: flex-start; gap: .25rem; }
+.book { font-size: 1.3rem; }
 .pl .hl, .pl em.hl { background: #ffd23f; color: #1a1a2e; border-radius: 4px; padding: 0 .3rem; }
 /* dice spellbook: pages are dice faces, leaves flip on each new turn */
 .tome { position: absolute; bottom: 1.8rem; left: .5rem; z-index: 2; pointer-events: none; width: 150px; height: 100px; display: flex; perspective: 600px; filter: drop-shadow(0 4px 6px #0008); }
