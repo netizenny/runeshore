@@ -13,10 +13,10 @@ export const TERRAIN_FILL: Record<Terrain, string> = {
   fleece: '#b4de6e',
   harvest: '#f5cc3f',
   starmetal: '#8c84f0',
-  ashen: '#9aa1b3',
+  ashen: '#e8c98a',
   deep: '#2a8fc4',
   glimmer: '#d278e8',
-  mist: '#e0d9c4',
+  mist: '#d4d8de',
 };
 
 const pine = (x: number, y: number, k = 1) => (
@@ -74,8 +74,10 @@ const TERRAIN_ART: Record<Terrain, ReactNode> = {
       <path d="M-40 12 Q-20 -6 0 10 T40 8" />
       <path d="M-34 24 Q-14 8 6 22 T40 22" />
       <path d="M-30 -8 Q-12 -22 6 -8 T34 -12" />
-      <g fill={GOLD} stroke="none">
-        {[[-24, 0], [18, -22], [30, 14], [-8, 28], [8, 0]].map(([x, y]) => <circle key={`${x}${y}`} cx={x} cy={y} r={1.6} />)}
+      <g fill="#3f8a4c">
+        <path d="M-22 22 V4 Q-22 0 -18 0 Q-14 0 -14 4 V22 Z" />
+        <path d="M-22 14 H-27 Q-30 14 -30 10 V6 M-14 12 H-10 Q-7 12 -7 8 V4" fill="none" stroke="#3f8a4c" strokeWidth={4} />
+        <path d="M20 -6 V-20 Q20 -23 23 -23 Q26 -23 26 -20 V-6 Z" transform="scale(0.9)" />
       </g>
     </g>
   ),
