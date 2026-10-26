@@ -798,9 +798,9 @@
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-10-25-runeshore-volcano.md": {
-    "mtime": 1792991003.0581417,
-    "seen": 1792991072.5194323,
-    "ast_hash": "5d3d5bf43e3fa0ab7b4aa05bd4c0acdf",
+    "mtime": 1792991172.7405164,
+    "seen": 1792991203.452251,
+    "ast_hash": "87b9bf5a6bcc43e6c2d19e0b7faa3085",
     "semantic_hash": ""
   },
   "shared/src/board/scenarios/volcano.ts": {
@@ -819,6 +819,12 @@
     "mtime": 1792990976.261703,
     "seen": 1792991072.5194132,
     "ast_hash": "5e941330aed90285ae39a52e59029028",
+    "semantic_hash": ""
+  },
+  "shared/test/volcano-gold.test.ts": {
+    "mtime": 1792991166.835934,
+    "seen": 1792991203.452231,
+    "ast_hash": "4097debacd4cf7d731a2c6d0e7ba22c8",
     "semantic_hash": ""
   }
 }

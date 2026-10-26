@@ -108,10 +108,10 @@
     "semantic_hash": "b48863bc2fe225d11da06a5ce11a6d70"
   },
   "client/src/screens/Lobby.tsx": {
-    "mtime": 1792884526.1659288,
-    "seen": 1792888419.29119,
-    "ast_hash": "c44d07c8be17560702b5862d0f837386",
-    "semantic_hash": "c44d07c8be17560702b5862d0f837386"
+    "mtime": 1792991615.530729,
+    "seen": 1792992106.889675,
+    "ast_hash": "2d75f4c0a27eb1148cccef8889c227ac",
+    "semantic_hash": ""
   },
   "client/src/state/useGame.ts": {
     "mtime": 1792896413.9459913,
@@ -162,9 +162,9 @@
     "semantic_hash": "bba1a2344fbbe8ebd14f1eb6a4abfba8"
   },
   "server/src/room.ts": {
-    "mtime": 1792972223.8045266,
-    "seen": 1792975752.1995149,
-    "ast_hash": "c390e70373760c04d8f46a97fab0417b",
+    "mtime": 1792991615.5277297,
+    "seen": 1792992106.8896976,
+    "ast_hash": "d52f30113505aac91e6e981efba1ed37",
     "semantic_hash": ""
   },
   "server/src/rooms.ts": {
@@ -246,15 +246,15 @@
     "semantic_hash": ""
   },
   "shared/src/engine/create.ts": {
-    "mtime": 1792990964.0195856,
-    "seen": 1792991072.5192943,
-    "ast_hash": "fc55a53e7c2df058f2601f033a107b55",
+    "mtime": 1792991615.5257306,
+    "seen": 1792992106.8897429,
+    "ast_hash": "8953c586290876db5c52fd03370369aa",
     "semantic_hash": ""
   },
   "shared/src/engine/legal.ts": {
-    "mtime": 1792972223.708078,
-    "seen": 1792975752.1995554,
-    "ast_hash": "f498897b2e43fd8e8659a31ebc615fc4",
+    "mtime": 1792991606.0333414,
+    "seen": 1792992106.8897715,
+    "ast_hash": "7f12a045fe1779e3dd81aeb98d54e10a",
     "semantic_hash": ""
   },
   "shared/src/engine/omens.ts": {
@@ -276,10 +276,10 @@
     "semantic_hash": "5b6e1454be8e161b1c62da7a0814c6ef"
   },
   "shared/src/engine/turn.ts": {
-    "mtime": 1792886943.6036067,
-    "seen": 1792888419.2912426,
-    "ast_hash": "b9eb144c88dba8cfd7728ab7feab8932",
-    "semantic_hash": "b9eb144c88dba8cfd7728ab7feab8932"
+    "mtime": 1792991606.0333414,
+    "seen": 1792992106.889782,
+    "ast_hash": "b57968f41770b84aa5a7a7f9d5ffac01",
+    "semantic_hash": ""
   },
   "shared/src/index.ts": {
     "mtime": 1792881019.7922873,
@@ -300,9 +300,9 @@
     "semantic_hash": "119bf21f1cac64237c5574daf860f4c3"
   },
   "shared/src/types.ts": {
-    "mtime": 1792990963.9209216,
-    "seen": 1792991072.5193388,
-    "ast_hash": "45d18b600b8aee27e70f2ece5b195d2c",
+    "mtime": 1792991615.5267305,
+    "seen": 1792992106.8897905,
+    "ast_hash": "005ec67bf164347bf59b309dde09d0f6",
     "semantic_hash": ""
   },
   "shared/src/view.ts": {
@@ -456,9 +456,9 @@
     "semantic_hash": "a781230ad455c6ac06147a0163bed07b"
   },
   "client/src/rules/content.ts": {
-    "mtime": 1792896983.644992,
-    "seen": 1792899675.9774094,
-    "ast_hash": "07c9ac0829e6bce72fedae4aa5724bdd",
+    "mtime": 1792992052.6641386,
+    "seen": 1792992106.8896677,
+    "ast_hash": "85a9770aabd3eaf28a8a2e6901f9af6f",
     "semantic_hash": ""
   },
   "render.yaml": {
@@ -708,9 +708,9 @@
     "semantic_hash": "4a80f46c051e08a6b360d429f5fba7a1"
   },
   "shared/src/board/scenarios/landfall.ts": {
-    "mtime": 1792990963.5977674,
-    "seen": 1792991072.5192716,
-    "ast_hash": "48f02e79b1f086c7df41f81f665b98f5",
+    "mtime": 1792991606.0303419,
+    "seen": 1792992106.8897178,
+    "ast_hash": "ab127aa2dbe4bca192c16f5be96ea018",
     "semantic_hash": ""
   },
   "shared/test/di-board.test.ts": {
@@ -798,33 +798,33 @@
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-10-25-runeshore-volcano.md": {
-    "mtime": 1792991172.7405164,
-    "seen": 1792991203.452251,
-    "ast_hash": "87b9bf5a6bcc43e6c2d19e0b7faa3085",
+    "mtime": 1792991321.1401515,
+    "seen": 1792992106.889889,
+    "ast_hash": "ab783373a427994d06d1cb4c2cd121c8",
     "semantic_hash": ""
   },
   "shared/src/board/scenarios/volcano.ts": {
-    "mtime": 1792990963.6872625,
-    "seen": 1792991072.5192826,
-    "ast_hash": "c11b950a52b3907126d32d124884d538",
+    "mtime": 1792991606.0303419,
+    "seen": 1792992106.889731,
+    "ast_hash": "120ea7a58d91b7d5bc5022ec3a7ce96f",
     "semantic_hash": ""
   },
   "shared/test/volcano-board.test.ts": {
-    "mtime": 1792990234.4728875,
-    "seen": 1792990887.510015,
-    "ast_hash": "778220867bef3be022ebc2b41315427e",
+    "mtime": 1792991621.2162023,
+    "seen": 1792992106.889865,
+    "ast_hash": "3e479377e76f029c736b3de3a39509a4",
     "semantic_hash": ""
   },
   "shared/test/volcano-fog.test.ts": {
-    "mtime": 1792990976.261703,
-    "seen": 1792991072.5194132,
-    "ast_hash": "5e941330aed90285ae39a52e59029028",
+    "mtime": 1792991606.0343418,
+    "seen": 1792992106.8898668,
+    "ast_hash": "95ad42d34321222f20972953adff87c6",
     "semantic_hash": ""
   },
   "shared/test/volcano-gold.test.ts": {
-    "mtime": 1792991166.835934,
-    "seen": 1792991203.452231,
-    "ast_hash": "4097debacd4cf7d731a2c6d0e7ba22c8",
+    "mtime": 1792991606.0343418,
+    "seen": 1792992106.8898687,
+    "ast_hash": "cd01b9614b121e10339b86cce686ad49",
     "semantic_hash": ""
   }
 }

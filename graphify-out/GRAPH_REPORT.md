@@ -1,17 +1,17 @@
 # Graph Report - Runeshore  (2026-10-25)
 
 ## Corpus Check
-- 136 files · ~72,209 words
+- 136 files · ~72,472 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 2 file(s) not represented in the graph (top: (none) 1, .css 1)
 
 ## Summary
-- 927 nodes · 2997 edges · 44 communities (41 shown, 3 thin omitted)
+- 927 nodes · 2999 edges · 49 communities (46 shown, 3 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 76 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `fa488e19`
+- Built from commit: `ad513330`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -39,7 +39,7 @@
 - vitest
 - shared/src/index.ts
 - Arcana Guild/Lore Tests
-- Phases
+- arcana-politics.ts
 - legal.ts
 - Sentinel Tests
 - hf-dice.test.ts
@@ -60,6 +60,11 @@
 - di-board.test.ts
 - types.ts
 - hf-arcana-crown.test.ts
+- state.ts
+- trade.ts
+- fleet.ts
+- improve.ts
+- PlayerId
 
 ## God Nodes (most connected - your core abstractions)
 1. `applyAction()` - 55 edges
@@ -94,11 +99,11 @@
 - **Lobby UI elements** — hollow_fleet_siege_player_list, hollow_fleet_siege_copy_link, hollow_fleet_siege_host_wait [EXTRACTED 1.00]
 - **Runeshore plan documents** — docs_superpowers_plans_2026_10_21_runeshore_session_phases_doc, docs_superpowers_plans_2026_10_23_runeshore_hollow_fleet_doc [INFERRED 0.85]
 
-## Communities (44 total, 3 thin omitted)
+## Communities (49 total, 3 thin omitted)
 
 ### Community 0 - "apply.ts"
-Cohesion: 0.07
-Nodes (73): Longest route (paths + boats), [x] Phase 2: Fog and setup, boardGeometry(), isLandHex(), landHexesAt(), of(), pathEdgeOn(), vertexHexes() (+65 more)
+Cohesion: 0.12
+Nodes (46): Longest route (paths + boats), [x] Phase 2: Fog and setup, boardGeometry(), isLandHex(), landHexesAt(), of(), pathEdgeOn(), vertexHexes() (+38 more)
 
 ### Community 1 - "Game.tsx"
 Cohesion: 0.13
@@ -188,13 +193,13 @@ Nodes (10): Omens(), Book, BOOKS, OMEN_ICON, t(), TERMS, Topic, OMEN_DECK (+2 mo
 Cohesion: 0.18
 Nodes (10): compilerOptions, esModuleInterop, module, moduleResolution, noEmit, noUncheckedIndexedAccess, skipLibCheck, strict (+2 more)
 
-### Community 23 - "Phases"
-Cohesion: 0.14
-Nodes (14): Assumptions to confirm (small), Global constraints, Layout (copied from the screenshot), Name map (Colonist to Runeshore), [ ] Phase 4: Client board and art, [ ] Phase 5: Cities & Knights, [ ] Phase 6: Ship it, Phases (+6 more)
+### Community 23 - "arcana-politics.ts"
+Cohesion: 0.18
+Nodes (18): SENTINELS_PER_RANK, addSentinel(), arcanaPickSentinel(), desert(), free(), POLITICS, touchesMyPath(), actor() (+10 more)
 
 ### Community 24 - "legal.ts"
-Cohesion: 0.08
-Nodes (52): [x] Phase 1: Scenario data and geometry, nextMove(), ARCANA, COMMODITIES, HF_BANK_EACH, isCommodity(), NOT_LAND, TRACK_COMMODITY (+44 more)
+Cohesion: 0.09
+Nodes (38): Assumptions to confirm (small), Global constraints, Layout (copied from the screenshot), Name map (Colonist to Runeshore), [ ] Phase 5: Cities & Knights, [ ] Phase 6: Ship it, Phases, Risks (+30 more)
 
 ### Community 25 - "Sentinel Tests"
 Cohesion: 0.22
@@ -225,8 +230,8 @@ Cohesion: 0.33
 Nodes (5): compilerOptions, types, extends, include, ../tsconfig.base.json
 
 ### Community 32 - "turn.ts"
-Cohesion: 0.09
-Nodes (46): ARCANA_HAND_MAX, FLEET_TRACK, drawArcana(), afterFleet(), FACES, rollHF(), advanceFleet(), canDraw() (+38 more)
+Cohesion: 0.21
+Nodes (18): afterFleet(), FACES, rollHF(), loreBonus(), discardLimitFor(), afterSeven(), bankTotal(), cardCount() (+10 more)
 
 ### Community 33 - "Shared TS Config"
 Cohesion: 0.50
@@ -260,6 +265,26 @@ Nodes (11): ArcanaArg, DIState, HexId, OmenKind, Phase, Port, TradeOffer, bad() 
 Cohesion: 0.28
 Nodes (5): NONE, other(), terrainHex(), withPath(), zero
 
+### Community 44 - "state.ts"
+Cohesion: 0.19
+Nodes (16): ARCANA, COMMODITIES, INVENTOR_FIXED, arcanaCandidates(), pairs(), cardTotal(), held(), Kind (+8 more)
+
+### Community 45 - "trade.ts"
+Cohesion: 0.23
+Nodes (15): isCommodity(), arcanaGive(), move(), stocks(), bankTrade(), cancelTrade(), confirmTrade(), have() (+7 more)
+
+### Community 46 - "fleet.ts"
+Cohesion: 0.23
+Nodes (12): ARCANA_HAND_MAX, FLEET_TRACK, advanceFleet(), canDraw(), chooseLoss(), chooseReward(), citadels(), lose() (+4 more)
+
+### Community 47 - "improve.ts"
+Cohesion: 0.27
+Nodes (13): drawArcana(), citadels(), gateDraws(), improve(), spire(), spireAt(), hfPlayer(), Track (+5 more)
+
+### Community 48 - "PlayerId"
+Cohesion: 0.23
+Nodes (9): ARCANA_INSTANT, MEDICINE_COST, Play, playArcana(), PLAYS, harvestAll(), SCIENCE, Result (+1 more)
+
 ## Knowledge Gaps
 - **37 isolated node(s):** `../tsconfig.base.json`, `../tsconfig.base.json`, `../tsconfig.base.json`, `Longest route (paths + boats)`, `Deep hex (sea)` (+32 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 228 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
@@ -268,17 +293,17 @@ Nodes (5): NONE, other(), terrainHex(), withPath(), zero
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `vitest` connect `vitest` to `apply.ts`, `turn.ts`, `Room`, `hf-sentinels.test.ts`, `apply.ts`, `GameState`, `generate.ts`, `di-board.test.ts`, `helpers.ts`, `hf-arcana-crown.test.ts`, `types.ts`, `applyAction`, `Server Package Deps`, `geometry.ts`, `edgeVertices`, `shared/src/index.ts`, `legal.ts`, `hf-dice.test.ts`?**
+- **Why does `vitest` connect `vitest` to `apply.ts`, `Room`, `hf-sentinels.test.ts`, `applyAction`, `generate.ts`, `helpers.ts`, `Server Package Deps`, `geometry.ts`, `edgeVertices`, `shared/src/index.ts`, `legal.ts`, `hf-dice.test.ts`, `apply.ts`, `GameState`, `di-board.test.ts`, `types.ts`, `hf-arcana-crown.test.ts`, `fleet.ts`, `improve.ts`?**
   _High betweenness centrality (0.051) - this node is a cross-community bridge._
 - **What connects `../tsconfig.base.json`, `../tsconfig.base.json`, `../tsconfig.base.json` to the rest of the system?**
   _37 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `apply.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.06789628441593157 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.12191582002902758 - nodes in this community are weakly interconnected._
 - **Why does `react` connect `PlayerView` to `Game.tsx`, `HF Plan & Server Room`, `Board.tsx`, `client/package.json`, `shared/src/index.ts`, `shared/src/index.ts`?**
   _High betweenness centrality (0.045) - this node is a cross-community bridge._
 - **Should `Game.tsx` be split into smaller, more focused modules?**
   _Cohesion score 0.13277310924369748 - nodes in this community are weakly interconnected._
-- **Why does `Action` connect `Game.tsx` to `apply.ts`, `turn.ts`, `Room`, `hf-sentinels.test.ts`, `apply.ts`, `GameState`, `Improve.tsx`, `applyAction`, `types.ts`, `Board.tsx`, `shared/src/index.ts`, `edgeVertices`, `shared/src/index.ts`, `legal.ts`, `hf-dice.test.ts`?**
+- **Why does `Action` connect `Game.tsx` to `apply.ts`, `Room`, `hf-sentinels.test.ts`, `applyAction`, `Board.tsx`, `shared/src/index.ts`, `edgeVertices`, `shared/src/index.ts`, `arcana-politics.ts`, `legal.ts`, `hf-dice.test.ts`, `turn.ts`, `apply.ts`, `GameState`, `Improve.tsx`, `types.ts`, `state.ts`, `trade.ts`, `fleet.ts`, `improve.ts`, `PlayerId`?**
   _High betweenness centrality (0.043) - this node is a cross-community bridge._
 - **Should `Room` be split into smaller, more focused modules?**
   _Cohesion score 0.06106442577030812 - nodes in this community are weakly interconnected._

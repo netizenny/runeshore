@@ -14,7 +14,7 @@
   "19": "edgeVertices",
   "20": "vitest",
   "21": "shared/src/index.ts",
-  "23": "Phases",
+  "23": "arcana-politics.ts",
   "24": "legal.ts",
   "26": "hf-dice.test.ts",
   "28": "PlayerView",
@@ -26,5 +26,10 @@
   "40": "Improve.tsx",
   "41": "di-board.test.ts",
   "42": "types.ts",
-  "43": "hf-arcana-crown.test.ts"
+  "43": "hf-arcana-crown.test.ts",
+  "44": "state.ts",
+  "45": "trade.ts",
+  "46": "fleet.ts",
+  "47": "improve.ts",
+  "48": "PlayerId"
 }
