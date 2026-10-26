@@ -79,7 +79,7 @@ New `shared/src/board/scenarios/volcano.ts` with a `Scenario`: radius to cover 1
 
 Wire `dealMist` to the 18 fog hexes with the five-resource pool. Check `solid()` and `vertexSolid`: fog ring touches ore, so paths and outposts next to fog land normally; no Boats needed. Setup restricts starts to the four corner clusters (use `home` flags or a new `startZone`; `anywhere` must not allow ore or desert starts). Done when: tests for lift on a path, reveal payout (resource, Glimmer pick, token), start-zone restriction, and no invalid hex ids.
 
-### [ ] Phase 3: Lobby target and gold
+### [x] Phase 3: Lobby target and gold
 
 Lobby picks the win target (existing setting). Gold is a plain Glimmer field, no bonus. Done when: tests confirm the lobby target applies and gold pays a pick.
 
