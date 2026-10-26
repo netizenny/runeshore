@@ -83,7 +83,7 @@ Wire `dealMist` to the 18 fog hexes with the five-resource pool. Check `solid()`
 
 Lobby picks the win target (existing setting). Gold is a plain Glimmer field, no bonus. Done when: tests confirm the lobby target applies and gold pays a pick.
 
-### [ ] Phase 4: Client board and art
+### [x] Phase 4: Client board and art
 
 Render the rectangular board in `client/src/board/Board.tsx` (scenario radius, hex positions). Terrain art for ore, desert, fog hexes exists; check gold and fog look. Lobby: add the map to `Settings['scenario']` select (2-4 players, not `big`). Rulebook entry in `client/src/rules/Book.tsx`. Done when: browser playtest at `:3001` shows the right shapes, tokens, ports and a fog lift.
 
