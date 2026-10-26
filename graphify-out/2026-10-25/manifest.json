@@ -246,9 +246,9 @@
     "semantic_hash": ""
   },
   "shared/src/engine/create.ts": {
-    "mtime": 1792888523.4101408,
-    "seen": 1792890783.9848824,
-    "ast_hash": "60e79eb8931fe4b2b33005bb35eb5631",
+    "mtime": 1792990964.0195856,
+    "seen": 1792991072.5192943,
+    "ast_hash": "fc55a53e7c2df058f2601f033a107b55",
     "semantic_hash": ""
   },
   "shared/src/engine/legal.ts": {
@@ -264,9 +264,9 @@
     "semantic_hash": "18cb2548125831c3dda63f06479623da"
   },
   "shared/src/engine/setup.ts": {
-    "mtime": 1792890239.725927,
-    "seen": 1792890783.98492,
-    "ast_hash": "8116823839c0aad0d78b6685a484076b",
+    "mtime": 1792990964.095512,
+    "seen": 1792991072.5193267,
+    "ast_hash": "2f1d63ef81d5145900a175d2c5aec486",
     "semantic_hash": ""
   },
   "shared/src/engine/trade.ts": {
@@ -300,9 +300,9 @@
     "semantic_hash": "119bf21f1cac64237c5574daf860f4c3"
   },
   "shared/src/types.ts": {
-    "mtime": 1792990218.8552513,
-    "seen": 1792990887.509943,
-    "ast_hash": "e6743757b977564d6956d4a067036f2a",
+    "mtime": 1792990963.9209216,
+    "seen": 1792991072.5193388,
+    "ast_hash": "45d18b600b8aee27e70f2ece5b195d2c",
     "semantic_hash": ""
   },
   "shared/src/view.ts": {
@@ -708,9 +708,9 @@
     "semantic_hash": "4a80f46c051e08a6b360d429f5fba7a1"
   },
   "shared/src/board/scenarios/landfall.ts": {
-    "mtime": 1792990218.5603766,
-    "seen": 1792990887.5098739,
-    "ast_hash": "59dd6e7ef80a424664b2642b8032f412",
+    "mtime": 1792990963.5977674,
+    "seen": 1792991072.5192716,
+    "ast_hash": "48f02e79b1f086c7df41f81f665b98f5",
     "semantic_hash": ""
   },
   "shared/test/di-board.test.ts": {
@@ -756,9 +756,9 @@
     "semantic_hash": ""
   },
   "shared/src/engine/mist.ts": {
-    "mtime": 1792900887.7077096,
-    "seen": 1792975752.1995564,
-    "ast_hash": "871242a3417325b8ed5f5eb57363d1f3",
+    "mtime": 1792990963.8380637,
+    "seen": 1792991072.5193224,
+    "ast_hash": "5574a7430c779826743a3db3de04d8df",
     "semantic_hash": ""
   },
   "shared/src/board/scenarios/sextet.ts": {
@@ -798,21 +798,27 @@
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-10-25-runeshore-volcano.md": {
-    "mtime": 1792990262.7277398,
-    "seen": 1792990887.5100348,
-    "ast_hash": "ca62875caa41bc649f1e1328c3c9d621",
+    "mtime": 1792991003.0581417,
+    "seen": 1792991072.5194323,
+    "ast_hash": "5d3d5bf43e3fa0ab7b4aa05bd4c0acdf",
     "semantic_hash": ""
   },
   "shared/src/board/scenarios/volcano.ts": {
-    "mtime": 1792990234.4121287,
-    "seen": 1792990887.5098848,
-    "ast_hash": "c3814eacb253fde511c544875847b8ad",
+    "mtime": 1792990963.6872625,
+    "seen": 1792991072.5192826,
+    "ast_hash": "c11b950a52b3907126d32d124884d538",
     "semantic_hash": ""
   },
   "shared/test/volcano-board.test.ts": {
     "mtime": 1792990234.4728875,
     "seen": 1792990887.510015,
     "ast_hash": "778220867bef3be022ebc2b41315427e",
+    "semantic_hash": ""
+  },
+  "shared/test/volcano-fog.test.ts": {
+    "mtime": 1792990976.261703,
+    "seen": 1792991072.5194132,
+    "ast_hash": "5e941330aed90285ae39a52e59029028",
     "semantic_hash": ""
   }
 }
