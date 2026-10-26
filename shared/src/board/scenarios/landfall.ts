@@ -13,6 +13,7 @@ export interface Scenario {
   anywhere?: true; // no home isle: setup may start on any isle
   big?: true; // a large map seating 2-6; the others seat 2-4
   target: number; // default renown to win (official: 14 New Shores, 13 Four Islands, 12 Fog Islands)
+  base?: true; // a map for Original and Hollow Fleet, not a Drowned Isles scenario: no Boats, no Raider
   noLandfall?: true; // no first-outpost bonus per isle
   redAdjacent?: true; // 6s and 8s may sit side by side
   calmWoods?: true; // timber and fleece never take 2, 3, 11 or 12

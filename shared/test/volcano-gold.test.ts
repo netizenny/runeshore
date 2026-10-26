@@ -6,7 +6,7 @@ import { SCENARIOS } from '../src/board/scenarios/landfall';
 import { DEFAULT_SETTINGS } from '../src/types';
 import { PLAYERS } from './helpers';
 
-const volcano = { ...DEFAULT_SETTINGS, drownedIsles: true, scenario: 'volcano' };
+const volcano = { ...DEFAULT_SETTINGS, boardSize: 'volcano' as const };
 
 describe('Volcano lobby target and gold', () => {
   it('default target is 10 and the lobby target reaches the game', () => {

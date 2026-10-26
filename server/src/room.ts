@@ -162,6 +162,7 @@ export class Room {
     // Expansions are mutually exclusive; the one just switched on wins. Drowned Isles maps come from the scenario, not boardSize.
     if (p.drownedIsles === true && p.hollowFleet !== true) next.hollowFleet = false;
     if (p.hollowFleet === true && p.drownedIsles !== true) next.drownedIsles = false;
+    if (p.drownedIsles === true && next.boardSize === 'volcano' && p.boardSize === undefined) next.boardSize = 'standard';
     // Toggling the mode moves the default target unless the host sent one too.
     const target = (x: Settings) => (x.hollowFleet ? 13 : x.drownedIsles ? SCENARIOS[x.scenario]?.target ?? 14 : 10);
     if (p.gloryTarget === undefined && target(next) !== target(this.settings)) next.gloryTarget = target(next);
@@ -171,7 +172,8 @@ export class Room {
       !(next.hollowFleet && next.drownedIsles) &&
       Object.hasOwn(SCENARIOS, next.scenario) &&
       ['random', 'starter'].includes(next.boardMode) &&
-      ['standard', 'large'].includes(next.boardSize) &&
+      ['standard', 'large', 'volcano'].includes(next.boardSize) &&
+      !(next.drownedIsles && (next.boardSize === 'volcano' || SCENARIOS[next.scenario].base)) &&
       Number.isInteger(next.gloryTarget) && next.gloryTarget >= 7 && next.gloryTarget <= 15 &&
       Number.isInteger(next.discardLimit) && next.discardLimit >= 7 && next.discardLimit <= 10 &&
       [15, 30, 45].includes(next.turnTimerSec);

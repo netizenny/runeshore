@@ -6,7 +6,7 @@ import { boardGeometry, edgeVertices, vertexHexes } from '../src/board/geometry'
 import { DEFAULT_SETTINGS } from '../src/types';
 import { PLAYERS } from './helpers';
 
-const game = (seed: number) => createGame(PLAYERS, { ...DEFAULT_SETTINGS, drownedIsles: true, scenario: 'volcano' }, seed);
+const game = (seed: number) => createGame(PLAYERS, { ...DEFAULT_SETTINGS, boardSize: 'volcano' }, seed);
 const FIVE = ['clay', 'fleece', 'timber', 'harvest', 'starmetal'];
 const CORNER = ['clay', 'fleece', 'timber', 'harvest'];
 

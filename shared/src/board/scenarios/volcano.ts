@@ -42,6 +42,7 @@ export const VOLCANO: Scenario = {
   name: 'Volcano',
   radius: RADIUS,
   target: 10,
+  base: true,
   noLandfall: true,
   anywhere: true,
   redAdjacent: true,

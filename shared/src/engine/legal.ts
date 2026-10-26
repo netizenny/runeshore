@@ -108,7 +108,7 @@ export function legalActions(s: GameState, id: PlayerId): Action[] {
     case 'moveShade':
       for (const h of Object.keys(s.board.hexes)) if (h !== s.shadeHex && !NOT_LAND.includes(s.board.hexes[h].terrain)) out.push({ type: 'moveShade', hex: h });
       if (s.di?.raiderHex) out.push({ type: 'moveShade', hex: FRAME, raider: true });
-      if (s.di) for (const h of Object.keys(s.board.hexes)) if (h !== s.di.raiderHex && s.board.hexes[h].terrain === 'deep') out.push({ type: 'moveShade', hex: h, raider: true });
+      if (s.di && !s.di.base) for (const h of Object.keys(s.board.hexes)) if (h !== s.di.raiderHex && s.board.hexes[h].terrain === 'deep') out.push({ type: 'moveShade', hex: h, raider: true });
       return out;
     case 'steal':
       for (const victim of ph.victims) out.push({ type: 'steal', victim });

@@ -51,7 +51,7 @@ export interface Board {
 
 export interface Settings {
   boardMode: 'random' | 'starter';
-  boardSize: 'standard' | 'large';
+  boardSize: 'standard' | 'large' | 'volcano'; // 'volcano' is a fixed Original/Hollow Fleet map
   gloryTarget: number;
   discardLimit: number;
   turnTimerSec: 15 | 30 | 45;
@@ -137,6 +137,7 @@ export interface DIState {
   builtTurn: Record<EdgeId, number>; // turn each boat was built or last moved to
   movedTurn: number; // turn a boat last moved (one move per turn)
   landfall: Record<PlayerId, string[]>; // isles with a Landfall mark
+  base?: true; // Original/Hollow Fleet map: no Boats, no Raider
   raiderHex: HexId | null; // starts on the scenario's mark; null once sent off to the frame
   fogHexes?: HexId[]; // hexes that began as Mist: boats only, no paths or outposts that touch nothing else
   startZone?: HexId[]; // when set, setup outposts must touch one of these hexes (Volcano's corner clusters)

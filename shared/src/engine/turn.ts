@@ -119,7 +119,7 @@ export function moveShade(s: GameState, id: PlayerId, a: Extract<Action, { type:
   const frame = raider && a.hex === FRAME;
   if (!frame && !Object.hasOwn(s.board.hexes, a.hex)) return 'no such hex';
   if (raider) {
-    if (!s.di) return 'no Raider in this game';
+    if (!s.di || s.di.base) return 'no Raider in this game';
     if (!frame && s.board.hexes[a.hex].terrain !== 'deep') return 'the Raider stays on the Deep';
     if (frame ? s.di.raiderHex === null : a.hex === s.di.raiderHex) return 'the Raider must move';
     s.di.raiderHex = frame ? null : a.hex;

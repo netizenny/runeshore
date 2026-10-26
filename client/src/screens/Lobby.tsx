@@ -60,6 +60,7 @@ export function Lobby(p: {
                 <select value={lobby.settings.boardSize} onChange={(e) => set({ boardSize: e.target.value as Settings['boardSize'] })}>
                   <option value="standard">Standard (2-4)</option>
                   <option value="large">Large (2-6)</option>
+                  <option value="volcano">Volcano (2-4)</option>
                 </select>
               </>
             )}
@@ -81,7 +82,7 @@ export function Lobby(p: {
               <>
                 <label>Scenario</label>
                 <select value={lobby.settings.scenario} onChange={(e) => set({ scenario: e.target.value as Settings['scenario'] })}>
-                  {Object.values(SCENARIOS).map((sc) => (
+                  {Object.values(SCENARIOS).filter((sc) => !sc.base).map((sc) => (
                     <option key={sc.id} value={sc.id}>{sc.name} ({sc.big ? '2-6' : '2-4'})</option>
                   ))}
                 </select>

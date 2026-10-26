@@ -5,7 +5,7 @@ import { VOLCANO } from '../src/board/scenarios/volcano';
 import { DEFAULT_SETTINGS } from '../src/types';
 import { PLAYERS } from './helpers';
 
-const game = (seed: number) => createGame(PLAYERS, { ...DEFAULT_SETTINGS, drownedIsles: true, scenario: 'volcano' }, seed);
+const game = (seed: number) => createGame(PLAYERS, { ...DEFAULT_SETTINGS, boardSize: 'volcano' }, seed);
 const land = (seed: number) => Object.values(game(seed).board.hexes).filter((h) => h.terrain !== 'deep');
 const count = (hs: { terrain: string }[], t: string) => hs.filter((h) => h.terrain === t).length;
 const CORNER = ['clay', 'fleece', 'timber', 'harvest'];
@@ -61,5 +61,18 @@ describe('Volcano ports', () => {
     const s = game(3);
     const spots = s.board.ports.flatMap((p) => p.edge.split('~'));
     expect(new Set(spots).size).toBe(spots.length);
+  });
+});
+
+describe('Volcano as a base-mode map', () => {
+  it('has no Boats or Raider, and also plays under Hollow Fleet', () => {
+    for (const hollowFleet of [false, true]) {
+      const s = createGame(PLAYERS, { ...DEFAULT_SETTINGS, boardSize: 'volcano', hollowFleet }, 7);
+      expect(s.di!.base).toBe(true);
+      expect(s.di!.raiderHex).toBeNull();
+      expect(Object.values(s.di!.boatsLeft).every((n) => n === 0)).toBe(true);
+      expect(s.board.hexes[s.shadeHex].terrain).toBe('ashen');
+      expect(!!s.hf).toBe(hollowFleet);
+    }
   });
 });
