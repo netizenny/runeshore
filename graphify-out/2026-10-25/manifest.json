@@ -210,15 +210,15 @@
     "semantic_hash": "2faeddfbfca60dcdd248ae1c6c9dfde2"
   },
   "shared/src/board/generate.ts": {
-    "mtime": 1792891332.047739,
-    "seen": 1792891689.6258855,
-    "ast_hash": "153bf0db9c3e0a492edc2b14efcace36",
+    "mtime": 1792990219.0980215,
+    "seen": 1792990887.5098689,
+    "ast_hash": "44515b761550bbcabd0bc7327badb4d8",
     "semantic_hash": ""
   },
   "shared/src/board/geometry.ts": {
-    "mtime": 1792890235.7102015,
-    "seen": 1792890783.9848566,
-    "ast_hash": "0511b7171a0746eaacc47fd9717695d9",
+    "mtime": 1792990218.750443,
+    "seen": 1792990887.509872,
+    "ast_hash": "c37712ab760e96d8b516332bc282152e",
     "semantic_hash": ""
   },
   "shared/src/constants.ts": {
@@ -300,9 +300,9 @@
     "semantic_hash": "119bf21f1cac64237c5574daf860f4c3"
   },
   "shared/src/types.ts": {
-    "mtime": 1792890235.7470653,
-    "seen": 1792890783.984934,
-    "ast_hash": "e2189b42d5ac0f1586836737b61f109f",
+    "mtime": 1792990218.8552513,
+    "seen": 1792990887.509943,
+    "ast_hash": "e6743757b977564d6956d4a067036f2a",
     "semantic_hash": ""
   },
   "shared/src/view.ts": {
@@ -708,9 +708,9 @@
     "semantic_hash": "4a80f46c051e08a6b360d429f5fba7a1"
   },
   "shared/src/board/scenarios/landfall.ts": {
-    "mtime": 1792891331.9454942,
-    "seen": 1792891689.625888,
-    "ast_hash": "8c35e06d21c01f012c27fc21c7a9da54",
+    "mtime": 1792990218.5603766,
+    "seen": 1792990887.5098739,
+    "ast_hash": "59dd6e7ef80a424664b2642b8032f412",
     "semantic_hash": ""
   },
   "shared/test/di-board.test.ts": {
@@ -795,6 +795,24 @@
     "mtime": 1792975850.228346,
     "seen": 1792975900.7758682,
     "ast_hash": "1c7b7c8b20b40e127774193bd0adaaee",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-10-25-runeshore-volcano.md": {
+    "mtime": 1792990262.7277398,
+    "seen": 1792990887.5100348,
+    "ast_hash": "ca62875caa41bc649f1e1328c3c9d621",
+    "semantic_hash": ""
+  },
+  "shared/src/board/scenarios/volcano.ts": {
+    "mtime": 1792990234.4121287,
+    "seen": 1792990887.5098848,
+    "ast_hash": "c3814eacb253fde511c544875847b8ad",
+    "semantic_hash": ""
+  },
+  "shared/test/volcano-board.test.ts": {
+    "mtime": 1792990234.4728875,
+    "seen": 1792990887.510015,
+    "ast_hash": "778220867bef3be022ebc2b41315427e",
     "semantic_hash": ""
   }
 }
