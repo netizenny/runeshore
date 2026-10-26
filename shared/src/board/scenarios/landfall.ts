@@ -3,6 +3,7 @@ import { QUARTET } from './quartet';
 import { SEXTET } from './sextet';
 import { VEILED } from './veiled';
 import { VEILED6 } from './veiled6';
+import { VOLCANO } from './volcano';
 
 export interface Scenario {
   id: string; // also the hex-id prefix: `S${letter}`
@@ -18,6 +19,9 @@ export interface Scenario {
   raiderStart: [q: number, r: number]; // Deep hex the Raider begins on
   land: [q: number, r: number, terrain: Terrain, token: number | null, home?: true][];
   fog?: { terrains: Terrain[]; tokens: number[] }; // hidden terrains and number tokens, dealt separately onto the `mist` hexes (`deep` takes no token)
+  // Random deal: land hexes whose terrain is in `corner` take a random one of them; every other numbered land hex, a random token
+  // (Glimmer from `goldTokens`). Desert stays bare. Port kinds: the first of each pair is 3:1, the second a random `portResources`.
+  random?: { corner: Terrain[]; tokens: number[]; goldTokens: number[]; portResources: Resource[] };
   ports: [q1: number, r1: number, q2: number, r2: number, kind: Resource | 'any'][];
 }
 
@@ -63,4 +67,4 @@ export const LANDFALL: Scenario = {
   ],
 };
 
-export const SCENARIOS: Record<string, Scenario> = { landfall: LANDFALL, quartet: QUARTET, veiled: VEILED, sextet: SEXTET, veiled6: VEILED6 };
+export const SCENARIOS: Record<string, Scenario> = { landfall: LANDFALL, quartet: QUARTET, veiled: VEILED, sextet: SEXTET, veiled6: VEILED6, volcano: VOLCANO };

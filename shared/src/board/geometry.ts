@@ -4,6 +4,7 @@ import { QUARTET } from './scenarios/quartet';
 import { SEXTET } from './scenarios/sextet';
 import { VEILED } from './scenarios/veiled';
 import { VEILED6 } from './scenarios/veiled6';
+import { VOLCANO } from './scenarios/volcano';
 
 // Pointy-top axial layout. Directions run clockwise on screen (y down) from east;
 // corner i of a hex sits between neighbor directions i and i+1.
@@ -94,7 +95,7 @@ const scenarioUniverse = (sc: Scenario) => {
   const lit = new Set(sc.land.map(([q, r]) => `${q},${r}`));
   return universe(sc.radius, sc.prefix, (q, r) => lit.has(`${q},${r}`));
 };
-const UNIVERSES: Record<string, typeof STANDARD> = { '': STANDARD, L: LARGE, [LANDFALL.prefix]: scenarioUniverse(LANDFALL), [QUARTET.prefix]: scenarioUniverse(QUARTET), [VEILED.prefix]: scenarioUniverse(VEILED), [SEXTET.prefix]: scenarioUniverse(SEXTET), [VEILED6.prefix]: scenarioUniverse(VEILED6) };
+const UNIVERSES: Record<string, typeof STANDARD> = { '': STANDARD, L: LARGE, [LANDFALL.prefix]: scenarioUniverse(LANDFALL), [QUARTET.prefix]: scenarioUniverse(QUARTET), [VEILED.prefix]: scenarioUniverse(VEILED), [SEXTET.prefix]: scenarioUniverse(SEXTET), [VEILED6.prefix]: scenarioUniverse(VEILED6), [VOLCANO.prefix]: scenarioUniverse(VOLCANO) };
 const of = (id: string) => UNIVERSES[prefixOf(id)];
 
 export const geometry = (pre: string | boolean) => UNIVERSES[pre === true ? 'L' : pre || ''];

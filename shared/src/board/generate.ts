@@ -1,6 +1,6 @@
 import type { Board, Hex, HexId, Terrain } from '../types';
 import { PORTS, PORTS_LARGE, TILES, TILES_LARGE, TOKENS, TOKENS_LARGE } from '../constants';
-import { shuffle } from '../rng';
+import { randInt, shuffle } from '../rng';
 import { edgeId, geometry, hexId } from './geometry';
 import type { Scenario } from './scenarios/landfall';
 
@@ -58,6 +58,7 @@ export function scenarioBoard(sc: Scenario): Board {
 // placement rules: no 6/8 side by side (unless the scenario allows it), none on gold, and in `calmWoods` scenarios none of
 // 2, 3, 11, 12 on timber or fleece. Mist hexes stay Mist; their contents are dealt later by dealMist.
 export function randomizeScenario(sc: Scenario, board: Board, rng: number): [Board, number] {
+  if (sc.random) return dealRandom(sc, board, rng);
   const { edgeSet } = geometry(sc.prefix);
   const { isleOf } = scenarioIsles(sc, board);
   const groups: Record<string, HexId[]> = {};
@@ -91,6 +92,25 @@ export function randomizeScenario(sc: Scenario, board: Board, rng: number): [Boa
   let kinds: typeof PORTS;
   [kinds, s] = shuffle(board.ports.map((p) => p.kind), s);
   return [{ hexes, ports: board.ports.map((p, i) => ({ ...p, kind: kinds[i] })) }, s];
+}
+
+// Volcano: every draw is independent and taken in the fixed order of `sc.land`, so a seed always yields the same board.
+function dealRandom(sc: Scenario, board: Board, rng: number): [Board, number] {
+  const { corner, tokens, goldTokens, portResources } = sc.random!;
+  let s = rng;
+  const draw = <T>(pool: readonly T[]): T => {
+    let i: number;
+    [i, s] = randInt(s, pool.length);
+    return pool[i];
+  };
+  const hexes: Record<HexId, Hex> = { ...board.hexes };
+  for (const [q, r, placeholder] of sc.land) {
+    if (placeholder === 'mist' || placeholder === 'ashen') continue;
+    const id = hexId(q, r, sc.prefix);
+    hexes[id] = { ...hexes[id], terrain: corner.includes(placeholder) ? draw(corner) : placeholder, token: draw(placeholder === 'glimmer' ? goldTokens : tokens) };
+  }
+  const ports = board.ports.map((p, i) => ({ ...p, kind: i % 2 ? draw(portResources) : ('any' as const) }));
+  return [{ hexes, ports }, s];
 }
 
 // Land hexes grouped into isles by flood fill over shared edges; the home isle holds the `home` hex ('' when setup may start anywhere).
