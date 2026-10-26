@@ -4,18 +4,19 @@ import type { Resource, Terrain } from '@runeshore/shared';
 // All art is hand-drawn SVG, local coordinates around (0,0), hex size S = 50.
 export const S = 50;
 const GOLD = 'var(--ink-gold)';
-const ink = { stroke: GOLD, strokeWidth: 1.4, strokeLinejoin: 'round', strokeLinecap: 'round' } as const;
+const INK = '#14122b'; // dark linework: gold lines vanish on bright terrain
+const ink = { stroke: INK, strokeWidth: 1.4, strokeLinejoin: 'round', strokeLinecap: 'round' } as const;
 
 export const TERRAIN_FILL: Record<Terrain, string> = {
-  clay: '#7d3f33',
-  timber: '#244a39',
-  fleece: '#52684a',
-  harvest: '#8a6c2c',
-  starmetal: '#3f3d7a',
-  ashen: '#3b3749',
-  deep: '#12363f',
-  glimmer: '#5a3d7a',
-  mist: '#6b6455',
+  clay: '#d9694a',
+  timber: '#2e9e5e',
+  fleece: '#b4de6e',
+  harvest: '#f5cc3f',
+  starmetal: '#8c84f0',
+  ashen: '#9aa1b3',
+  deep: '#2a8fc4',
+  glimmer: '#d278e8',
+  mist: '#e0d9c4',
 };
 
 const pine = (x: number, y: number, k = 1) => (
@@ -115,8 +116,8 @@ export function Token({ n }: { n: number }) {
   const c = hot ? 'var(--blood)' : '#14122b';
   return (
     <g>
-      <circle r={18} fill="none" stroke={GOLD} strokeWidth={1} strokeDasharray="2 3" />
-      <circle r={15} fill="var(--parchment)" stroke={GOLD} strokeWidth={1.5} />
+      <circle r={18} fill="none" stroke={INK} strokeWidth={1} strokeDasharray="2 3" />
+      <circle r={15} fill="#fff" stroke={INK} strokeWidth={2} />
       <text y={3} textAnchor="middle" fontFamily="Cinzel, serif" fontWeight={700} fontSize={n > 9 ? 13 : 15} fill={c}>{n}</text>
       {Array.from({ length: pips }, (_, i) => (
         <circle key={i} cx={(i - (pips - 1) / 2) * 4} cy={9} r={1.2} fill={c} />
@@ -156,7 +157,7 @@ export function Port({ kind, x, y, ang, c1, c2 }: { kind: Resource | 'any'; x: n
               <clipPath id={`px-${kind}`}><polygon points={HEX} /></clipPath>
               <polygon points={HEX} fill={TERRAIN_FILL[kind]} />
               <g clipPath={`url(#px-${kind})`}><TerrainArt terrain={kind} /></g>
-              <polygon points={HEX} fill="none" stroke={GOLD} strokeWidth={6} strokeLinejoin="round" />
+              <polygon points={HEX} fill="none" stroke={INK} strokeWidth={6} strokeLinejoin="round" />
             </g>
             <text x={9} y={3} textAnchor="middle" fontSize={9} fontWeight={600} fill="var(--parchment)">2:1</text>
           </>
@@ -166,15 +167,18 @@ export function Port({ kind, x, y, ang, c1, c2 }: { kind: Resource | 'any'; x: n
   );
 }
 
+const OUT = '#0b0a1a';
+const HALO = { filter: 'drop-shadow(0 0 1.6px #fff) drop-shadow(0 0 1px #fff)' } as const;
+
 export const Outpost = ({ color }: { color: string }) => (
-  <g stroke={GOLD} strokeWidth={1.2} strokeLinejoin="round">
+  <g style={HALO} stroke={OUT} strokeWidth={1.2} strokeLinejoin="round">
     <path d="M-5 7 V-3 H-7 V-8 H-4 V-6 H-1.5 V-8 H1.5 V-6 H4 V-8 H7 V-3 H5 V7 Z" fill={color} />
     <path d="M-1.5 7 V3 Q0 1 1.5 3 V7" fill="#14122b" />
   </g>
 );
 
 export const Citadel = ({ color }: { color: string }) => (
-  <g stroke={GOLD} strokeWidth={1.2} strokeLinejoin="round">
+  <g style={HALO} stroke={OUT} strokeWidth={1.2} strokeLinejoin="round">
     <path d="M-11 8 V-2 H-9 L-7 -12 L-5 -2 H-3 V-4 H3 V-2 H5 L7 -12 L9 -2 H11 V8 Z" fill={color} />
     <path d="M-2.5 8 V2 Q0 -1 2.5 2 V8" fill="#14122b" />
   </g>
@@ -182,15 +186,16 @@ export const Citadel = ({ color }: { color: string }) => (
 
 export const PathLine = ({ a, b, color }: { a: { x: number; y: number }; b: { x: number; y: number }; color: string }) => (
   <g strokeLinecap="round">
-    <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke="#14122b" strokeWidth={8} />
+    <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke="#fff" strokeWidth={10} />
+    <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={OUT} strokeWidth={8} />
     <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={color} strokeWidth={5} />
-    <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={GOLD} strokeWidth={1} strokeDasharray="3 4" />
+    <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke="#fff" strokeWidth={1} strokeDasharray="3 4" strokeOpacity={0.7} />
   </g>
 );
 
 export const Shade = () => (
-  <g>
-    <path d="M0 -16 Q10 -14 10 -2 Q10 8 14 14 Q8 11 5 15 Q0 10 -5 15 Q-8 11 -14 14 Q-10 8 -10 -2 Q-10 -14 0 -16 Z" fill="#0b0a1a" stroke={GOLD} strokeWidth={1.3} strokeLinejoin="round" />
+  <g style={HALO}>
+    <path d="M0 -16 Q10 -14 10 -2 Q10 8 14 14 Q8 11 5 15 Q0 10 -5 15 Q-8 11 -14 14 Q-10 8 -10 -2 Q-10 -14 0 -16 Z" fill="#0b0a1a" stroke={OUT} strokeWidth={1.3} strokeLinejoin="round" />
     <path d="M-6 -3 Q0 -9 6 -3 Q6 3 0 4 Q-6 3 -6 -3 Z" fill="#14122b" />
     <circle cx={-2.5} cy={-2} r={1.4} fill="var(--blood)" />
     <circle cx={2.5} cy={-2} r={1.4} fill="var(--blood)" />
@@ -204,30 +209,30 @@ export const ResIcon = ({ r, size = 18 }: { r: Resource; size?: number }) => (
     <clipPath id={`hx-${r}`}><polygon points={HEX} /></clipPath>
     <polygon points={HEX} fill={TERRAIN_FILL[r]} />
     <g clipPath={`url(#hx-${r})`}><TerrainArt terrain={r} /></g>
-    <polygon points={HEX} fill="none" stroke={GOLD} strokeWidth={4} strokeLinejoin="round" />
+    <polygon points={HEX} fill="none" stroke={INK} strokeWidth={4} strokeLinejoin="round" />
   </svg>
 );
 
 // Expansion pieces. A Sentinel is a pennant on a post: rank = pips, hollow when inactive.
 export const SentinelPiece = ({ color, rank, active }: { color: string; rank: 1 | 2 | 3; active: boolean }) => (
-  <g stroke={GOLD} strokeWidth={1.4} strokeLinejoin="round" transform="scale(1.9)">
+  <g style={HALO} stroke={OUT} strokeWidth={1.4} strokeLinejoin="round" transform="scale(1.9)">
     <circle cy={-1} r={12} fill="#000" fillOpacity={0.55} stroke="none" />
     <path d="M0 8 V-10" fill="none" strokeWidth={1.8} />
-    <path d="M0 -10 L10 -6 L0 -2 Z" fill={active ? color : '#000'} fillOpacity={active ? 1 : 0.5} stroke={active ? GOLD : color} strokeWidth={1.8} strokeDasharray={active ? undefined : '2 2'} />
-    {Array.from({ length: rank }, (_, i) => <circle key={i} cx={-4 + i * 4} cy={11} r={2} fill={GOLD} stroke="none" />)}
+    <path d="M0 -10 L10 -6 L0 -2 Z" fill={active ? color : '#000'} fillOpacity={active ? 1 : 0.5} stroke={active ? OUT : color} strokeWidth={1.8} strokeDasharray={active ? undefined : '2 2'} />
+    {Array.from({ length: rank }, (_, i) => <circle key={i} cx={-4 + i * 4} cy={11} r={2} fill="#fff" stroke="none" />)}
   </g>
 );
 
-export const BulwarkRim = () => <circle r={13} fill="none" stroke={GOLD} strokeWidth={2.2} strokeDasharray="4 2" />;
+export const BulwarkRim = () => <circle r={13} fill="none" stroke={OUT} strokeWidth={2.2} strokeDasharray="4 2" />;
 
 export const SpireCrest = ({ color }: { color: string }) => (
-  <g stroke={GOLD} strokeWidth={1} strokeLinejoin="round" transform="translate(0 -17)">
+  <g style={HALO} stroke={OUT} strokeWidth={1} strokeLinejoin="round" transform="translate(0 -17)">
     <path d="M0 -8 L4 0 H-4 Z" fill={color} />
   </g>
 );
 
 export const PeddlerToken = ({ color }: { color: string }) => (
-  <g stroke={GOLD} strokeWidth={1.2} strokeLinejoin="round" transform="translate(-20 20)">
+  <g style={HALO} stroke={OUT} strokeWidth={1.2} strokeLinejoin="round" transform="translate(-20 20)">
     <circle r={8} fill={color} />
     <path d="M-4 1 H4 M0 -4 V5" fill="none" />
   </g>
@@ -237,18 +242,18 @@ export const PeddlerToken = ({ color }: { color: string }) => (
 export const BoatPiece = ({ a, b, color }: { a: { x: number; y: number }; b: { x: number; y: number }; color: string }) => {
   const ang = (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI;
   return (
-    <g transform={`translate(${(a.x + b.x) / 2} ${(a.y + b.y) / 2}) rotate(${ang})`} stroke={GOLD} strokeWidth={1.1} strokeLinejoin="round">
+    <g style={HALO} transform={`translate(${(a.x + b.x) / 2} ${(a.y + b.y) / 2}) rotate(${ang})`} stroke={OUT} strokeWidth={1.1} strokeLinejoin="round">
       <path d="M-14 -3 H12 L17 -5 L12 4 H-12 Z" fill="#14122b" />
       <path d="M-1 -3 V-11" fill="none" />
       <path d="M-1 -11 Q8 -8 -1 -2 Z" fill={color} />
-      <circle cx={16} cy={-5} r={1.6} fill={GOLD} stroke="none" />
+      <circle cx={16} cy={-5} r={1.6} fill="#fff" stroke="none" />
     </g>
   );
 };
 
 // The Raider: a ghost boat with a torn black sail and a green lantern.
 export const RaiderPiece = () => (
-  <g stroke={GOLD} strokeWidth={1.3} strokeLinejoin="round">
+  <g style={HALO} stroke={OUT} strokeWidth={1.3} strokeLinejoin="round">
     <path d="M-14 4 H14 L10 11 H-10 Z" fill="#0b0a1a" />
     <path d="M0 4 V-14" fill="none" />
     <path d="M0 -14 L12 -8 L8 -4 L12 0 L0 3 Z" fill="#0b0a1a" />
@@ -259,7 +264,7 @@ export const RaiderPiece = () => (
 
 // Landfall flag: a small gold-edged pennant in the player's color, one per player per isle.
 export const LandfallFlag = ({ color }: { color: string }) => (
-  <g stroke={GOLD} strokeWidth={1.1} strokeLinejoin="round">
+  <g style={HALO} stroke={OUT} strokeWidth={1.1} strokeLinejoin="round">
     <path d="M0 8 V-8" fill="none" />
     <path d="M0 -8 L9 -5 L0 -2 Z" fill={color} />
   </g>

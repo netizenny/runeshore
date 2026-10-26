@@ -101,7 +101,7 @@ export function Board({ view, legal, mode, onAction, pick = [] }: { view: Player
         const { x, y } = hexPixel(h.id, S);
         return (
           <g key={h.id}>
-            <polygon points={poly(h)} fill={TERRAIN_FILL[h.terrain]} stroke="var(--ink-gold)" strokeWidth={1.8} strokeLinejoin="round" />
+            <polygon points={poly(h)} fill={TERRAIN_FILL[h.terrain]} stroke="#14122b" strokeWidth={2.4} strokeLinejoin="round" />
             <g transform={`translate(${x} ${y})`}>
               <TerrainArt terrain={h.terrain} />
               {h.token && <Token n={h.token} />}
