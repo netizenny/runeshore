@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { PlayerView } from '@runeshore/shared';
+import { play } from '../sound';
 
 // Glory the table can see: pieces and awards. Relics stay hidden until the win.
 export function glory(v: PlayerView, id: string) {
@@ -27,6 +28,10 @@ function useSecondsLeft(deadline: number | null) {
 
 export function Players({ view, waiting, deadline }: { view: PlayerView; waiting: string[]; deadline: number | null }) {
   const left = useSecondsLeft(deadline);
+  const myTurn = waiting.includes(view.you);
+  useEffect(() => {
+    if (myTurn && left !== null && left > 0 && left <= 10) play(left % 2 ? 'tick' : 'tock');
+  }, [left, myTurn]);
   return (
     <div className="players">
       {[...view.order].sort((a, b) => glory(view, b) - glory(view, a)).map((id, rank) => {

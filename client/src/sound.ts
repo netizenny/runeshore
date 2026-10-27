@@ -68,6 +68,8 @@ const SOUNDS = {
     tone(523, 0.14, { type: 'triangle' });
     tone(784, 0.22, { type: 'triangle', at: 0.13 });
   },
+  tick: () => tone(1500, 0.04, { type: 'square', vol: 0.05 }),
+  tock: () => tone(1000, 0.05, { type: 'square', vol: 0.05 }),
   offer: () => tone(1175, 0.4, { vol: 0.12 }),
   trade: () => {
     tone(988, 0.1, { type: 'square', vol: 0.06 });
