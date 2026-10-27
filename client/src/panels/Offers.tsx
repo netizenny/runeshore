@@ -17,6 +17,7 @@ export function Offers({ view, legal, act }: { view: PlayerView; legal: Action[]
             <div><b>GET</b> <Cards c={own ? o.get : o.give} /></div>
             {own ? (
               <>
+                {o.declined.map((p) => <small key={p} className="declined">{name(p)} declined</small>)}
                 {o.accepted.map((p) => (
                   <button key={p} disabled={!legal.some((a) => a.type === 'confirmTrade' && a.offerId === o.id && a.partner === p)} onClick={() => act({ type: 'confirmTrade', offerId: o.id, partner: p })}>Trade with {name(p)}</button>
                 ))}
