@@ -50,7 +50,7 @@ line.hit { stroke-width: 8; stroke-dasharray: 6 5; stroke-opacity: .85; }
 .pl-head { display: flex; align-items: center; gap: .5rem; }
 .pl-rank { min-width: 1.4em; text-align: center; opacity: .7; }
 .pl-glory { margin-left: auto; font-size: 1.6rem; font-weight: 700; color: var(--ink-gold); line-height: 1; }
-.pl-stats { display: flex; gap: .9rem; font-size: .85rem; }
+.pl-stats { display: flex; flex-wrap: wrap; gap: .2rem .9rem; font-size: .85rem; }
 .pl-stats b { font-size: .95rem; }
 .pl-badges { display: flex; gap: .4rem; flex-wrap: wrap; }
 .pl em { font-style: normal; color: var(--ink-gold); font-size: .75rem; border: 1px solid var(--ink-gold); border-radius: 999px; padding: .05rem .5rem; }
