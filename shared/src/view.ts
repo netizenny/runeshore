@@ -39,7 +39,8 @@ export function viewFor(s: GameState, viewer: PlayerId): GameView {
       ...structuredClone(p),
       handCount: sum(hand),
       omenCount: omens.length,
-      ...(p.id === viewer ? { hand: { ...hand }, omens: structuredClone(omens) } : {}),
+      // Relics are revealed to everyone once the game is over
+      ...(p.id === viewer || s.phase.k === 'ended' ? { hand: { ...hand }, omens: structuredClone(omens) } : {}),
     })),
     you: viewer,
   };

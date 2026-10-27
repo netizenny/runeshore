@@ -36,12 +36,35 @@ export function ComicPanel({ events, view }: { events: GameEvent[]; view: Player
   }, [queue]);
 
   if (view.phase.k === 'ended') {
-    const rows = [...view.players].sort((a, b) => glory(view, b.id) - glory(view, a.id));
+    const relics = (p: PlayerView['players'][number]) => (p.omens ?? []).filter((o) => o.kind === 'relic').length;
+    const total = (p: PlayerView['players'][number]) => glory(view, p.id) + relics(p);
+    const rows = [...view.players].sort((a, b) => total(b) - total(a));
+    const bld = (id: string, kind: string) => Object.values(view.buildings).filter((x) => x.owner === id && x.kind === kind).length;
+    const hf = (id: string) => view.hf?.players[id];
+    const src: [string, (p: PlayerView['players'][number]) => number][] = [
+      ['Outposts', (p) => bld(p.id, 'outpost')],
+      ['Citadels ×2', (p) => 2 * bld(p.id, 'citadel')],
+      ['Longest path', (p) => (view.longestPath === p.id ? 2 : 0)],
+      ['Grand host', (p) => (view.grandHost === p.id ? 2 : 0)],
+      ...(view.di ? [['Landfalls', (p: PlayerView['players'][number]) => 2 * view.di!.landfall[p.id].length] as [string, (p: PlayerView['players'][number]) => number]] : []),
+      ...(view.hf ? ([
+        ['Spires', (p) => 2 * Object.values(view.hf!.spires).filter((s) => s?.owner === p.id).length],
+        ['Shields', (p) => hf(p.id)!.shields],
+        ['Printer/Charter', (p) => hf(p.id)!.extraGlory],
+        ['Peddler', (p) => (view.hf!.peddler?.owner === p.id ? 1 : 0)],
+      ] as [string, (p: PlayerView['players'][number]) => number][]) : []),
+      ['Relics', relics],
+    ];
     return (
       <div className="comic win">
         <h1>{n(view, view.phase.winner)} rules Runeshore!</h1>
-        <table><tbody>{rows.map((p) => <tr key={p.id}><td>{p.name}</td><td>★ {glory(view, p.id)}</td></tr>)}</tbody></table>
-        <small>Hidden Relics decided the rest.</small>
+        <table>
+          <thead><tr><th />{rows.map((p) => <th key={p.id}>{p.name}</th>)}</tr></thead>
+          <tbody>
+            {src.filter(([, f]) => rows.some((p) => f(p) > 0)).map(([label, f]) => <tr key={label}><td>{label}</td>{rows.map((p) => <td key={p.id}>{f(p) || '·'}</td>)}</tr>)}
+            <tr><td><b>Total</b></td>{rows.map((p) => <td key={p.id}><b>★ {total(p)}</b></td>)}</tr>
+          </tbody>
+        </table>
         <button onClick={() => { location.hash = ''; location.reload(); }}>Back to lobby</button> {/* reload: the socket is still seated in the finished room */}
       </div>
     );
