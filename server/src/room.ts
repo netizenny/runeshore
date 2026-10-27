@@ -41,6 +41,7 @@ export class Room {
   private bySocket = new Map<Conn, Seat>();
   private logSent = new WeakSet<Conn>(); // conns that already hold the full log
   private pendingSince = new Map<PlayerId, number>();
+  private setupRound = 0;
   private timers = new Map<PlayerId, ReturnType<typeof setTimeout>>();
   private idle: ReturnType<typeof setTimeout> | null = null;
   private lobbyTtl: ReturnType<typeof setTimeout>;
@@ -234,8 +235,12 @@ export class Room {
     if (!this.game) return;
     for (let guard = 0; guard < 200; guard++) {
       const pending = pendingPlayers(this.game);
+      // The last seat places twice in a row (round 1 then 2): the same player stays pending, so restart their clock.
+      const round = this.game.phase.k === 'setup' ? this.game.phase.round : 0;
+      const newRound = round !== this.setupRound;
+      this.setupRound = round;
       for (const id of [...this.pendingSince.keys()]) {
-        if (!pending.includes(id)) this.drop(id);
+        if (newRound || !pending.includes(id)) this.drop(id);
       }
       for (const id of pending) {
         if (this.pendingSince.has(id)) continue;
