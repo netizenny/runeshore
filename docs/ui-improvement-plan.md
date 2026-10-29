@@ -66,7 +66,7 @@ Nothing here is built yet. It is meant to be built in a separate chat, in the or
 ### Phase 6 re-critique (2026-10-29)
 Score 28/40 (Good), up from 22/40 baseline and 27/40 after phase 6. Snapshot: `client/.impeccable/critique/2026-10-29T00-51-23Z__src.md`. The human test with a child and an older adult is skipped by owner decision. Three P1 issues remain; phase 7 fixes them. Each sub-phase ends in its own commit. Do not push until 7a, 7b and 7c are all done.
 
-### Phase 7a: Setup banner shows the right player
+### Phase 7a: Setup banner shows the right player (DONE, 4b0483a; not yet checked in two tabs)
 - Problem: `Game.tsx:101-102` checks `ph.k === 'setup'` before `mine`, so every player sees "Place your outpost/path" until their own turn. A child or older adult clicks a board that does nothing, and a screen reader announces the wrong prompt.
 - Fix: branch on `mine`. If mine: "Place your outpost" or "Place your path". Otherwise: "{name} is placing an outpost" or "{name} is placing a path". The gold bar tint and `data-mine` stay tied to `mine` only. Keep `role=status` so the change is announced.
 - Check: with two browser tabs in setup, the non-active tab shows the other player's name and no gold tint.
