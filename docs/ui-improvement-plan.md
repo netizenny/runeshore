@@ -58,7 +58,8 @@ Nothing here is built yet. It is meant to be built in a separate chat, in the or
 - Parchment, stone or wood texture on panels instead of identical indigo boxes. Keep today's strong contrast (about 14:1).
 - Commands: `typeset`, `colorize`, `delight`.
 
-### Phase 6: Check and finish
+### Phase 6: Check and finish (DONE except human test)
+- Critique 2026-10-28: 27/40, up from 22/40. Remaining: dense seat stat rows, trade panel covers the hand, no feedback on board miss-clicks, win screen and offer card not re-checked.
 - `polish`, then re-run `critique` and compare against 22/40.
 - Test with a young child and an older adult at the table.
 
