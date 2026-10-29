@@ -21,7 +21,7 @@ import { Rulebook } from '../panels/Rulebook';
 import { Players } from '../panels/Players';
 import { ShadeSteal } from '../panels/ShadeSteal';
 import { Trade } from '../panels/Trade';
-import { isMuted, setMuted } from '../sound';
+import { getVolume, setVolume } from '../sound';
 
 type GameMsg = Omit<Extract<ServerMsg, { t: 'game' }>, 'view'> & { view: PlayerView };
 
@@ -33,7 +33,7 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
   const [picked, setPicked] = useState<Mode>(null);
   const [trading, setTrading] = useState(false);
   const [book, setBook] = useState(false);
-  const [muted, setMute] = useState(isMuted);
+  const [vol, setVol] = useState(getVolume);
   const [sub, setSub] = useState<Sub | null>(null);
   const [from, setFrom] = useState<string | null>(null);
   const [card, setCard] = useState<string | null>(null);
@@ -108,7 +108,7 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
   return (
     <div className="game" data-hf={!!hf}>
       <div className="bar" data-mine={myMove} role="status" aria-live="polite"><span className="bar-icon" aria-hidden="true">{icon}</span><b>{prompt}</b>{frame && <button onClick={() => act(frame)}>Raider to the frame</button>}</div>
-      <div className="board"><DiceBook dice={view.dice} turn={view.turn} /><div className="corner"><button className="book" title="Rulebook" onClick={() => setBook(true)}>📖</button><button className="book" title="Sound on/off" onClick={() => { setMuted(!muted); setMute(!muted); }}>{muted ? '🔇' : '🔊'}</button><DiceStats view={view} /></div><Board view={view} legal={legal} mode={mode} onAction={act} pick={pick} /></div>
+      <div className="board"><DiceBook dice={view.dice} turn={view.turn} /><div className="corner"><button className="book" title="Rulebook" onClick={() => setBook(true)}>📖</button><label className="vol" title="Volume"><span>{vol === 0 ? '🔇' : '🔊'}</span><input type="range" min="0" max="1" step="0.05" value={vol} aria-label="Volume" onChange={(e) => { const v = +e.target.value; setVolume(v); setVol(v); }} /></label><DiceStats view={view} /></div><Board view={view} legal={legal} mode={mode} onAction={act} pick={pick} /></div>
       <aside className="side">
         <div
           className="side-grip"

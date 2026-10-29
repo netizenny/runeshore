@@ -1,19 +1,22 @@
 // Synthesised sound effects (Web Audio): no asset files. Silent until the browser allows audio (first click).
 import type { GameEvent, PlayerId } from '@runeshore/shared';
 
-const MUTE_KEY = 'runeshore:muted';
-let muted = (() => {
+const VOL_KEY = 'runeshore:volume';
+const BOOST = 2.5;
+let volume = (() => {
   try {
-    return localStorage.getItem(MUTE_KEY) === '1';
+    const v = parseFloat(localStorage.getItem(VOL_KEY) ?? '');
+    return v >= 0 && v <= 1 ? v : 1;
   } catch {
-    return false;
+    return 1;
   }
 })();
-export const isMuted = () => muted;
-export function setMuted(m: boolean) {
-  muted = m;
+export const getVolume = () => volume;
+export function setVolume(v: number) {
+  volume = v;
+  if (bus) bus.gain.value = v * BOOST;
   try {
-    localStorage.setItem(MUTE_KEY, m ? '1' : '0');
+    localStorage.setItem(VOL_KEY, String(v));
   } catch {
     /* ignore */
   }
@@ -23,15 +26,13 @@ let ctx: AudioContext | null = null;
 const ac = () => (ctx ??= new AudioContext());
 
 // Master bus: boost every effect, compressor keeps stacked sounds from clipping.
-let bus: AudioNode | null = null;
+let bus: GainNode | null = null;
 const out = () => {
   if (!bus) {
     const c = ac();
-    const g = c.createGain();
-    g.gain.value = 2.5;
-    const comp = c.createDynamicsCompressor();
-    g.connect(comp).connect(c.destination);
-    bus = g;
+    bus = c.createGain();
+    bus.gain.value = volume * BOOST;
+    bus.connect(c.createDynamicsCompressor()).connect(c.destination);
   }
   return bus;
 };
@@ -139,7 +140,7 @@ const SOUNDS = {
 export type Sound = keyof typeof SOUNDS;
 
 export function play(s: Sound) {
-  if (muted) return;
+  if (volume === 0) return;
   try {
     void ac().resume();
     SOUNDS[s]();
