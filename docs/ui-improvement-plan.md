@@ -63,5 +63,32 @@ Nothing here is built yet. It is meant to be built in a separate chat, in the or
 - `polish`, then re-run `critique` and compare against 22/40.
 - Test with a young child and an older adult at the table.
 
+### Phase 6 re-critique (2026-10-29)
+Score 28/40 (Good), up from 22/40 baseline and 27/40 after phase 6. Snapshot: `client/.impeccable/critique/2026-10-29T00-51-23Z__src.md`. The human test with a child and an older adult is skipped by owner decision. Three P1 issues remain; phase 7 fixes them. Each sub-phase ends in its own commit. Do not push until 7a, 7b and 7c are all done.
+
+### Phase 7a: Setup banner shows the right player
+- Problem: `Game.tsx:101-102` checks `ph.k === 'setup'` before `mine`, so every player sees "Place your outpost/path" until their own turn. A child or older adult clicks a board that does nothing, and a screen reader announces the wrong prompt.
+- Fix: branch on `mine`. If mine: "Place your outpost" or "Place your path". Otherwise: "{name} is placing an outpost" or "{name} is placing a path". The gold bar tint and `data-mine` stay tied to `mine` only. Keep `role=status` so the change is announced.
+- Check: with two browser tabs in setup, the non-active tab shows the other player's name and no gold tint.
+- Command: `clarify`.
+
+### Phase 7b: Trade has no dead ends
+- The own-offer card (`.offers`, `top: 3rem`) overlaps the trade drawer (`top: 4.5rem`) in `theme.css`. Move own offers inside the drawer, or stack them below it, so nothing covers the "Vault / ports" tab.
+- Add proposer states: "Waiting for {name}" and "{name} accepted".
+- Stop a receiver accepting an offer they cannot pay. Disable Accept and say what is missing, for example "You need 1 clay". If the proposer's confirm button is disabled, show the reason beside it.
+- Reset the picker after an offer is sent, so a double click cannot send two offers.
+- Check: two tabs. Send an offer the receiver cannot afford, then one they can. Confirm no overlap at 1440x900, including with the sidebar resized.
+- Commands: `harden`, then `layout`.
+
+### Phase 7c: Dock and seat stats readable without reading
+- Replace the seat stat labels "Built / Cards / Runes / Warriors" (`Players.tsx:76-80`) with icons plus a tooltip and an accessible name. Keep numerals at least 16px.
+- Unaffordable Build buttons show what is missing (one grey dot or icon per missing resource) instead of only dimming to 0.5 opacity.
+- Raise dock cost icons from about 18px to 24px.
+- Check: a grown-up and a non-reader can tell what a piece costs and what is missing without reading text. Keep every target at 48px and no text under 14px.
+- Commands: `shape` for the icon set first, then `adapt`.
+
+### Not in phase 7 (P2, later)
+Hollow Fleet dock text below 14px, board hit targets not keyboard reachable, 6 unlabeled Lobby selects, win dialog autofocus, ★ vs ♛ glyph mismatch, duplicate `.step` class, flat Home hero art, emoji used as UI icons.
+
 ## Out of scope
 Game rules and engine. No changes to `shared/`.

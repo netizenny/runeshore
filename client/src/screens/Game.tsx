@@ -76,7 +76,7 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
   const name = view.players.find((p) => p.id === view.order[view.current])?.name;
   const mine = view.order[view.current] === view.you;
   const prompt = ph.k === 'waymaking' ? `Twin Paths: lay ${ph.left} more path${ph.left > 1 ? 's' : ''} or boat${ph.left > 1 ? 's' : ''}`
-    : ph.k === 'setup' ? `Setup: place your ${ph.step}${ph.step === 'path' && freeBoats.length ? ' (or a boat)' : ''}`
+    : ph.k === 'setup' ? (mine ? `Setup: place your ${ph.step}${ph.step === 'path' && freeBoats.length ? ' (or a boat)' : ''}` : `${name} is placing ${ph.step === 'path' ? 'a path' : `an ${ph.step}`}`)
     : has(legal, 'moveShade') ? 'Move the Shade to a hex'
     : ph.k === 'discard' ? 'Waiting for discards'
     : ph.k === 'displaced' ? 'A Sentinel was displaced: move it' + (ph.owner === view.you ? '' : ` (${view.players.find((p) => p.id === ph.owner)?.name})`)
