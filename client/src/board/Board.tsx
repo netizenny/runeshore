@@ -151,12 +151,12 @@ export function Board({ view, legal, mode, onAction, pick = [] }: { view: Player
       })}
       {vertexActs.map((a) => {
         const { x, y } = vertexPixel(a.vertex, S);
-        return <circle key={a.vertex} className="hit" cx={x} cy={y} r={15} onClick={() => onAction(a)} />;
+        return <circle key={a.vertex} className="hit" cx={x} cy={y} r={21} onClick={() => onAction(a)} />;
       })}
       {pick.map((p) => {
         if (p.kind === 'edge') { const [a, b] = edgePts[p.id]; return <line key={p.id} className="hit" x1={a.x} y1={a.y} x2={b.x} y2={b.y} strokeWidth={28} strokeLinecap="round" onClick={p.go} />; }
         const { x, y } = p.kind === 'vertex' ? vertexPixel(p.id, S) : hexPixel(p.id, S);
-        return <circle key={p.kind + p.id} className="hit" cx={x} cy={y} r={p.kind === 'vertex' ? 15 : S * 0.7} onClick={p.go} />;
+        return <circle key={p.kind + p.id} className="hit" cx={x} cy={y} r={p.kind === 'vertex' ? 21 : S * 0.7} onClick={p.go} />;
       })}
       {hexActs.map((a) => {
         const { x, y } = hexPixel(a.hex, S);

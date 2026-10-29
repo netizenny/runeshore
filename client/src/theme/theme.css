@@ -196,7 +196,7 @@ button.huge:disabled { background: var(--night-2); color: var(--ink-gold-dim); }
 .advanced summary { cursor: pointer; padding: .6rem 0; min-height: 48px; }
 .advanced .settings { margin-top: .5rem; }
 .comic.win { background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--win) 45%, var(--night)), var(--night) 70%); overflow: auto; z-index: 20; }
-.crown { font-size: 5rem; line-height: 1; animation: crown-drop .7s cubic-bezier(.2, .8, .3, 1.2) both; }
+.crown { font-size: 5rem; line-height: 1; animation: crown-drop .7s cubic-bezier(.22, 1, .36, 1) both; }
 .podium { display: flex; align-items: flex-end; gap: .5rem; }
 .step { display: flex; flex-direction: column; align-items: center; gap: .2rem; min-width: 7.5rem; padding: .8rem .6rem; background: var(--night-2); border: 2px solid var(--ink-gold-dim); border-radius: 6px 6px 0 0; font-size: 1.1rem; }
 .step[data-place='1'] { min-height: 11rem; border-color: var(--ink-gold); background: color-mix(in srgb, var(--win) 30%, var(--night-2)); }

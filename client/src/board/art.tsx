@@ -149,19 +149,19 @@ export function Port({ kind, x, y, ang, c1, c2 }: { kind: Resource | 'any'; x: n
         </g>
       ))}
       <g transform={`translate(${fx} ${fy})`}>
-        <path d={kind === 'any' ? 'M-14 -11 H14 V8 L0 14 L-14 8 Z' : 'M-21 -11 H21 V8 L0 14 L-21 8 Z'} fill="#1f1b40" stroke={GOLD} strokeWidth={1.3} />
+        <path d={kind === 'any' ? 'M-17 -12 H17 V9 L0 15 L-17 9 Z' : 'M-26 -12 H26 V9 L0 15 L-26 9 Z'} fill="#1f1b40" stroke={GOLD} strokeWidth={1.3} />
         {kind === 'any' ? (
-          <text y={3} textAnchor="middle" fontSize={10} fontWeight={600} fill="var(--parchment)">3:1</text>
+          <text y={4} textAnchor="middle" fontSize={13} fontWeight={600} fill="var(--parchment)">3:1</text>
         ) : (
           <>
             {/* Same hex tile as the resource cards, so a port reads like its card. */}
-            <g transform="translate(-9 -1) scale(.2)">
+            <g transform="translate(-14 -2) scale(.2)">
               <clipPath id={`px-${kind}`}><polygon points={HEX} /></clipPath>
               <polygon points={HEX} fill={TERRAIN_FILL[kind]} />
               <g clipPath={`url(#px-${kind})`}><TerrainArt terrain={kind} /></g>
               <polygon points={HEX} fill="none" stroke={INK} strokeWidth={6} strokeLinejoin="round" />
             </g>
-            <text x={9} y={3} textAnchor="middle" fontSize={9} fontWeight={600} fill="var(--parchment)">2:1</text>
+            <text x={11} y={4} textAnchor="middle" fontSize={12} fontWeight={600} fill="var(--parchment)">2:1</text>
           </>
         )}
       </g>

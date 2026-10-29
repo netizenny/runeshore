@@ -114,6 +114,7 @@ export function Lobby(p: {
           </div>
           </details>
           {!mapFits && <div className="err">Five or six players need a large map.</div>}
+          {lobby.seats.length < 2 && <div role="status">Waiting for a friend. Share the link or code above.</div>}
           <button disabled={lobby.seats.length < 2 || !mapFits} className="go huge" onClick={() => send({ t: 'start' })}>Begin</button>
         </>
       )}
