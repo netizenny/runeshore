@@ -72,7 +72,7 @@ Score 28/40 (Good), up from 22/40 baseline and 27/40 after phase 6. Snapshot: `c
 - Check: with two browser tabs in setup, the non-active tab shows the other player's name and no gold tint.
 - Command: `clarify`.
 
-### Phase 7b: Trade has no dead ends
+### Phase 7b: Trade has no dead ends (DONE; not yet checked in two tabs)
 - The own-offer card (`.offers`, `top: 3rem`) overlaps the trade drawer (`top: 4.5rem`) in `theme.css`. Move own offers inside the drawer, or stack them below it, so nothing covers the "Vault / ports" tab.
 - Add proposer states: "Waiting for {name}" and "{name} accepted".
 - Stop a receiver accepting an offer they cannot pay. Disable Accept and say what is missing, for example "You need 1 clay". If the proposer's confirm button is disabled, show the reason beside it.

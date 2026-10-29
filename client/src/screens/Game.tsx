@@ -134,8 +134,11 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
         <button className="trade" data-on={trading} onClick={() => setTrading(!trading)}>Trade</button>
         {end && <button className="go" onClick={() => act(end)}>End turn</button>}
       </div>
-      <Offers view={view} legal={legal} act={act} />
-      {trading &&<div className="drawer"><Trade view={view} legal={legal} act={act} /></div>}
+      <Offers view={view} legal={legal} act={act} scope="incoming" />
+      <div className="tradecol">
+        {trading && <div className="drawer"><Trade view={view} legal={legal} act={act} /></div>}
+        <Offers view={view} legal={legal} act={act} scope="own" />
+      </div>
       {owed > 0 && has(legal, 'discard') && <Give title="The Shade stirs: cast off" type="discard" hand={me.hand!} commodities={hf?.players[view.you].commodities} need={owed} legal={legal} act={act} />}
       {ph.k === 'arcanaGive' && ph.pending[view.you] > 0 && <Give title={ph.mode === 'discard' ? 'Arcana: discard' : 'Arcana: give'} type="arcanaGive" hand={me.hand!} commodities={hf?.players[view.you].commodities} need={ph.pending[view.you]} onlyCommodities={ph.mode === 'harbor'} legal={legal} act={act} />}
       {ph.k === 'fleetReward' && has(legal, 'chooseReward') && <Reward legal={legal} act={act} />}

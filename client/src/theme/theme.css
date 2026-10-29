@@ -84,7 +84,11 @@ button[data-on='true'] { background: var(--ink-gold-dim); color: var(--night); }
 .step { display: inline-flex; gap: .3rem; align-items: center; }
 .step button { padding: 0 .5em; min-width: 48px; }
 .drawer, .modal { position: absolute; z-index: 5; background: var(--night-2); border: 2px solid var(--ink-gold); border-radius: 6px; padding: 1rem; }
-.drawer { right: calc(var(--side-w, 320px) + 10px); top: 4.5rem; max-height: calc(100% - 7rem); overflow-y: auto; }
+.tradecol { position: absolute; z-index: 5; right: calc(var(--side-w, 320px) + 10px); top: 4.5rem; max-height: calc(100% - 7rem); max-width: 260px; display: flex; flex-direction: column; gap: .5rem; overflow-y: auto; pointer-events: none; }
+.tradecol > * { pointer-events: auto; }
+.drawer { position: static; }
+.offer .why, .offer .waiting, .offer .accepted { display: flex; align-items: center; gap: .3rem; font-size: .9rem; }
+.offer .accepted { color: var(--moss); font-weight: bold; }
 .modal .castoff { font-size: 2.2rem; font-weight: 900; text-transform: uppercase; text-align: center; color: var(--ink-gold); margin: 0; }
 .modal { top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; gap: .5rem; }
 .offer { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; margin-bottom: .4rem; }
@@ -98,8 +102,8 @@ button[data-on='true'] { background: var(--ink-gold-dim); color: var(--night); }
 .pick-row { display: flex; flex-direction: column; gap: .3rem; margin-bottom: .6rem; }
 .tray { display: flex; flex-wrap: wrap; gap: .2rem; min-height: 28px; padding: .2rem; border: 1px dashed var(--ink-gold-dim); border-radius: 4px; }
 /* own offers hug the sidebar; incoming ones take the centre of the board */
-.offers { position: absolute; z-index: 6; top: 3rem; right: calc(var(--side-w, 320px) + 10px); display: flex; flex-direction: column; gap: .5rem; max-width: 260px; }
-.offers:has([data-incoming='true']) { inset: 0; right: var(--side-w, 320px); max-width: none; align-items: center; justify-content: center; background: #1e1b4b99; }
+.offers { display: flex; flex-direction: column; gap: .5rem; }
+.offers[data-scope='incoming'] { position: absolute; z-index: 6; inset: 0; right: var(--side-w, 320px); max-width: none; align-items: center; justify-content: center; background: #1e1b4b99; }
 .offer .declined { color: #e57373; font-weight: bold; }
 .offers .offer { flex-direction: column; align-items: stretch; margin: 0; padding: .5rem; background: var(--night-2); border: 2px solid var(--ink-gold); border-radius: 6px; }
 .game .board { position: relative; }
