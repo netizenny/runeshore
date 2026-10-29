@@ -66,11 +66,11 @@ export function Players({ view, waitingOn, deadline }: { view: PlayerView; waiti
             </div>
             {waiting.includes(id) && !paused.includes(id) && left !== null && total > 0 && <div className="drain" aria-hidden="true"><i style={{ width: `${Math.min(100, (left / total) * 100)}%` }} /></div>}
             <div className="pl-stats">
-              <span title={`Roads ${roads}, houses ${houses}, citadels ${cits}`} className={view.longestPath === id ? 'hl' : undefined}>Built <b>{roads + houses + cits}</b></span>
-              <span title="Cards">Cards <b>{p.handCount}</b></span>
-              {view.hf ? <span title="Arcana">Arcana <b>{view.hf.players[id].arcanaCount}</b></span> : <span title="Runes">Runes <b>{p.omenCount}</b></span>}
-              {view.hf && <span title="Commodities">Goods <b>{Object.values(view.hf.players[id].commodities).reduce((a, b) => a + b, 0)}</b></span>}
-              <span title="Warriors played" className={view.grandHost === id ? 'hl' : undefined}>Warriors <b>{p.wardensPlayed}</b></span>
+              <span title={`Built: roads ${roads}, houses ${houses}, citadels ${cits}`} aria-label={`Built ${roads + houses + cits}: roads ${roads}, houses ${houses}, citadels ${cits}`} className={view.longestPath === id ? 'hl' : undefined}><i aria-hidden="true">🏠</i><b>{roads + houses + cits}</b></span>
+              <span title="Cards in hand" aria-label={`Cards in hand ${p.handCount}`}><i aria-hidden="true">🃏</i><b>{p.handCount}</b></span>
+              {view.hf ? <span title="Arcana" aria-label={`Arcana ${view.hf.players[id].arcanaCount}`}><i aria-hidden="true">📜</i><b>{view.hf.players[id].arcanaCount}</b></span> : <span title="Runes" aria-label={`Runes ${p.omenCount}`}><i aria-hidden="true">ᚱ</i><b>{p.omenCount}</b></span>}
+              {view.hf && <span title="Goods" aria-label={`Goods ${Object.values(view.hf.players[id].commodities).reduce((a, b) => a + b, 0)}`}><i aria-hidden="true">📦</i><b>{Object.values(view.hf.players[id].commodities).reduce((a, b) => a + b, 0)}</b></span>}
+              <span title="Warriors played" aria-label={`Warriors played ${p.wardensPlayed}`} className={view.grandHost === id ? 'hl' : undefined}><i aria-hidden="true">⚔️</i><b>{p.wardensPlayed}</b></span>
             </div>
             {(view.longestPath === id || view.grandHost === id) && (
               <div className="pl-badges">

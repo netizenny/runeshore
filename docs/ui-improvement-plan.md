@@ -80,7 +80,7 @@ Score 28/40 (Good), up from 22/40 baseline and 27/40 after phase 6. Snapshot: `c
 - Check: two tabs. Send an offer the receiver cannot afford, then one they can. Confirm no overlap at 1440x900, including with the sidebar resized.
 - Commands: `harden`, then `layout`.
 
-### Phase 7c: Dock and seat stats readable without reading
+### Phase 7c: Dock and seat stats readable without reading (DONE; not yet checked in two tabs)
 - Replace the seat stat labels "Built / Cards / Runes / Warriors" (`Players.tsx:76-80`) with icons plus a tooltip and an accessible name. Keep numerals at least 16px.
 - Unaffordable Build buttons show what is missing (one grey dot or icon per missing resource) instead of only dimming to 0.5 opacity.
 - Raise dock cost icons from about 18px to 24px.

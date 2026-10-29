@@ -127,7 +127,7 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
       <div className="dock" ref={dock} data-mine={myMove}>
         <Hand hand={me.hand!} />
         {hf && <Commodities hf={hf} me={view.you} />}
-        <Build left={{ ...me.piecesLeft, boat: view.di?.boatsLeft[view.you] ?? 0 }} boats={!!view.di} legal={legal} picked={forced ? null : picked} setPicked={setPicked} act={act} />
+        <Build hand={me.hand!} left={{ ...me.piecesLeft, boat: view.di?.boatsLeft[view.you] ?? 0 }} boats={!!view.di} legal={legal} picked={forced ? null : picked} setPicked={setPicked} act={act} />
         {hf ? <Improve hf={hf} me={view.you} legal={legal} act={act} /> : <Omens me={me} turn={view.turn} legal={legal} act={act} />}
         {hf && <Sentinels legal={legal} sub={sub} setSub={(v) => { setSub(v); setFrom(null); setPicked(null); setCard(null); }} />}
         {hf && <ArcanaHand cards={hf.players[view.you].arcana ?? []} legal={legal} view={view} sel={card} setSel={(c) => { setCard(c); setSub(null); setPicked(null); }} act={act} />}

@@ -61,7 +61,11 @@ line.hit { stroke-width: 8; stroke-dasharray: 6 5; stroke-opacity: .85; }
 .drain { height: 6px; border-radius: 3px; background: #0b0a1a; overflow: hidden; }
 .drain i { display: block; height: 100%; background: var(--ink-gold); transition: width 1s linear; }
 .ring[data-urgent='true'] { background: var(--blood); color: #fff; }
-.pl-stats b { font-size: .95rem; }
+.pl-stats b { font-size: 1rem; }
+.pl-stats span { display: inline-flex; align-items: center; gap: .3rem; min-height: 1.5rem; }
+.pl-stats i { font-style: normal; font-size: 1.1rem; }
+.miss { display: inline-flex; gap: .3rem; margin-left: .3rem; }
+.miss > span { display: inline-flex; align-items: center; font-size: .875rem; opacity: .55; filter: grayscale(1); }
 .pl-badges { display: flex; gap: .4rem; flex-wrap: wrap; }
 .pl em { font-style: normal; color: var(--ink-gold); font-size: .875rem; border: 1px solid var(--ink-gold); border-radius: 999px; padding: .05rem .5rem; }
 .ring { margin-left: auto; border: 2px solid var(--blood); border-radius: 50%; padding: 0 .4em; }
