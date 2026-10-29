@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import type { PlayerView } from '@runeshore/shared';
 import { play } from '../sound';
 
@@ -28,6 +28,12 @@ function useSecondsLeft(deadline: number | null) {
 
 type Waiting = { player: string; since: number; paused?: true };
 
+// one shape per seat so colour is never the only cue
+const SHAPES = ['M12 3l9 9-9 9-9-9z', 'M12 3l2.8 6 6.2.8-4.6 4.3 1.2 6.4L12 17.6 6.4 20.5l1.2-6.4L3 9.8 9.2 9z', 'M12 4a8 8 0 100 16 8 8 0 000-16z', 'M12 3l9 17H3z', 'M4 4h16v16H4z', 'M9 3h6v6h6v6h-6v6H9v-6H3V9h6z'];
+function Flag({ n }: { n: number }) {
+  return <span className="pl-flag" aria-hidden="true"><svg viewBox="0 0 24 24"><path d={SHAPES[n % SHAPES.length]} /></svg></span>;
+}
+
 export function Players({ view, waitingOn, deadline }: { view: PlayerView; waitingOn: Waiting[]; deadline: number | null }) {
   const left = useSecondsLeft(deadline);
   const waiting = waitingOn.map((w) => w.player);
@@ -48,7 +54,8 @@ export function Players({ view, waitingOn, deadline }: { view: PlayerView; waiti
         const g = glory(view, id);
         const relics = id === view.you ? (p.omens ?? []).filter((o) => o.kind === 'relic').length : 0;
         return (
-          <div key={id} className="pl" data-turn={turn} style={{ borderLeftColor: `var(--${p.color})` }}>
+          <div key={id} className="pl" data-turn={turn} style={{ '--seat': `var(--${p.color})` } as CSSProperties}>
+            <Flag n={view.order.indexOf(id)} />
             <div className="pl-head">
               <span className="pl-rank">{rank === 0 && g > 0 ? '👑' : rank + 1}</span>
               <b>{turn && '▶ '}{p.name}{id === view.you ? ' (you)' : ''}</b>

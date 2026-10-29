@@ -11,11 +11,14 @@
   --bone: #ffffff;
   --dusk: #a050ff;
   --rose: #ff3fae;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9 .06' numOctaves='3' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .85 0 0 0 0 .5 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  --panel-lit: linear-gradient(180deg, rgb(255 215 114 / .10), rgb(255 215 114 / 0) 40%);
 }
 * { box-sizing: border-box; }
 html, body, #root { height: 100%; margin: 0; }
-body { background: var(--night); color: var(--parchment); font-family: Inter, system-ui, sans-serif; font-size: 16px; }
-h1, h2, h3 { font-family: Cinzel, serif; color: var(--ink-gold); letter-spacing: .08em; margin: 0 0 .5em; }
+body { background: var(--night); color: var(--parchment); font-family: 'Alegreya Sans', system-ui, sans-serif; font-size: 17px; font-weight: 500; line-height: 1.35; }
+b, strong, button, th, em { font-weight: 700; }
+h1, h2, h3 { font-family: Cinzel, serif; font-weight: 700; color: var(--ink-gold); letter-spacing: .08em; margin: 0 0 .5em; }
 button, input, select {
   font: inherit; color: var(--parchment); background: var(--night-2);
   border: 1px solid var(--ink-gold-dim); border-radius: 4px; padding: .5em .9em;
@@ -49,7 +52,7 @@ line.hit { stroke-width: 8; stroke-dasharray: 6 5; stroke-opacity: .85; }
 .game .board { min-height: 0; }
 .side { position: relative; display: flex; flex-direction: column; min-height: 0; border-left: 1px solid var(--ink-gold-dim); }
 .players { display: flex; flex-direction: column; gap: .5rem; padding: .5rem; }
-.pl { display: flex; flex-direction: column; gap: .3rem; padding: .55rem .75rem; background: var(--night-2); border-left: 8px solid; font-size: 1rem; font-variant-numeric: tabular-nums; }
+.pl { display: flex; flex-direction: column; gap: .3rem; padding: .55rem .75rem; background: var(--night-2); border: 1px solid var(--ink-gold-dim); border-radius: 6px; position: relative; padding-left: 3.6rem; font-size: 1rem; font-variant-numeric: tabular-nums; }
 .pl[data-turn='true'] { outline: 2px solid var(--ink-gold); background: color-mix(in srgb, var(--ink-gold) 14%, var(--night-2)); }
 .pl-head { display: flex; align-items: center; gap: .5rem; }
 .pl-rank { min-width: 1.4em; text-align: center; opacity: .7; }
@@ -133,8 +136,7 @@ button[data-on='true'] { background: var(--ink-gold-dim); color: var(--night); }
 .game[data-hf='true'] .card { width: 44px; padding: .15rem; }
 .game[data-hf='true'] .card small { display: none; }
 
-/* bold everything, bigger symbols */
-* { font-weight: 700; }
+/* bigger symbols */
 .card { width: 72px; }
 .card small { font-size: .875rem; }
 .book { font-size: 2rem; }
@@ -204,3 +206,11 @@ button.huge:disabled { background: var(--night-2); color: var(--ink-gold-dim); }
 .how summary { cursor: pointer; text-align: center; min-height: 48px; padding: .6rem; }
 @keyframes crown-drop { from { transform: translateY(-3rem) scale(.6); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .crown { animation: fade .2s ease-out; } }
+
+/* fantasy panels: grain + lit top edge on dark indigo */
+.pl, .drawer, .modal, .pick, .offers .offer, .step, .seat { background-image: var(--panel-lit), var(--grain); box-shadow: 0 2px 6px rgb(0 0 0 / .45), inset 0 1px 0 rgb(255 215 114 / .25); }
+.side { background-image: var(--grain); }
+.pl[data-turn='true'] { box-shadow: 0 0 0 2px var(--ink-gold), 0 2px 8px rgb(0 0 0 / .5); outline: none; }
+/* seat banner: coloured pennant with a shape per seat */
+.pl-flag { position: absolute; left: .6rem; top: -2px; width: 2.4rem; height: 3.4rem; display: grid; place-items: start center; padding-top: .4rem; background: var(--seat); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%); }
+.pl-flag svg { width: 1.4rem; height: 1.4rem; fill: #fff; stroke: #1e1b4b; stroke-width: 1.5; paint-order: stroke; }

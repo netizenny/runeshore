@@ -52,7 +52,7 @@ Nothing here is built yet. It is meant to be built in a separate chat, in the or
 - Win screen: crown, podium, winner colour wash, safe for reduced-motion. Score table behind "How it happened". "Back to lobby" keeps the room.
 - Commands: `onboard`, `delight`, `animate`.
 
-### Phase 5: Fantasy look
+### Phase 5: Fantasy look (DONE)
 - Replace Inter with a warmer face that stays legible at large sizes (headings already use Cinzel). Remove the global bold rule and rebuild the weight hierarchy.
 - Seat identity by colour plus shape or banner art instead of an 8px side stripe.
 - Parchment, stone or wood texture on panels instead of identical indigo boxes. Keep today's strong contrast (about 14:1).
