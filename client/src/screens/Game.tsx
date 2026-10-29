@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Action, ClientMsg, PlayerView, ServerMsg } from '@runeshore/shared';
 import { FRAME } from '@runeshore/shared';
 import { Board, type Mode, type Pick } from '../board/Board';
@@ -89,14 +89,25 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
     : ph.k === 'main' ? (mine ? 'Your turn: build, trade or end your turn' : `${name}'s turn`)
     : ph.k === 'steal' ? (mine ? 'Choose who to steal from' : `${name} is stealing`)
     : `Waiting for ${name}`;
+  const icon = ph.k === 'setup' ? (ph.step === 'path' ? '🛤️' : '🏠') : ph.k === 'waymaking' ? '🛤️' : has(legal, 'moveShade') ? '👻'
+    : ph.k === 'roll' ? '🎲' : ph.k === 'discard' ? '🃏' : ph.k === 'steal' ? '🫳' : ph.k === 'main' ? (mine ? '⭐' : '⏳') : '✨';
   const roll = legal.find((a) => a.type === 'roll');
   const end = legal.find((a) => a.type === 'endTurn');
   useEffect(() => { if (roll) act(roll); }, [!!roll, view.turn]); // auto-roll on my turn
+  const myMove = legal.length > 0;
+  // One live dock control (Trade aside): mark it as the move to make and dim the rest.
+  const dock = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const live = Array.from(dock.current!.querySelectorAll<HTMLButtonElement>('button:not(:disabled):not(.trade)'));
+    dock.current!.querySelectorAll('[data-next]').forEach((b) => b.removeAttribute('data-next'));
+    if (live.length === 1) live[0].setAttribute('data-next', '');
+    dock.current!.dataset.solo = String(live.length === 1);
+  });
   const owed = ph.k === 'discard' ? ph.pending[view.you] : 0;
 
   return (
     <div className="game" data-hf={!!hf}>
-      <div className="bar" role="status" aria-live="polite"><b>{prompt}</b>{frame && <button onClick={() => act(frame)}>Raider to the frame</button>}</div>
+      <div className="bar" data-mine={myMove} role="status" aria-live="polite"><span className="bar-icon" aria-hidden="true">{icon}</span><b>{prompt}</b>{frame && <button onClick={() => act(frame)}>Raider to the frame</button>}</div>
       <div className="board"><DiceBook dice={view.dice} turn={view.turn} /><div className="corner"><button className="book" title="Rulebook" onClick={() => setBook(true)}>📖</button><button className="book" title="Sound on/off" onClick={() => { setMuted(!muted); setMute(!muted); }}>{muted ? '🔇' : '🔊'}</button><DiceStats view={view} /></div><Board view={view} legal={legal} mode={mode} onAction={act} pick={pick} /></div>
       <aside className="side">
         <div
@@ -113,14 +124,14 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
         <Players view={view} waitingOn={game.waitingOn} deadline={game.deadline} />
         <Log view={view} />
       </aside>
-      <div className="dock">
+      <div className="dock" ref={dock} data-mine={myMove}>
         <Hand hand={me.hand!} />
         {hf && <Commodities hf={hf} me={view.you} />}
         <Build left={{ ...me.piecesLeft, boat: view.di?.boatsLeft[view.you] ?? 0 }} boats={!!view.di} legal={legal} picked={forced ? null : picked} setPicked={setPicked} act={act} />
         {hf ? <Improve hf={hf} me={view.you} legal={legal} act={act} /> : <Omens me={me} turn={view.turn} legal={legal} act={act} />}
         {hf && <Sentinels legal={legal} sub={sub} setSub={(v) => { setSub(v); setFrom(null); setPicked(null); setCard(null); }} />}
         {hf && <ArcanaHand cards={hf.players[view.you].arcana ?? []} legal={legal} view={view} sel={card} setSel={(c) => { setCard(c); setSub(null); setPicked(null); }} act={act} />}
-        <button data-on={trading} onClick={() => setTrading(!trading)}>Trade</button>
+        <button className="trade" data-on={trading} onClick={() => setTrading(!trading)}>Trade</button>
         {end && <button className="go" onClick={() => act(end)}>End turn</button>}
       </div>
       <Offers view={view} legal={legal} act={act} />

@@ -147,3 +147,17 @@ button[data-on='true'] { background: var(--ink-gold-dim); color: var(--night); }
   button { transition-property: border-color; }
   button:not(:disabled):active { scale: none; }
 }
+
+/* Phase 2: a clear turn */
+.bar b { font-size: 1.6rem; line-height: 1.2; }
+.bar-icon { font-size: 2.2rem; line-height: 1; }
+.bar[data-mine='true'] { background: color-mix(in srgb, var(--ink-gold) 18%, var(--night)); }
+.dock { border: 3px solid transparent; }
+.dock[data-mine='true'] { border-color: var(--ink-gold); animation: yourturn 1.6s ease-in-out infinite; }
+@keyframes yourturn { 50% { box-shadow: 0 0 18px 4px var(--ink-gold), inset 0 0 14px var(--ink-gold-dim); } }
+.dock button { background: transparent; }
+.dock button[data-on='true'] { background: var(--ink-gold-dim); }
+.dock .go { border-color: var(--ink-gold); border-width: 2px; }
+.dock[data-solo='true'] button:not([data-next]):not(.trade) { opacity: .5; }
+.dock button[data-next] { background: var(--ink-gold); color: var(--night); border-color: var(--ink-gold); font-size: 1.15rem; padding-inline: 1.6em; opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .dock[data-mine='true'] { animation: none; box-shadow: 0 0 12px 2px var(--ink-gold); } }
