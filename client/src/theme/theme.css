@@ -84,7 +84,7 @@ button[data-on='true'] { background: var(--ink-gold-dim); color: var(--night); }
 .step { display: inline-flex; gap: .3rem; align-items: center; }
 .step button { padding: 0 .5em; min-width: 48px; }
 .drawer, .modal { position: absolute; z-index: 5; background: var(--night-2); border: 2px solid var(--ink-gold); border-radius: 6px; padding: 1rem; }
-.drawer { right: calc(var(--side-w, 320px) + 10px); bottom: 90px; max-height: 70%; overflow-y: auto; }
+.drawer { right: calc(var(--side-w, 320px) + 10px); top: 4.5rem; max-height: calc(100% - 7rem); overflow-y: auto; }
 .modal .castoff { font-size: 2.2rem; font-weight: 900; text-transform: uppercase; text-align: center; color: var(--ink-gold); margin: 0; }
 .modal { top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; gap: .5rem; }
 .offer { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; margin-bottom: .4rem; }
@@ -214,3 +214,7 @@ button.huge:disabled { background: var(--night-2); color: var(--ink-gold-dim); }
 /* seat banner: coloured pennant with a shape per seat */
 .pl-flag { position: absolute; left: .6rem; top: -2px; width: 2.4rem; height: 3.4rem; display: grid; place-items: start center; padding-top: .4rem; background: var(--seat); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%); }
 .pl-flag svg { width: 1.4rem; height: 1.4rem; fill: #fff; stroke: #1e1b4b; stroke-width: 1.5; paint-order: stroke; }
+
+svg[data-miss='true'] .hit { fill-opacity: .7; stroke-opacity: 1; stroke-width: 4; }
+svg[data-miss='true'] line.hit { stroke-width: 12; }
+@media (prefers-reduced-motion: no-preference) { .hit { transition: fill-opacity .2s, stroke-width .2s; } }

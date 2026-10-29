@@ -52,6 +52,8 @@ export function Players({ view, waitingOn, deadline }: { view: PlayerView; waiti
         const p = view.players.find((x) => x.id === id)!;
         const turn = view.order[view.current] === id;
         const g = glory(view, id);
+        const built = (k: string) => Object.values(view.buildings).filter((x) => x.owner === id && x.kind === k).length;
+        const roads = Object.values(view.paths).filter((o) => o === id).length, houses = built('outpost'), cits = built('citadel');
         const relics = id === view.you ? (p.omens ?? []).filter((o) => o.kind === 'relic').length : 0;
         return (
           <div key={id} className="pl" data-turn={turn} style={{ '--seat': `var(--${p.color})` } as CSSProperties}>
@@ -64,11 +66,9 @@ export function Players({ view, waitingOn, deadline }: { view: PlayerView; waiti
             </div>
             {waiting.includes(id) && !paused.includes(id) && left !== null && total > 0 && <div className="drain" aria-hidden="true"><i style={{ width: `${Math.min(100, (left / total) * 100)}%` }} /></div>}
             <div className="pl-stats">
-              <span title="Paths (roads)" className={view.longestPath === id ? 'hl' : undefined}>Roads <b>{Object.values(view.paths).filter((o) => o === id).length}</b></span>
-              <span title="Outposts (houses)">Houses <b>{Object.values(view.buildings).filter((x) => x.owner === id && x.kind === 'outpost').length}</b></span>
-              <span title="Citadels">Citadels <b>{Object.values(view.buildings).filter((x) => x.owner === id && x.kind === 'citadel').length}</b></span>
+              <span title={`Roads ${roads}, houses ${houses}, citadels ${cits}`} className={view.longestPath === id ? 'hl' : undefined}>Built <b>{roads + houses + cits}</b></span>
               <span title="Cards">Cards <b>{p.handCount}</b></span>
-              {view.hf ? <span title="Arcana">Arcana <b>{view.hf.players[id].arcanaCount}</b></span> : <span title="Runes">ᚱ <b>{p.omenCount}</b></span>}
+              {view.hf ? <span title="Arcana">Arcana <b>{view.hf.players[id].arcanaCount}</b></span> : <span title="Runes">Runes <b>{p.omenCount}</b></span>}
               {view.hf && <span title="Commodities">Goods <b>{Object.values(view.hf.players[id].commodities).reduce((a, b) => a + b, 0)}</b></span>}
               <span title="Warriors played" className={view.grandHost === id ? 'hl' : undefined}>Warriors <b>{p.wardensPlayed}</b></span>
             </div>

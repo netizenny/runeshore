@@ -12,6 +12,7 @@ const OUTPOST: Action['type'][] = ['placeOutpost', 'buildOutpost'];
 const PATH: Action['type'][] = ['placePath', 'buildPath'];
 
 export function Board({ view, legal, mode, onAction, pick = [] }: { view: PlayerView; legal: Action[]; mode: Mode; onAction(a: Action): void; pick?: Pick[] }) {
+  const [miss, setMiss] = useState(false);
   const colorOf = (id: string) => `var(--${view.players.find((p) => p.id === id)!.color})`;
   const hexes = Object.values(view.board.hexes);
   const k = hexes.length > 61 ? 1.75 : hexes.length > 19 ? 1.4 : 1;
@@ -91,7 +92,7 @@ export function Board({ view, legal, mode, onAction, pick = [] }: { view: Player
   }, [W, H, X0, Y0]);
 
   return (
-    <svg ref={svgRef} viewBox={`${X0 + zoom.px} ${Y0 + zoom.py} ${W / zoom.z} ${H / zoom.z}`} style={{ width: '100%', height: '100%' }} role="img" aria-label="Runeshore board">
+    <svg ref={svgRef} data-miss={miss} onClick={(e) => { if (!(e.target as Element).closest('.hit') && document.querySelector('svg .hit')) { setMiss(true); setTimeout(() => setMiss(false), 500); } }} viewBox={`${X0 + zoom.px} ${Y0 + zoom.py} ${W / zoom.z} ${H / zoom.z}`} style={{ width: '100%', height: '100%' }} role="img" aria-label="Runeshore board">
       <rect x={-290 * k} y={-270 * k} width={580 * k} height={540 * k} fill="var(--night)" />
       <g fill="none" stroke="var(--ink-gold-dim)" strokeWidth={0.8} opacity={0.35}>
         {Array.from({ length: 9 }, (_, i) => <path key={i} d={`M-280 ${-250 + i * 62} q35 -9 70 0 t70 0 t70 0 t70 0 t70 0 t70 0 t70 0 t70 0`} />)}
