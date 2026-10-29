@@ -22,6 +22,20 @@ export function setMuted(m: boolean) {
 let ctx: AudioContext | null = null;
 const ac = () => (ctx ??= new AudioContext());
 
+// Master bus: boost every effect, compressor keeps stacked sounds from clipping.
+let bus: AudioNode | null = null;
+const out = () => {
+  if (!bus) {
+    const c = ac();
+    const g = c.createGain();
+    g.gain.value = 2.5;
+    const comp = c.createDynamicsCompressor();
+    g.connect(comp).connect(c.destination);
+    bus = g;
+  }
+  return bus;
+};
+
 // One note: frequency glide f0 -> f1 over `dur` seconds, starting `at` seconds from now.
 function tone(f0: number, dur: number, { f1 = f0, type = 'sine' as OscillatorType, vol = 0.15, at = 0 } = {}) {
   const c = ac();
@@ -33,7 +47,7 @@ function tone(f0: number, dur: number, { f1 = f0, type = 'sine' as OscillatorTyp
   o.frequency.exponentialRampToValueAtTime(f1, t + dur);
   g.gain.setValueAtTime(vol, t);
   g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-  o.connect(g).connect(c.destination);
+  o.connect(g).connect(out());
   o.start(t);
   o.stop(t + dur);
 }
@@ -53,7 +67,7 @@ function noise(dur: number, { freq = 1800, vol = 0.2, at = 0 } = {}) {
   const g = c.createGain();
   g.gain.setValueAtTime(vol, t);
   g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-  s.connect(f).connect(g).connect(c.destination);
+  s.connect(f).connect(g).connect(out());
   s.start(t);
 }
 
