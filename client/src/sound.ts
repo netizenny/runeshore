@@ -119,6 +119,7 @@ const SOUNDS = {
     tone(2093, 0.15, { vol: 0.08, at: 0.07 });
   },
   fleet: () => tone(150, 0.4, { f1: 100, type: 'sawtooth', vol: 0.1 }),
+  chime: () => [880, 1319].forEach((f, i) => tone(f, 0.35, { vol: 0.12, at: i * 0.12 })),
   win: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.4, { type: 'triangle', vol: 0.15, at: i * 0.15 })),
 };
 export type Sound = keyof typeof SOUNDS;

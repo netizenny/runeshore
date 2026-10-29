@@ -34,7 +34,7 @@ export function Trade({ view, legal, act }: { view: PlayerView; legal: Action[];
   const [tab, setTab] = useState<'players' | 'bank'>('players');
   const from = kinds.filter((g) => bank.some((a) => a.give === g));
 
-  if (!mine) return <div className="trade"><h3>Trade</h3><small>Wait for your turn to offer. Incoming offers show top right.</small></div>;
+  if (!mine) return <div className="trade"><h3>Trade</h3><small>Wait for your turn to offer. Incoming offers pop up in the middle.</small></div>;
   return (
     <div className="trade">
       <div className="row">
@@ -43,8 +43,8 @@ export function Trade({ view, legal, act }: { view: PlayerView; legal: Action[];
       </div>
       {tab === 'players' ? (
         <>
-          <Pick label="GIVE" hand value={give} max={(r) => hand[r]} onChange={setGive} />
-          <Pick label="GET" hand={false} value={get} max={() => 9} onChange={setGet} />
+          <Pick label="You give →" hand value={give} max={(r) => hand[r]} onChange={setGive} />
+          <Pick label="You get ←" hand={false} value={get} max={() => 9} onChange={setGet} />
           <button className="go" disabled={!ok} onClick={send}>Offer to everyone</button>
         </>
       ) : from.length ? from.map((g) => (

@@ -81,7 +81,7 @@ button[data-on='true'] { background: var(--ink-gold-dim); color: var(--night); }
 .step { display: inline-flex; gap: .3rem; align-items: center; }
 .step button { padding: 0 .5em; min-width: 48px; }
 .drawer, .modal { position: absolute; z-index: 5; background: var(--night-2); border: 2px solid var(--ink-gold); border-radius: 6px; padding: 1rem; }
-.drawer { right: 330px; bottom: 90px; max-height: 70%; overflow-y: auto; }
+.drawer { right: calc(var(--side-w, 320px) + 10px); bottom: 90px; max-height: 70%; overflow-y: auto; }
 .modal .castoff { font-size: 2.2rem; font-weight: 900; text-transform: uppercase; text-align: center; color: var(--ink-gold); margin: 0; }
 .modal { top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; gap: .5rem; }
 .offer { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; margin-bottom: .4rem; }
@@ -94,7 +94,9 @@ button[data-on='true'] { background: var(--ink-gold-dim); color: var(--night); }
 @keyframes pop { from { transform: rotate(-2deg) scale(.6); } }
 .pick-row { display: flex; flex-direction: column; gap: .3rem; margin-bottom: .6rem; }
 .tray { display: flex; flex-wrap: wrap; gap: .2rem; min-height: 28px; padding: .2rem; border: 1px dashed var(--ink-gold-dim); border-radius: 4px; }
-.offers { position: absolute; z-index: 6; top: 3rem; right: 330px; display: flex; flex-direction: column; gap: .5rem; max-width: 260px; }
+/* own offers hug the sidebar; incoming ones take the centre of the board */
+.offers { position: absolute; z-index: 6; top: 3rem; right: calc(var(--side-w, 320px) + 10px); display: flex; flex-direction: column; gap: .5rem; max-width: 260px; }
+.offers:has([data-incoming='true']) { inset: 0; right: var(--side-w, 320px); max-width: none; align-items: center; justify-content: center; background: #1e1b4b99; }
 .offer .declined { color: #e57373; font-weight: bold; }
 .offers .offer { flex-direction: column; align-items: stretch; margin: 0; padding: .5rem; background: var(--night-2); border: 2px solid var(--ink-gold); border-radius: 6px; }
 .game .board { position: relative; }
@@ -161,3 +163,14 @@ button[data-on='true'] { background: var(--ink-gold-dim); color: var(--night); }
 .dock[data-solo='true'] button:not([data-next]):not(.trade) { opacity: .5; }
 .dock button[data-next] { background: var(--ink-gold); color: var(--night); border-color: var(--ink-gold); font-size: 1.15rem; padding-inline: 1.6em; opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .dock[data-mine='true'] { animation: none; box-shadow: 0 0 12px 2px var(--ink-gold); } }
+
+.offer .line { display: flex; align-items: center; gap: .5rem; font-size: 1rem; }
+.offer[data-incoming='true'] { min-width: 18rem; padding: 1.2rem 1.5rem; gap: .8rem; font-size: 1.15rem; box-shadow: 0 0 0 4px var(--ink-gold-dim), 0 12px 32px #000a; animation: pop-in .2s ease-out; }
+.offer .answer { display: flex; gap: .8rem; }
+.offer .answer button { flex: 1; min-height: 56px; font-size: 1.3rem; }
+.offer .answer button span { font-size: 1rem; }
+.offer .answer .yes { background: #1f7a3a; border-color: var(--moss); color: var(--bone); }
+.offer .answer .no { background: #8f2a22; border-color: var(--blood); color: var(--bone); }
+.offer .answer button[data-on='true'] { outline: 3px solid var(--bone); }
+@keyframes pop-in { from { transform: scale(.85); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .offer[data-incoming='true'] { animation: none; } }
