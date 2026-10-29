@@ -39,6 +39,13 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
   const [card, setCard] = useState<string | null>(null);
   const [boatFrom, setBoatFrom] = useState<string | null>(null);
   useEffect(() => setBoatFrom(null), [picked]);
+  // The rulebook and trade drawer stop my turn clock; the server resumes it after 2 minutes at most.
+  const reading = book || trading;
+  useEffect(() => {
+    if (!reading) return;
+    send({ t: 'pause', on: true });
+    return () => send({ t: 'pause', on: false });
+  }, [reading]);
   const hf = view.hf;
   const ph = view.phase;
   const forced: Mode = has(legal, 'placeOutpost') ? 'outpost' : has(legal, 'placePath') || ph.k === 'waymaking' ? 'path' : has(legal, 'moveShade') ? 'shade' : null;
@@ -67,6 +74,7 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
     : ph.k === 'deserter' ? forcedPick('arcanaPickSentinel', 'vertex')
     : (card && arcanaPicks(playsOf(legal, card), act)) || sentinelPicks(legal, sub, from, setFrom, act);
   const name = view.players.find((p) => p.id === view.order[view.current])?.name;
+  const mine = view.order[view.current] === view.you;
   const prompt = ph.k === 'waymaking' ? `Twin Paths: lay ${ph.left} more path${ph.left > 1 ? 's' : ''} or boat${ph.left > 1 ? 's' : ''}`
     : ph.k === 'setup' ? `Setup: place your ${ph.step}${ph.step === 'path' && freeBoats.length ? ' (or a boat)' : ''}`
     : has(legal, 'moveShade') ? 'Move the Shade to a hex'
@@ -77,7 +85,10 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
     : ph.k === 'glimmer' ? 'Glimmer fields pay: choose your cards'
     : ph.k === 'arcanaGive' ? 'Arcana: cards are owed'
     : ph.k === 'deserter' ? 'Turncoat: choose a Sentinel to give up'
-    : `${name}: ${ph.k}`;
+    : ph.k === 'roll' ? (mine ? 'Rolling the dice' : `${name} is rolling`)
+    : ph.k === 'main' ? (mine ? 'Your turn: build, trade or end your turn' : `${name}'s turn`)
+    : ph.k === 'steal' ? (mine ? 'Choose who to steal from' : `${name} is stealing`)
+    : `Waiting for ${name}`;
   const roll = legal.find((a) => a.type === 'roll');
   const end = legal.find((a) => a.type === 'endTurn');
   useEffect(() => { if (roll) act(roll); }, [!!roll, view.turn]); // auto-roll on my turn
@@ -85,7 +96,7 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
 
   return (
     <div className="game" data-hf={!!hf}>
-      <div className="bar"><b>{prompt}</b>{frame && <button onClick={() => act(frame)}>Raider to the frame</button>}</div>
+      <div className="bar" role="status" aria-live="polite"><b>{prompt}</b>{frame && <button onClick={() => act(frame)}>Raider to the frame</button>}</div>
       <div className="board"><DiceBook dice={view.dice} turn={view.turn} /><div className="corner"><button className="book" title="Rulebook" onClick={() => setBook(true)}>📖</button><button className="book" title="Sound on/off" onClick={() => { setMuted(!muted); setMute(!muted); }}>{muted ? '🔇' : '🔊'}</button><DiceStats view={view} /></div><Board view={view} legal={legal} mode={mode} onAction={act} pick={pick} /></div>
       <aside className="side">
         <div
@@ -99,7 +110,7 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
           }}
         />
         {hf && <Fleet hf={hf} />}
-        <Players view={view} waiting={game.waitingOn.map((w) => w.player)} deadline={game.deadline} />
+        <Players view={view} waitingOn={game.waitingOn} deadline={game.deadline} />
         <Log view={view} />
       </aside>
       <div className="dock">

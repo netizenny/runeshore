@@ -41,8 +41,8 @@ export function Log({ view }: { view: PlayerView }) {
       case 'peddlerPlaced': return `${n(e.player)} places the Peddler`;
       case 'improved': return `${n(e.player)} improves ${e.track} to ${e.level}`;
       case 'spire': return `${n(e.player)} raises the ${e.track} Spire`;
-      case 'turnEnded':
-      case 'autoActed': return null;
+      case 'autoActed': return `Auto-moved for ${n(e.player)}`;
+      case 'turnEnded': return null;
       case 'won': return `${n(e.player)} wins!`;
     }
   };

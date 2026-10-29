@@ -54,7 +54,7 @@ export interface Settings {
   boardSize: 'standard' | 'large' | 'volcano'; // 'volcano' is a fixed Original/Hollow Fleet map
   gloryTarget: number;
   discardLimit: number;
-  turnTimerSec: 15 | 30 | 45;
+  turnTimerSec: 15 | 30 | 45 | 60 | 90;
   hollowFleet: boolean;
   drownedIsles: boolean;
   scenario: 'landfall' | 'quartet' | 'veiled' | 'sextet' | 'veiled6' | 'volcano';
@@ -65,7 +65,7 @@ export const DEFAULT_SETTINGS: Settings = {
   boardSize: 'standard',
   gloryTarget: 10,
   discardLimit: 7,
-  turnTimerSec: 30,
+  turnTimerSec: 45,
   hollowFleet: false,
   drownedIsles: false,
   scenario: 'landfall',

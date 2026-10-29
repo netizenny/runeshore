@@ -7,7 +7,7 @@ export function Home({ open, error, onCreate }: { open: boolean; error: string |
     <div className="screen">
       <h1>Runeshore</h1>
       <div className="row">
-        <input value={name} maxLength={20} placeholder="Your name" onChange={(e) => setName(e.target.value)} />
+        <input aria-label="Your name" value={name} maxLength={20} placeholder="Your name" onChange={(e) => setName(e.target.value)} />
         <button disabled={!open || !name.trim()} onClick={() => onCreate(name)}>Create room</button>
       </div>
       {error && <div className="err">{error}</div>}

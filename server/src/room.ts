@@ -28,6 +28,7 @@ type Seat = { id: PlayerId; name: string; color: PlayerColor; seatToken: string;
 
 const COLORS: PlayerColor[] = ['ember', 'tide', 'moss', 'bone', 'dusk', 'rose'];
 const IDLE_MS = 10 * 60_000;
+const PAUSE_MS = 2 * 60_000; // a paused clock resumes by itself so nobody can stall the table
 const HOST_WAIT_MS = 120_000;
 const LOBBY_MS = 30 * 60_000; // a room that never starts a game is dropped, even with sockets attached
 const MAX_SEATS = 6;
@@ -42,6 +43,7 @@ export class Room {
   private logSent = new WeakSet<Conn>(); // conns that already hold the full log
   private pendingSince = new Map<PlayerId, number>();
   private setupRound = 0;
+  private paused = new Set<PlayerId>();
   private timers = new Map<PlayerId, ReturnType<typeof setTimeout>>();
   private idle: ReturnType<typeof setTimeout> | null = null;
   private lobbyTtl: ReturnType<typeof setTimeout>;
@@ -127,6 +129,8 @@ export class Room {
     if (!seat) return this.put(conn, bad('not_seated', 'Join the room first.'));
     try {
       switch (msg.t) {
+        case 'pause':
+          return this.pause(seat.id, msg.on === true);
         case 'leave':
           return this.leave(conn, seat);
         case 'settings':
@@ -177,7 +181,7 @@ export class Room {
       !(next.drownedIsles && (next.boardSize === 'volcano' || SCENARIOS[next.scenario].base)) &&
       Number.isInteger(next.gloryTarget) && next.gloryTarget >= 7 && next.gloryTarget <= 15 &&
       Number.isInteger(next.discardLimit) && next.discardLimit >= 7 && next.discardLimit <= 10 &&
-      [15, 30, 45].includes(next.turnTimerSec);
+      [15, 30, 45, 60, 90].includes(next.turnTimerSec);
     if (!ok) return this.put(conn, bad('bad_settings', 'Those settings are out of range.'));
     this.settings = { boardMode: next.boardMode, boardSize: next.boardSize, gloryTarget: next.gloryTarget, discardLimit: next.discardLimit, turnTimerSec: next.turnTimerSec, hollowFleet: next.hollowFleet, drownedIsles: next.drownedIsles, scenario: next.scenario };
     this.changed();
@@ -280,7 +284,22 @@ export class Room {
     this.settle(events);
   }
 
+  private pause(id: PlayerId, on: boolean) {
+    if (!this.game || !this.pendingSince.has(id) || this.paused.has(id) === on) return;
+    clearTimeout(this.timers.get(id));
+    if (on) {
+      this.paused.add(id);
+      this.timers.set(id, setTimeout(() => this.pause(id, false), PAUSE_MS));
+    } else {
+      this.paused.delete(id);
+      this.pendingSince.set(id, Date.now());
+      this.timers.set(id, setTimeout(() => this.expire(id), this.settings.turnTimerSec * 1000));
+    }
+    this.broadcast([]);
+  }
+
   private drop(id: PlayerId) {
+    this.paused.delete(id);
     this.pendingSince.delete(id);
     clearTimeout(this.timers.get(id));
     this.timers.delete(id);
@@ -344,8 +363,9 @@ export class Room {
 
   private broadcast(events: GameEvent[]) {
     const g = this.game!;
-    const waitingOn = [...this.pendingSince].map(([player, since]) => ({ player, since }));
-    const deadline = waitingOn.length ? Math.min(...waitingOn.map((w) => w.since)) + this.settings.turnTimerSec * 1000 : null;
+    const waitingOn = [...this.pendingSince].map(([player, since]) => ({ player, since, ...(this.paused.has(player) && { paused: true as const }) }));
+    const running = waitingOn.filter((w) => !w.paused);
+    const deadline = running.length ? Math.min(...running.map((w) => w.since)) + this.settings.turnTimerSec * 1000 : null;
     for (const s of this.seats) {
       if (!s.conn) continue;
       // The log only grows, so after the first full copy the client appends `events`.

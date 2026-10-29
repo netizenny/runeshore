@@ -26,14 +26,22 @@ function useSecondsLeft(deadline: number | null) {
   return deadline ? Math.max(0, Math.ceil((deadline - now) / 1000)) : null;
 }
 
-export function Players({ view, waiting, deadline }: { view: PlayerView; waiting: string[]; deadline: number | null }) {
+type Waiting = { player: string; since: number; paused?: true };
+
+export function Players({ view, waitingOn, deadline }: { view: PlayerView; waitingOn: Waiting[]; deadline: number | null }) {
   const left = useSecondsLeft(deadline);
+  const waiting = waitingOn.map((w) => w.player);
+  const paused = waitingOn.filter((w) => w.paused).map((w) => w.player);
+  const running = waitingOn.filter((w) => !w.paused);
+  const total = deadline && running.length ? (deadline - Math.min(...running.map((w) => w.since))) / 1000 : 0;
   const myTurn = waiting.includes(view.you);
   useEffect(() => {
     if (myTurn && left !== null && left > 0 && left <= 10) play(left % 2 ? 'tick' : 'tock');
   }, [left, myTurn]);
+  const say = myTurn && (left === 10 || left === 5) ? `${left} seconds left` : '';
   return (
     <div className="players">
+      <span className="sr" role="alert">{say}</span>
       {[...view.order].sort((a, b) => glory(view, b) - glory(view, a)).map((id, rank) => {
         const p = view.players.find((x) => x.id === id)!;
         const turn = view.order[view.current] === id;
@@ -44,9 +52,10 @@ export function Players({ view, waiting, deadline }: { view: PlayerView; waiting
             <div className="pl-head">
               <span className="pl-rank">{rank === 0 && g > 0 ? '👑' : rank + 1}</span>
               <b>{turn && '▶ '}{p.name}{id === view.you ? ' (you)' : ''}</b>
-              {waiting.includes(id) && <span className="ring">{left === null ? '…' : `${left}s`}</span>}
+              {waiting.includes(id) && <span className="ring" data-urgent={left !== null && left <= 10 && !paused.includes(id)}>{paused.includes(id) ? '⏸' : left === null ? '…' : `${left}s`}</span>}
               <span className="pl-glory" title={relics ? 'Glory (bracket: with your hidden Relics, only you see it)' : 'Glory'}>♛ {g}{relics > 0 && ` (${g + relics})`}</span>
             </div>
+            {waiting.includes(id) && !paused.includes(id) && left !== null && total > 0 && <div className="drain" aria-hidden="true"><i style={{ width: `${Math.min(100, (left / total) * 100)}%` }} /></div>}
             <div className="pl-stats">
               <span title="Paths (roads)" className={view.longestPath === id ? 'hl' : undefined}>Roads <b>{Object.values(view.paths).filter((o) => o === id).length}</b></span>
               <span title="Outposts (houses)">Houses <b>{Object.values(view.buildings).filter((x) => x.owner === id && x.kind === 'outpost').length}</b></span>

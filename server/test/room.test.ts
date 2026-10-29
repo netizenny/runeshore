@@ -184,6 +184,22 @@ describe('game flow', () => {
     expect(pendingPlayers(room.game!)).not.toContain(first);
     expect(Object.keys(room.game!.buildings).length).toBeGreaterThan(0);
   });
+
+  it('pause stops my clock, resume restarts it, and the pause ends by itself', () => {
+    const { room, socks } = lobby(3);
+    room.handle(socks[0], { t: 'settings', settings: { turnTimerSec: 30 } });
+    room.handle(socks[0], { t: 'start' });
+    const idx = room.seats.findIndex((x) => x.id === room.game!.order[0]);
+    room.handle(socks[idx], { t: 'pause', on: true });
+    expect(socks[idx].last('game')!.deadline).toBeNull();
+    vi.advanceTimersByTime(60_000);
+    expect(room.game!.log.some((e) => e.type === 'autoActed')).toBe(false);
+    room.handle(socks[idx], { t: 'pause', on: false });
+    expect(socks[idx].last('game')!.deadline).toBe(Date.now() + 30_000);
+    room.handle(socks[idx], { t: 'pause', on: true });
+    vi.advanceTimersByTime(120_000);
+    expect(socks[idx].last('game')!.deadline).toBe(Date.now() + 30_000);
+  });
 });
 
 describe('disconnects and host commands', () => {

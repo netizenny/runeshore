@@ -30,7 +30,7 @@ export function Lobby(p: {
       <h1>Room {p.roomId}</h1>
       {!p.seated && (
         <div className="row">
-          <input value={name} maxLength={20} placeholder="Your name" onChange={(e) => setName(e.target.value)} />
+          <input aria-label="Your name" value={name} maxLength={20} placeholder="Your name" onChange={(e) => setName(e.target.value)} />
           <button disabled={!name.trim()} onClick={() => send({ t: 'join', roomId: p.roomId, name })}>Take a seat</button>
         </div>
       )}
@@ -90,7 +90,7 @@ export function Lobby(p: {
             )}
             <label>Turn timer</label>
             <select value={lobby.settings.turnTimerSec} onChange={(e) => set({ turnTimerSec: +e.target.value as Settings['turnTimerSec'] })}>
-              {[15, 30, 45].map((n) => <option key={n} value={n}>{n} s</option>)}
+              {[15, 30, 45, 60, 90].map((n) => <option key={n} value={n}>{n} s</option>)}
             </select>
           </div>
           {!mapFits && <div className="err">Five or six players need a large map.</div>}
