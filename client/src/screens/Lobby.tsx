@@ -4,6 +4,13 @@ import { savedName } from '../state/useGame';
 
 type Lobby = Extract<ServerMsg, { t: 'lobby' }>;
 
+const PRESETS: { id: string; label: string; hint: string; set: Partial<Settings> }[] = [
+  { id: 'quick', label: 'Quick', hint: 'Short game, 7 Glory', set: { hollowFleet: false, drownedIsles: false, gloryTarget: 7 } },
+  { id: 'classic', label: 'Classic', hint: 'The usual, 10 Glory', set: { hollowFleet: false, drownedIsles: false, gloryTarget: 10 } },
+  { id: 'epic', label: 'Epic', hint: 'Hollow Fleet, 13 Glory', set: { hollowFleet: true, drownedIsles: false, gloryTarget: 13 } },
+];
+const presetOf = (s: Settings) => (s.drownedIsles ? null : s.hollowFleet ? (s.gloryTarget === 13 ? 'epic' : null) : s.gloryTarget === 7 ? 'quick' : s.gloryTarget === 10 ? 'classic' : null);
+
 const range = (a: number, b: number) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
 
 export function Lobby(p: {
@@ -27,7 +34,10 @@ export function Lobby(p: {
 
   return (
     <div className="screen">
-      <h1>Room {p.roomId}</h1>
+      <div className="code" role="group" aria-label={`Room code ${p.roomId.split('').join(' ')}`}>
+        <small>Room code</small>
+        <b aria-hidden="true">{p.roomId.slice(0, 3)} {p.roomId.slice(3)}</b>
+      </div>
       {!p.seated && (
         <div className="row">
           <input aria-label="Your name" value={name} maxLength={20} placeholder="Your name" onChange={(e) => setName(e.target.value)} />
@@ -48,6 +58,15 @@ export function Lobby(p: {
       <button onClick={copy}>{copied ? 'Link copied' : 'Copy link'}</button>
       {isHost && lobby && (
         <>
+          <div className="presets" role="radiogroup" aria-label="Game length">
+            {PRESETS.map((x) => (
+              <button key={x.id} role="radio" aria-checked={presetOf(lobby.settings) === x.id} data-on={presetOf(lobby.settings) === x.id} onClick={() => set(x.set)}>
+                <b>{x.label}</b><small>{x.hint}</small>
+              </button>
+            ))}
+          </div>
+          <details className="advanced">
+          <summary>Advanced</summary>
           <div className="settings">
             <label>Board</label>
             <select value={lobby.settings.boardMode} onChange={(e) => set({ boardMode: e.target.value as Settings['boardMode'] })}>
@@ -93,8 +112,9 @@ export function Lobby(p: {
               {[15, 30, 45, 60, 90].map((n) => <option key={n} value={n}>{n} s</option>)}
             </select>
           </div>
+          </details>
           {!mapFits && <div className="err">Five or six players need a large map.</div>}
-          <button disabled={lobby.seats.length < 2 || !mapFits} onClick={() => send({ t: 'start' })}>Begin</button>
+          <button disabled={lobby.seats.length < 2 || !mapFits} className="go huge" onClick={() => send({ t: 'start' })}>Begin</button>
         </>
       )}
       {p.seated && !isHost && <div>Waiting for the host to begin.</div>}

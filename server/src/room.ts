@@ -137,6 +137,8 @@ export class Room {
           return this.setSettings(conn, seat, msg.settings);
         case 'start':
           return this.start(conn, seat);
+        case 'rematch':
+          return this.rematch(conn);
         case 'action':
           return this.act(conn, seat, msg.action);
         case 'host':
@@ -195,6 +197,13 @@ export class Room {
     const players = this.seats.map(({ id, name, color }) => ({ id, name, color }));
     this.game = createGame(players, this.settings, randomInt(1, 2 ** 31));
     this.settle([]);
+  }
+
+  private rematch(conn: Conn) {
+    if (this.game?.phase.k !== 'ended') return this.put(conn, bad('not_ended', 'The game is not over.'));
+    this.game = null;
+    this.logSent = new WeakSet(); // the next game sends the full log afresh
+    this.changed();
   }
 
   // Strictly synchronous from check to apply: that is the per-room action queue.

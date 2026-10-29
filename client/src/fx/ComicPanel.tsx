@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { GameEvent, PlayerView } from '@runeshore/shared';
+import type { ClientMsg, GameEvent, PlayerView } from '@runeshore/shared';
 import { ARCANA_BY_KEY } from '@runeshore/shared';
 import { glory } from '../panels/Players';
 
@@ -23,7 +23,7 @@ function caption(e: GameEvent, v: PlayerView): Cap | null {
 }
 
 // Each new big moment shows for ~1.2s, queued in order; the last one fades after 2.5s. The win screen stays until the player leaves.
-export function ComicPanel({ events, view }: { events: GameEvent[]; view: PlayerView }) {
+export function ComicPanel({ events, view, send }: { events: GameEvent[]; view: PlayerView; send(m: ClientMsg): void }) {
   const [queue, setQueue] = useState<Cap[]>([]);
   useEffect(() => {
     const c = events.map((e) => caption(e, view)).filter((x): x is Cap => !!x);
@@ -55,17 +55,32 @@ export function ComicPanel({ events, view }: { events: GameEvent[]; view: Player
       ] as [string, (p: PlayerView['players'][number]) => number][]) : []),
       ['Relics', relics],
     ];
+    const winner = view.players.find((p) => p.id === (view.phase as { winner: string }).winner)!;
+    const podium = [rows[1], rows[0], rows[2]].filter(Boolean); // 2nd, 1st, 3rd: the tall step sits in the middle
     return (
-      <div className="comic win">
-        <h1>{n(view, view.phase.winner)} rules Runeshore!</h1>
-        <table>
-          <thead><tr><th />{rows.map((p) => <th key={p.id}>{p.name}</th>)}</tr></thead>
-          <tbody>
-            {src.filter(([, f]) => rows.some((p) => f(p) > 0)).map(([label, f]) => <tr key={label}><td>{label}</td>{rows.map((p) => <td key={p.id}>{f(p) || '·'}</td>)}</tr>)}
-            <tr><td><b>Total</b></td>{rows.map((p) => <td key={p.id}><b>★ {total(p)}</b></td>)}</tr>
-          </tbody>
-        </table>
-        <button onClick={() => { location.hash = ''; location.reload(); }}>Back to lobby</button> {/* reload: the socket is still seated in the finished room */}
+      <div className="comic win" style={{ '--win': `var(--${winner.color})` } as React.CSSProperties} role="dialog" aria-label={`${winner.name} wins`}>
+        <div className="crown" aria-hidden="true">👑</div>
+        <h1>{winner.name} rules Runeshore!</h1>
+        <div className="podium">
+          {podium.map((p) => (
+            <div key={p.id} className="step" data-first={p.id === winner.id} data-place={rows.indexOf(p) + 1}>
+              <span className="chip" style={{ background: `var(--${p.color})` }} />
+              <b>{p.name}</b>
+              <span>★ {total(p)}</span>
+            </div>
+          ))}
+        </div>
+        <button className="go huge" onClick={() => send({ t: 'rematch' })}>Back to lobby</button>
+        <details className="how">
+          <summary>How it happened</summary>
+          <table>
+            <thead><tr><th />{rows.map((p) => <th key={p.id}>{p.name}</th>)}</tr></thead>
+            <tbody>
+              {src.filter(([, f]) => rows.some((p) => f(p) > 0)).map(([label, f]) => <tr key={label}><td>{label}</td>{rows.map((p) => <td key={p.id}>{f(p) || '·'}</td>)}</tr>)}
+              <tr><td><b>Total</b></td>{rows.map((p) => <td key={p.id}><b>★ {total(p)}</b></td>)}</tr>
+            </tbody>
+          </table>
+        </details>
       </div>
     );
   }

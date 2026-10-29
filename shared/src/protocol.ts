@@ -8,6 +8,7 @@ export type ClientMsg =
   | { t: 'join'; roomId: string; name: string; seatToken?: string }
   | { t: 'settings'; settings: Partial<Settings> }
   | { t: 'start' }
+  | { t: 'rematch' } // after a win: everyone back to this room's lobby
   | { t: 'action'; action: Action }
   | { t: 'host'; cmd: 'autopilot' | 'remove'; player: PlayerId }
   | { t: 'pause'; on: boolean } // stop my clock while I read the rulebook or build a trade

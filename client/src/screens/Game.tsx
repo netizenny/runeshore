@@ -142,7 +142,7 @@ export function Game({ game, send }: { game: GameMsg; send(m: ClientMsg): void }
       {ph.k === 'glimmer' && has(legal, 'chooseGlimmer') && <Glimmer view={view} legal={legal} act={act} />}
       {ph.k === 'steal' && has(legal, 'steal') && <ShadeSteal view={view} legal={legal} act={act} />}
       {book && <Rulebook close={() => setBook(false)} />}
-      <ComicPanel events={game.events} view={view} />
+      <ComicPanel events={game.events} view={view} send={send} />
     </div>
   );
 }

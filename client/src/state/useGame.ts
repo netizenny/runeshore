@@ -75,7 +75,11 @@ export function useGame(roomId: string | null) {
           setToken(m.roomId, m.seatToken);
           setJoined(m);
           setError(null);
-        } else if (m.t === 'lobby') setLobby(m);
+        } else if (m.t === 'lobby') {
+          setLobby(m);
+          setGame(null); // a rematch sends everyone back here
+          log.current = [];
+        }
         else if (m.t === 'game') {
           // Full log arrives once per connection; later messages only add this move's events.
           log.current = m.log ?? [...log.current, ...m.events];

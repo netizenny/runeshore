@@ -174,3 +174,33 @@ button[data-on='true'] { background: var(--ink-gold-dim); color: var(--night); }
 .offer .answer button[data-on='true'] { outline: 3px solid var(--bone); }
 @keyframes pop-in { from { transform: scale(.85); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .offer[data-incoming='true'] { animation: none; } }
+
+/* Phase 4: welcome and win */
+.home { align-items: stretch; text-align: center; }
+.hero { width: 100%; max-height: 220px; border-radius: 12px; background: linear-gradient(#312d6b, #1e1b4b); }
+.field { display: flex; flex-direction: column; gap: .3rem; text-align: left; font-size: 1rem; }
+button.huge { font-size: 1.6rem; min-height: 72px; font-family: Cinzel, serif; letter-spacing: .08em; background: var(--ink-gold); color: var(--night); border-color: var(--ink-gold); }
+button.huge:disabled { background: var(--night-2); color: var(--ink-gold-dim); }
+.join { margin-top: .5rem; }
+.code { text-align: center; }
+.code small { display: block; font-size: 1rem; opacity: .85; }
+.code b { font-family: Cinzel, serif; font-size: 3.4rem; letter-spacing: .15em; color: var(--ink-gold); }
+.presets { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; }
+.presets button { display: flex; flex-direction: column; gap: .2rem; padding: .8rem .4rem; min-height: 84px; }
+.presets button b { font-size: 1.3rem; font-family: Cinzel, serif; }
+.presets button small { font-size: .9rem; color: var(--parchment); }
+.presets button[data-on='true'] { background: var(--ink-gold); border-color: var(--ink-gold); }
+.presets button[data-on='true'] b, .presets button[data-on='true'] small { color: var(--night); }
+.advanced summary { cursor: pointer; padding: .6rem 0; min-height: 48px; }
+.advanced .settings { margin-top: .5rem; }
+.comic.win { background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--win) 45%, var(--night)), var(--night) 70%); overflow: auto; z-index: 20; }
+.crown { font-size: 5rem; line-height: 1; animation: crown-drop .7s cubic-bezier(.2, .8, .3, 1.2) both; }
+.podium { display: flex; align-items: flex-end; gap: .5rem; }
+.step { display: flex; flex-direction: column; align-items: center; gap: .2rem; min-width: 7.5rem; padding: .8rem .6rem; background: var(--night-2); border: 2px solid var(--ink-gold-dim); border-radius: 6px 6px 0 0; font-size: 1.1rem; }
+.step[data-place='1'] { min-height: 11rem; border-color: var(--ink-gold); background: color-mix(in srgb, var(--win) 30%, var(--night-2)); }
+.step[data-place='2'] { min-height: 8.5rem; }
+.step[data-place='3'] { min-height: 6.5rem; }
+.how { max-width: 90vw; }
+.how summary { cursor: pointer; text-align: center; min-height: 48px; padding: .6rem; }
+@keyframes crown-drop { from { transform: translateY(-3rem) scale(.6); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .crown { animation: fade .2s ease-out; } }
